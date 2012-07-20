@@ -37,7 +37,7 @@
 //#include "galtmodel.h"
 //#include "pgaltmodel.h"
 //#include "sersic.h"
-//#include "extpgauss.h"
+#include "extpgauss.h"
 #include "medfil.h"
 #include "varipar.h"
 #include "makemask.h"
@@ -202,19 +202,8 @@ int main()
 //          model4d = &sersic4d_;
      }
      if (strncmp(flags[0], "EXTPGAUSS",  5) == 0){
-          printf("EXTENDED PGAUSS  MODEL CURRENTLY NOT FUNCTIONAL\n");
-          printf("USING PGAUSS MODEL INSTEAD\n");
-          // need seperate upper and lower limits to hold
-          // beta4 index above zero
-          model2d = &pgauss2d_;
-          model4d = &pgauss4d_;
-          tune4_.npar  -= 1;
-          tune4_.nfit2 -= 1;
-          free(flags[0]);
-          flags[0] = malloc((strlen("PGAUSS") + 1) * sizeof(char));
-          strcpy(flags[0], "PGAUSS");
-//          model2d = &extpgauss2d_;
-//          model4d = &extpgauss4d_;
+          model2d = &extpgauss2d_;
+          model4d = &extpgauss4d_;
      }
 
      /* Open log file if desired. */
