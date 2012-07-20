@@ -1,0 +1,102 @@
+\centerline{\bf 4.  CONTENTS OF VERSION 4.0 AND HOW TO USE THEM}
+
+	The program and data files provided to you have been arranged 
+into a subdirectory structure, which you are strongly urged to maintain.
+In versions 3.0 and prior, the program was arranged into a more 
+redundant subdirectory structure with the underlying intent to maintain 
+always a pristine ORIGINAL copy of the code as reference, and to have 
+an easy facility to check that code that has been modified produces 
+IDENTICAL results when run on the supplied test images with the 
+supplied input data and parameters. We believe that with modern 
+source control the old subdirectory structure may be cumbersome to 
+users rather than helpful, so it has been dropped in 4.0.  We do still 
+encourage that users keep and maintain a pristine copy of DoPHOT
+at all times on their machines.  As with previous versions, all modified 
+code should produce IDENTICAL results when run on the supplied test 
+images with the supplied input data and parameters.  Whether the user 
+chooses to use GIT and make their working copy a branch off of a pristine 
+master or simply download DoPHOT twice, one copy for modifications 
+one for verification is at his or her discretion.
+
+\centerline{\bf 4.1 CFITSIO precursor}
+	DoPHOT 4.0 requires the CFITSIO library which is not included 
+with DoPHOT.  It can be obtained at 
+http://heasarc.gsfc.nasa.gov/docs/software/fitsio/fitsio.html
+and installed by following the guidelines on that page.  Once it is installed
+(and working), edit {\bf Makefile} in the top level, MAIN directory
+supplied with this package to reflect the path of the CFITSIO installation. 
+Unfortunately, you will NEED TO MODIFY THE MAKEFILE, EVEN IN 
+THE `PRISTINE' DoPHOT COPY as well as the working copy, however 
+this is the ONLY FILE YOU SHOULD EVER MODIFY IN THE PRISTINE 
+COPY. 
+
+\centerline{\bf 4.2 UNIX Systems}
+
+	The tar supplied to you, should, when properly read, 
+produce a main-level directory (which can be a sub-directory in 
+your general subdirectory tree), which will be referred to as MAIN.
+MAIN contains 
+\item{1)} {\bf README} containing general information and instruction file(s) that you 
+should read before proceeding.
+\item{2)} subdirectory {\bf manual} containing a TEXable version of this manual.
+\item{3)} a {\bf Makefile}
+\item{4)} the original Version4\_0 code as .c files.
+\item{5)} subdirectory {\bf headers} containing headers for most of the source 
+routines
+\item{6)} subdirectory {\bf structs} containing additional header files with struct 
+information
+\item{7)} subdirectory {\bf verif\_data} containing test files
+\item{8)} subdirectory {\bf working\_data} which is empty.
+
+Run 'make test' to populate the {\bf verif\_data} subdirectory with a dophot 
+executable.
+Alternately, run 'make dophot' from MAIN to populate {\bf working\_data} 
+with a dophot executable.
+
+In either case, the {\bf working\_source} subdirectory will populate with
+.o files and any errors in your modified Makefile or CFITSIO installation 
+will now appear.
+
+	On a pristine copy of DoPHOT version4\_0, the {\bf working\_data}
+subdirectory is empty. By running the `make' described above, an executable
+image of {\bf dophot} is created here. You may choose to use this 
+as your work area for DoPHOT; we urge that you do. Before you can do so, 
+you will need proper parameter files and other optional input files
+(as described elsewhere in this manual) in addition to the image on which
+you wish to run DoPHOT. 
+
+	The {\bf verif\_data} subdirectory comes with the test image 
+{\bf J0159.8.chip\_01.fits}, the default parameter file 
+{\bf param\_default\_c}, a file containing the modified parameters {\bf pm}, 
+and a list of input objects {\bf obj\_in\_J0159.8.chip\_01} for the field. Additionally 
+{\bf verif\_data} contains a subdirectory {\bf compare\_out} containing files 
+intended for verification that the supplied program or any modification you 
+make is executing correctly.  By running 'make test' in 
+{\bf working\_to\_compilable}, {\bf verif\_data} will be populated with a 
+dophot executable.
+
+Let us walk through and see how to run dophot on the galaxy cluster image 
+called {\bf J0159.8.chip\_01.fits}.  
+Type `./dophot' at the command line (or equivalent for your machine).  You 
+should be prompted for a parameter modification file.  Type in 'pm', which 
+contains the non-default parameters for this test file, and hit return.  'pm' also 
+informs DoPHOT as to which file contains the default parameters, namely 
+{\bf param\_default\_c}, which should never be modified.  
+
+DoPHOT should now execute in a number of seconds and report 6 output files 
+matching the ones in the {\bf compare\_out} subdirectory. Feel free to examine 
+all of them, but in particular diff {\bf obj\_out\_J0159.8.chip\_01} with 
+the {\bf compare\_out} file of the same name.  If there are any discrepancies, 
+something has gone wrong or you are not working with a pristine copy of 
+DoPHOT. 
+
+
+
+
+
+
+
+
+
+
+

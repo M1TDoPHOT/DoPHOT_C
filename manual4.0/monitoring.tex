@@ -1,0 +1,60 @@
+\centerline{\bf 9. MONITORING OUTPUT AND DIAGNOSING DIFFICULTIES}
+
+\centerline{\bf 9.1  Monitoring Output}
+
+The single most useful thing one can do to get a qualitative
+feel for how DoPHOT is doing is to create a synthetic image
+by subtracting the object-subtracted image from the original
+image.  Displaying this will show whether DoPHOT is
+successfully classifying galaxies and double-stars, and
+whether spurious objects are being detected.
+
+Another useful check is to compare outputs obtained for two
+separate images of the same field.  One might ask how well
+the fit magnitudes agree, after adjustment for possible
+variations in transparency and correction to an aperture
+magnitude system, how well the classifications and positions
+agree, and which objects were detected on one frame but not
+on the other.  Comparisons such as these can profitably be
+done by hand, but can also be done using matching programs
+which may be available from the person in the office next
+door.
+
+Much can be learned just from examination of the output
+object list.  The scatter in the difference between
+aperture and fit magnitudes should be consistent with the
+quoted errors.   The
+object classifications should make sense ({\it e.g.}, in an open
+cluster most of the objects should be single stars and not
+galaxies and split stars, while in a more crowded globular cluster
+field, one might find a number of double stars, and in a high-latitude
+field galaxies should be common).  The uncertainties
+in the fit magnitudes should be small for bright stars
+and larger for faint stars.  They will be larger for
+stars which lie near other stars.
+
+One can produce a large ``log'' file records DoPHOT's
+progress in identifying objects, estimating positions and
+magnitudes and shapes, classifying objects, and determining
+typical shape parameters and sky values.  The output of the 
+``log'' file can be easily directed to the user's terminal or
+window.  Since the entries in this file
+are more or less self explanatory, no attempt will be made
+here to describe the (many) possible entries in the log file.
+One useful quantity reported in the log file is the number
+of pixels used in fitting a model.  If this is very much
+smaller than the number computed from the dimensions of the
+fit subraster, it may be that the object is at the edge of
+the image, or that a nearby object has been ``obliterated.''
+
+The user would be well advised to look at the output
+parameters file to make sure that the values used were those
+intended.  This file also serves as a record of the
+reduction of that image with one caveat described in Appendix
+A.  With the output parameters file, the user can {\it
+precisely} reproduce that reduction.
+
+The user is also encouraged to reduce some image that has
+been reduced with some other program, perhaps borrowing one
+from a colleague who wouldn't mind having his reduction
+double checked.

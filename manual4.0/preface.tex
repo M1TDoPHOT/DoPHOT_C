@@ -1,0 +1,144 @@
+\centerline{\bf 1. PREFACE}
+
+DoPHOT is a computer program designed to search for
+``objects'' on a digital image of the sky and to produce
+positions, magnitudes and crude classifications for those
+objects.  Digital images, like the research programs for
+which they are obtained, vary enormously, and no single
+computer program is likely to handle all cases equally well.
+The particular application for which DoPHOT was designed,
+and to an extent, optimized, involved large numbers of
+poorly sampled, low signal-to-noise images for which a fast,
+hands-off approach seemed desirable.  The scientific program
+for which it was written required photometry of a large
+number ($10^5$) of relatively bright stars, with an accuracy
+of 0.03 mag or better.
+
+Anyone considering using DoPHOT would do well to think
+carefully about using some other program (see, for example, the
+various programs described in the proceedings of the 1st ESO/ST-ECF
+Data Analysis Workshop edited by Gr\o sbol, Murtaugh, and Warmels)
+or writing new code designed
+specifically for the application at hand.  The user who
+chooses DoPHOT may sacrifice completeness in the
+identification of objects, and accuracy in their positions,
+magnitudes and classifications.  This is especially likely
+if DoPHOT is used on data sets (or for research programs)
+which are very different from those for which it was
+originally designed.  Some users may, despite these losses,
+find it advantageous to use DoPHOT.
+
+DoPHOT was written and modified by individuals more
+interested in expeditiously carrying out their own research
+than in producing a black box requiring minimal
+understanding of its contents.  While some attempt has been
+made to make the present version less user-hostile than
+earlier versions, the program is not designed to check
+whether the input data are ``reasonable", or whether the
+output is ``reasonable".  The necessary ``reason" must be
+supplied by the user, giving careful thought to the input
+data and careful attention to the output results.  The
+greater the user's understanding of the program, the more
+likely he or she will find it useful.  Through this manual
+the authors try to convey a thorough understanding of the
+program, suggesting ways of monitoring results and pointing
+out pitfalls to be avoided.
+
+A second consequence of DoPHOT's origin as a program
+intended for use only by its authors warrants mention.  In
+the course of working with different data sets a variety of
+unanticipated and frustrating difficulties were encountered
+for which ad hoc solutions were implemented.  Many of these
+``quick fixes'' used the programmer's equivalent of baling
+wire and duct tape.  They are not pretty.  Moreover, while
+many of the fixes adopted were adequate for the immediate
+problem they were intended to address, they are far from
+optimum.  New data sets are likely to reveal the
+shortcomings of many of these fixes.
+
+DoPHOT is a free-standing program, not part of any
+``package,'' ``facility'' or ``system.''  The user is
+therefore responsible for the needed preprocessing (bias
+subtraction, ``flat fielding,'' and perhaps the editing of
+unwanted parts of an image), and for the display of input
+and output images.  Users who find that DoPHOT has been
+incorporated into some local ``system'' should recognize
+that it can be run outside that system, as a
+non-interactive, batch job, which might avoid some of the
+overheads endemic to such systems.  However, in its
+current version in C, DoPHOT does now require the NASA
+HEASARC CFITSIO library for reading and writing fits files.
+We extend our apologies to those who detest library 
+dependences. We just didn't want to reinvent the wheel on 
+data io.
+
+DoPHOT is composed of a great many relatively short modules,
+allowing for their quick replacement with improved versions.
+Since no two data sets present exactly the same challenges,
+the modules have evolved, and we expect them to continue to
+evolve, as new circumstances are encountered.  The user is
+{\it encouraged} to improve upon and to customize these routines
+and to advise the authors of improvements which they have
+implemented and the results they have obtained.  The user is
+{\it cautioned} to preserve a version of 
+the code as originally distributed, to
+guard against accidental corruption in the implementation
+of genuine improvements.  It is the authors' experience that
+while many of the difficulties encountered by users are the
+result of genuine shortcomings of the program, many others
+are the result of local modifications which have
+unanticipated repercussions.  To help guard against such
+accidental corruption, a test images and its associated
+input/output files  are
+distributed with the program, so that the user can check
+whether the version he or she is using produces results
+{\it identical}, not merely close, to those supplied.
+
+DoPHOT's authors believe that astronomers are only beginning
+to take advantage of the potential of digital images, and
+that there is much to be had in the way of improvement.
+Users of DoPHOT are therefore urged to think carefully about
+which aspects of DoPHOT might be worth adopting in a next
+generation reduction program and which aspects ought to be
+abandoned for something better.
+
+Having issued these discouraging warnings, some words of
+reassurance are in order.  DoPHOT has been used with modest
+success by perhaps a hundred users, on traditional ``stare" mode
+images, on time-delay-integration images, on Hartmann test
+images and even on the comparison arcs of echelle
+spectrograms.  Customized versions have been written which
+allow (separately) for a point spread function which varies
+with position within an image, for the classification of
+objects as asteroid trails, and for taking proper account
+of the noise associated with the subtraction a smooth
+background (specifically an elliptical galaxy).  Photometry
+has been obtained for many tens of millions of stellar images, with
+relative photometry which on occasion reproduces to better
+than 0.005 mag for a single measurement of a single star. At
+least some of DoPHOT's users have found that the time
+invested in learning to use it has yielded a satisfactory
+return on their investment.
+
+DoPHOT and its capabilities have been described in a paper: Schechter, Mateo,
+\& Saha (1993), PASP 105, 1342. This manual acquaints the new user with 
+running DoPHOT, and serves as a reference for all users alike. 
+ 
+In the sections which immediately follow, DoPHOT is
+described conceptually, with as little reference as possible
+to variable names and subroutine names.  More detailed descriptions
+of the parameter names and data formats are given in the two
+Appendices following the main body of the manual.
+
+The present manual describes DoPHOT 4.0, which is not much different from 
+the manual for DoPHOT 3.0, except in the "Details for Connoisseurs" section.
+This is by design.  DoPHOT 4.0 in C was built modularly from the DoPHOT 3.0 
+routines in Fortran 77, and until intentional improvements were made, 
+produced identical photometry. Although we have tried to change all instances 
+of 1.0, 2.0, and 3.0 to 4.0, some cases may have slipped by the editors.
+It is safe to assume that any references to DoPHOT 1.0, 2.0, or 3.0 really mean 
+DoPHOT 4.0, and any file names containing {\bf 1\_0}, {\bf 2\_0}, or {\bf 3\_0}, 
+should be read to contain {\bf 4\_0}.
+
+
+

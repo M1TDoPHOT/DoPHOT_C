@@ -1,0 +1,533 @@
+This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  19 JUL 2012 14:15
+entering extended mode
+\write18 enabled.
+ %&-line parsing enabled.
+**script.tex
+(./script.tex (./setup.tex (./cituseful.tex
+\eqnum=\count27
+)) (./title.tex) [1{/usr/local/texlive/2008/texmf-var/fonts/map/pdftex/updmap/p
+dftex.map}] (./contents.tex [2]
+[3] [4]) (./preface.tex [5] [6]
+Overfull \hbox (11.25703pt too wide) in paragraph at lines 123--126
+\tenrm Saha (1993), PASP 105, 1342. This man-ual ac-quaints the new user with r
+un-ning DoPHOT, 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm S
+.\tenrm a
+.\tenrm h
+.\tenrm a
+.\glue(\spaceskip) 3.33298
+.etc.
+
+[7]) [8] (./gen_descrip.tex
+Overfull \hbox (11.67361pt too wide) in paragraph at lines 35--44
+\tenrm ni-tudes for stars, DoPHOT as-sumes that all stars have the same ``typ-i
+-cal'' shape. DoPHOT 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm n
+.\tenrm i
+.\discretionary
+..\tenrm -
+.\tenrm t
+.\tenrm u
+.etc.
+
+[9] [10]
+Overfull \hbox (11.5628pt too wide) in paragraph at lines 123--132
+\tenrm also re-moves pix-els from fur-ther con-sid-er-a-tion when-ever a cos-mi
+c ray is de-tected. DoPHOT 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm a
+.\tenrm l
+.\tenrm s
+.\tenrm o
+.\glue(\spaceskip) 3.33298
+.etc.
+
+[11]) [12] (./crypto_program.tex) [13] (./dir_struct.tex [14]
+Overfull \hbox (3.80232pt too wide) in paragraph at lines 60--67
+[]\tenrm On a pris-tine copy of DoPHOT ver-sion4[]0, the \tenbf work-ing[]data 
+\tenrm sub-di-rec-tory is empty. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm O
+.\tenrm n
+.\glue(\spaceskip) 3.33298
+.\tenrm a
+.etc.
+
+[15]
+Overfull \hbox (7.45064pt too wide) in paragraph at lines 86--92
+[]\tenrm DoPHOT should now ex-e-cute in a num-ber of sec-onds and re-port 6 out
+-put files match- 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm D
+.\tenrm o
+.\tenrm P
+.\tenrm H
+.etc.
+
+) [16] (./image_formats.tex) [17] (./step_by_step.tex
+Overfull \hbox (4.32246pt too wide) in paragraph at lines 3--10
+\tenrm like to try run-ning it. Nat-u-rally you would like to try run-ning it o
+n your own data. \tenit Avoid 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm l
+.\tenrm i
+.\tenrm k
+.\kern-0.27779
+.\tenrm e
+.etc.
+
+
+Overfull \hbox (8.09033pt too wide) in paragraph at lines 13--16
+[]\tenrm In ad-di-tion to the ex-e-cutable file which re-sulted from com-pil-in
+g and link-ing DoPHOT, 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm I
+.\tenrm n
+.\glue(\spaceskip) 3.33298
+.\tenrm a
+.etc.
+
+[18] [19] [20] [21]
+Overfull \hbox (22.14471pt too wide) in paragraph at lines 187--200
+[]\tenrm There are \tenit two ways \tenrm in which the user con-trols the faint
+est ob-jects iden-ti-fied by DoPHOT. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm T
+.\tenrm h
+.\tenrm e
+.\tenrm r
+.etc.
+
+[22]) [23] (./lesson_2.tex [24] [25] [26] [27]
+Overfull \hbox (3.50069pt too wide) in paragraph at lines 219--227
+[]\tenit Limited \tenrm tests in-di-cate that while this quan-tity does help to
+ sep-a-rate stars from galax- 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenit L
+.\tenit i
+.\tenit m
+.\tenit i
+.etc.
+
+[28] [29] [30]) [31] (./guidelines.tex
+Missing character: There is no Ó in font cmr10!
+Missing character: There is no Ô in font cmr10!
+Missing character: There is no Õ in font cmr10!
+
+Overfull \hbox (21.72466pt too wide) in paragraph at lines 28--31
+[]\tenrm All #de-fines (in For-tran, pa-ram-e-ter) are con-fined to the header 
+file \tenbf structs/tuneable.h\tenrm . 
+
+\hbox(7.5+2.5)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm A
+.\tenrm l
+.\tenrm l
+.\glue(\spaceskip) 3.33298
+.etc.
+
+Missing character: There is no Ô in font cmr10!
+Missing character: There is no Ò in font cmr10!
+Missing character: There is no Ò in font cmr10!
+Missing character: There is no Ó in font cmr10!
+[32]
+Missing character: There is no É in font cmr10!
+Missing character: There is no Õ in font cmr10!
+Missing character: There is no Õ in font cmr10!
+Missing character: There is no Õ in font cmr10!
+
+Overfull \hbox (14.10075pt too wide) in paragraph at lines 68--77
+[]\tenrm Tuneable vari-ables, tune##[].variable, are AL-MOST never changed ex-c
+ept in \tenbf tuneup.c 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm T
+.\kern-0.83334
+.\tenrm u
+.\tenrm n
+.etc.
+
+
+Overfull \hbox (4.25064pt too wide) in paragraph at lines 68--77
+\tenrm where they are de-fined from the pa-ram-e-ter files. The ex-cep-tion is 
+in the rou-tine \tenbf bestab.c 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm w
+.\tenrm h
+.\tenrm e
+.\tenrm r
+.\tenrm e
+.etc.
+
+
+Overfull \hbox (21.3039pt too wide) in paragraph at lines 78--88
+\tenrm length is not fixed in the struct def-i-ni-tion it-self, but rather mal-
+loced in each run in \tenbf tuneup.c\tenrm , 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm l
+.\tenrm e
+.\tenrm n
+.\tenrm g
+.\tenrm t
+.etc.
+
+[33]
+Missing character: There is no Ô in font cmr10!
+Missing character: There is no Õ in font cmr10!
+
+Overfull \hbox (4.06242pt too wide) in paragraph at lines 119--123
+\tenrm es-pe-cially in the smaller sub-rou-tines. C con-ven-tions are not used.
+ This flaw will be slowly 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm e
+.\tenrm s
+.\discretionary
+..\tenrm -
+.\tenrm p
+.\kern0.27779
+.etc.
+
+Missing character: There is no Õ in font cmr10!
+[34]
+Overfull \hbox (42.48213pt too wide) in paragraph at lines 168--174
+\tenrm (i.e. EXT[]PGAUSS, not PGAUSS[]EXTENDED). The rel-e-vant line in the \te
+nbf params[]default[]c 
+
+\hbox(7.5+2.5)x371.46176
+.\tenrm (
+.\tenrm i
+.\tenrm .
+.\tenrm e
+.\tenrm .
+.etc.
+
+[35]
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \delimiter 
+\{->\delimiter 
+               "4266308 
+l.201 ...(strncmp(flags[0], "NEWMODEL", 5) == 0)\{
+                                                  
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.202 
+      
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \delimiter 
+\}->\delimiter 
+               "5267309 
+l.207 	\}
+         
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.208 
+      
+? 
+
+Overfull \hbox (6.84099pt too wide) in paragraph at lines 223--227
+[][]\tenrm Modify the files which read IN-COM-PLETE and COM-PLETE warm-start fi
+les, namely 
+
+\hbox(7.5+2.5)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\hbox(7.5+2.5)x0.0, glue set - 16.6667fil
+..\glue 0.0 plus 1.0fil minus 1.0fil
+..\tenrm 6
+..\tenrm .
+..\tenrm )
+..\kern 5.0
+.\tenrm M
+.\tenrm o
+.\kern0.27779
+.etc.
+
+[36] [37]
+Overfull \hbox (2.81071pt too wide) in paragraph at lines 270--274
+\tenrm to en-sure that it is greater than or equal to the num-ber of pa-ram-e-t
+ers in your new model. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm t
+.\tenrm o
+.\glue(\spaceskip) 3.33298
+.\tenrm e
+.\tenrm n
+.etc.
+
+[38] [39] [40]
+Overfull \hbox (9.53474pt too wide) in paragraph at lines 429--435
+\tenrm as op-posed to an em-pir-i-cal, point spread func-tion are as-so-ci-ated
+ with the object-subtracted 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm a
+.\tenrm s
+.\glue(\spaceskip) 3.33298
+.\tenrm o
+.\tenrm p
+.etc.
+
+) [41] (./monitoring.tex [42]) [43] (./known_bugs.tex [44]) [45]
+(./enhancements.tex [46]
+Overfull \hbox (1.92288pt too wide) in paragraph at lines 74--94
+[]\tenrm When the user re-quests a \tentt DoPHOT \tenrm run with fixed po-si-ti
+ons, the pro-gram goes through 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm W
+.\tenrm h
+.\tenrm e
+.\tenrm n
+.etc.
+
+[47]
+Overfull \hbox (8.1487pt too wide) in paragraph at lines 115--132
+[]\tenrm Two disk-fits files are sup-plied in the \tenbf verif[]data \tenrm di-
+rec-tory called \tenbf im-age[]in[]template 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm T
+.\tenrm w
+.\kern-0.27779
+.\tenrm o
+.etc.
+
+
+Overfull \hbox (24.51073pt too wide) in paragraph at lines 115--132
+\tenrm first im-age is (nat-u-rally) \tenbf param[]in[]template \tenrm and for 
+the sec-ond im-age \tenbf param[]in[]program\tenrm . 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm ^^L (ligature fi)
+.\tenrm r
+.\tenrm s
+.\tenrm t
+.\glue(\spaceskip) 3.33298
+.etc.
+
+
+Overfull \hbox (1.73253pt too wide) in paragraph at lines 115--132
+\tenrm The re-sults of these runs will be two files (\tenbf obj[]out[]template1
+ \tenrm and \tenbf obj[]out[]program1\tenrm , 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm T
+.\tenrm h
+.\tenrm e
+.\glue(\spaceskip) 3.33298
+.\tenrm r
+.etc.
+
+
+Overfull \hbox (11.04219pt too wide) in paragraph at lines 133--151
+\tenrm gram frame ``once over lightly''. To il-lus-trate this, run \tentt DoPHO
+T \tenrm 4.0 us-ing \tenbf param[]program1 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm g
+.\tenrm r
+.\tenrm a
+.\tenrm m
+.\glue(\spaceskip) 3.33298
+.etc.
+
+[48] [49] [50] [51] [52]) [53] (./turnback.tex) [54] (./parameters.tex
+Overfull \hbox (18.10576pt too wide) in paragraph at lines 37--46
+\tenrm The de-fault pa-ram-e-ters file sup-pled with ver-sion 4.0 of DoPHOT is 
+called \tenbf param[]default[]c\tenrm . 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm T
+.\tenrm h
+.\tenrm e
+.\glue(\spaceskip) 3.33298
+.\tenrm d
+.etc.
+
+[55]
+Overfull \hbox (17.00635pt too wide) in paragraph at lines 66--72
+\tenrm so that you can prop-erly and re-li-ably trans-mit your the pa-ram-e-ter
+ val-ues you wish DoPHOT 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm s
+.\tenrm o
+.\glue(\spaceskip) 3.33298
+.\tenrm t
+.\tenrm h
+.etc.
+
+[56] [57]
+Overfull \hbox (1.83928pt too wide) in paragraph at lines 158--167
+\tenrm sizes will be too small to cope and the cor-re-spond-ing pa-ram-e-ter \t
+entt NS-MAX \tenrm should be changed 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm s
+.\tenrm i
+.\tenrm z
+.\tenrm e
+.\tenrm s
+.etc.
+
+
+Overfull \hbox (2.67351pt too wide) in paragraph at lines 179--187
+[]\tenrm This sec-tion de-scribes the pa-ram-e-ters found in the pa-ram-e-ter f
+iles used by DoPHOT. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm T
+.\tenrm h
+.\tenrm i
+.\tenrm s
+.etc.
+
+[58] [59] [60]
+Overfull \hbox (3.31142pt too wide) in paragraph at lines 309--320
+\tenrm the rel-e-vant fit-box size is set equal the near-est odd in-te-ger larg
+er than \tentt AMASKBOXMIN\tenrm .  
+
+\hbox(6.94444+1.94444)x371.46176
+.\tenrm t
+.\tenrm h
+.\tenrm e
+.\glue(\spaceskip) 3.33298
+.\tenrm r
+.etc.
+
+[61]
+Overfull \hbox (19.70284pt too wide) in paragraph at lines 375--387
+\tentt PARAMS[]DEFAULT \tenrm -- This key-word spec-i-fies the name of the de-f
+ault pa-ram-e-ter file. If DoPHOT 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tentt P
+.\tentt A
+.\tentt R
+.\tentt A
+.\tentt M
+.etc.
+
+
+Overfull \hbox (9.36777pt too wide) in paragraph at lines 375--387
+\tenrm `mod-i-fi-ca-tion' pa-ram-e-ter file that only needs to con-tain the pa-
+ram-e-ters you wish to change. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tenrm `
+.\tenrm m
+.\tenrm o
+.\kern0.27779
+.\tenrm d
+.etc.
+
+[62] [63] [64] [65]
+Overfull \hbox (18.95229pt too wide) in paragraph at lines 631--644
+\tenrm PLETE. The `COM-PLETE' in-put/output for-mat type pro-vides all the in-f
+or-ma-tion DoPHOT 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm P
+.\tenrm L
+.\tenrm E
+.\tenrm T
+.\tenrm E
+.etc.
+
+[66]
+Overfull \hbox (55.22404pt too wide) in paragraph at lines 656--675
+\tenrm word for PSNAME[]ROOT such that the de-sired PS file names are `PS-DIR/d
+#[]PSNAME[]ROOT.fits' 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm w
+.\kern-0.27779
+.\tenrm o
+.\tenrm r
+.\tenrm d
+.etc.
+
+[67] [68] [69]
+Overfull \hbox (0.38885pt too wide) in paragraph at lines 810--821
+\tenrm sigma in the $\teni x$\tenrm -direction, (6) the pseudo-gaussian cross t
+erm, and (7) the pseudo-gaussian 
+
+\hbox(7.5+2.5)x391.46176
+.\tenrm s
+.\tenrm i
+.\tenrm g
+.\tenrm m
+.\tenrm a
+.etc.
+
+[70] [71] [72] [73] [74] [75]) (./out_format.tex [76] [77] [78]) [79]
+(./types.tex
+Overfull \hbox (0.56104pt too wide) in paragraph at lines 8--11
+[]\tenrm Type 2: Ob-ject is not as peaked as a star, and has been in-ter-preted
+ to be a `galaxy'. 
+
+\hbox(6.94444+1.94444)x391.46176
+.\hbox(0.0+0.0)x20.0
+.\tenrm T
+.\kern-0.27779
+.\tenrm y
+.\tenrm p
+.etc.
+
+) [80] )
+(\end occurred inside a group at level 1)
+
+### simple group (level 1) entered at line 68 ({)
+### bottom level</usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmbx
+10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmex10.pfb></
+usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmmi10.pfb></usr/local
+/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmmi7.pfb></usr/local/texlive/2
+008/texmf-dist/fonts/type1/bluesky/cm/cmr10.pfb></usr/local/texlive/2008/texmf-
+dist/fonts/type1/bluesky/cm/cmr7.pfb></usr/local/texlive/2008/texmf-dist/fonts/
+type1/bluesky/cm/cmsy10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/blu
+esky/cm/cmsy7.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cm
+ti10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmtt10.pfb>
+Output written on script.pdf (80 pages, 249133 bytes).
+PDF statistics:
+ 300 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 131072)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

@@ -1,0 +1,140 @@
+\centerline{\bf APPENDIX B:  OUTPUT FILE FORMATS}
+
+Formats for object photometry output can be done in 3 different 
+ways, INTERNAL, COMPLETE and INCOMPLETE. 
+Warmstarts are possible only from the INTERNAL or COMPLETE types, 
+and additional models will only support outputs in the INTERNAL and 
+COMPLETE types as well.
+It is important to note that the INTERNAL format measures $x$ and $y$
+positions assuming that the center of the first pixel in a row or column
+of the image is 1.0, whereas for the COMPLETE and INCOMPLETE formats, 
+the centers of the first pixels are measured as 0.5, in agreement with 
+most conventions. 
+
+\vskip1em
+
+\noindent INTERNAL format.
+
+This is the form in which DoPHOT internally tracks the objects
+and their associated properties. For each object the following 
+quantities are reported (the last 5 are from empirical PSF fitting, 
+the remainder from analytic fitting or aperture measures):
+
+\item{1)} Object Number
+\item{2)} Object type
+\item{3)} Fit sky value
+\item{4)} $x$ position
+\item{5)} $y$ position
+\item{6)} Height (maximum) of fitted model PSF in Data numbers
+\item{7)} $\sigma_x^2$ (see section 7.2 for the form of fitted function)
+\item{8)} $\sigma_{xy}$ (as above)
+\item{9)} $\sigma_y^2$ (as above)
+\item{10)} Aperture flux (in DN)
+\item{11)} Aperture sky value
+\item{12)} Aperture magnitude minus fit magnitude
+\item{13)} Estimated error in fit magnitude
+\item{14)} Extendedness parameter
+\item{15} Sky value from empirical fit
+\item{16} Height (maximum) of fitted empirical PSF in Data numbers
+\item{17} $x$ position from empirical PSF fitting
+\item{18} $y$ position from empirical PSF fitting
+\item{19} Estimated error in fit magnitude from empirical PSF  
+The format of the output is:
+
+\noindent {\tt  \%4d \%2d \%10.4E \%10.2f \%10.2f \%10.3E \%10.3E \%10.3E 
+\%10.3E \%10.3E \%10.3E \%7.3f \%7.3f \%10.2E \%10.3E \%10.3E \%10.2f \%10.2f \%7.3f}
+
+\noindent For Object type 8 (obliterations), item 7 and 9 above are the 
+$x$ and $y$ dimensions of the obliterated subraster. For a rectangular obliteration, 
+a value of 0.0 is stored in item 8 above and items 7 and 9 are the full x and y widths
+in pixels.  For elliptical obliterations, the tilt of the ellipse in degrees in stored in item
+8 above and items 7 and 9 are the semi major and minor axis widths.  If an object is
+ judged to be a cosmic-ray, in which case the value in item 8 is $-1.0$.  Thus, for
+ obliterating an ellipse, do not set the value of the tilt to identically $-1.0$ or $0.0$, 
+ though $-1.01$ or $0.01$ will do just fine.  For similar reasons discussed below,
+ avoid exactly $90.0$ degrees as well.  All other values are fine.
+
+\vskip1em
+
+\noindent COMPLETE format (also sometimes referred to as ``external'' format
+in the manual).
+
+
+ This is the form that is most convenient for the user.
+For each object, the following quantities are put out (the last 5 
+are from empirical PSF fitting, the remainder from analytic fitting 
+or aperture measures):
+
+\item{1)} Object Number
+\item{2)} Object type
+\item{3)} $x$ position
+\item{4)} $y$ position
+\item{5)} Fit magnitude
+\item{6)} Estimated error in fit magnitude
+\item{7)} Fit sky value
+\item{8)} FWHM of major axis
+\item{9)} FWHM of minor axis
+\item{10)} Tilt (degrees: 0 implies major axis along positive $x$-axis;
+90 is along positive $y$-axis)
+\item{11)} Extendedness parameter
+\item{12)} Aperture magnitude  
+\item{13)} estimated error in aperture magnitude
+\item{14)} aperture sky value
+\item{15)} aperture mag minus fit mag
+\item{16} Sky value from empirical fit
+\item{17} Fit magnitude from empirical PSF 
+\item{18} $x$ position from empirical PSF fitting
+\item{19} $y$ position from empirical PSF fitting
+\item{20} Estimated error in fit magnitude from empirical PSF  
+The format of the output line is:
+
+\noindent {\tt  \%4d \%2d \%8.2f \%8.2f \%8.3f \%6.3f \%9.2f \%9.3f \%9.3f \%7.2f 
+\%10.3E \%10.3E \%10.3E \%10.3E \%10.2E \%8.3f \%6.3f \%9.2f \%7.3f \%9.2f 
+\%8.3f \%8.2f \%8.2f \%6.3f }
+
+If the object type is 8, the shape descriptors for rectangular obliterations are 
+set as follows:
+
+\noindent FWHM of 
+major axis shows the longer side of the obliterated rectangle.
+
+\noindent FWHM 
+of minor axis shows the shorter side of the obliterated rectangle.
+
+\noindent Tilt of 0.0 
+shows that the long side of the obliterated rectangle is along $x$.
+
+\noindent Tilt of 90. shows that the long side of the obliterated 
+rectangle is along $y$.
+
+All other tilt values indicate an ellipse was obliterated rather than a 
+rectangle and the `FWHM' values are in fact the semi-major and minor 
+widths of the obliterated ellipse.
+
+\noindent Empirical fit magnitudes are flagged at 99.999 is the fitted 
+intensity was zero or negative. It is flagged at -99.999 if no empirical 
+PSF fit was attempted for that object.
+
+\vskip1em
+
+\noindent INCOMPLETE format.
+
+For the die-hard DAOPHOT compatibility freak.
+
+Output quantities in order are:
+
+\item{1)} Object Number
+\item{2)} $x$ position
+\item{3)} $y$ position
+\item{4)} Fit magnitude
+\item{5)} Estimated error in fit magnitude
+\item{6)} Fit sky value
+\item{7)} Object type (converted to floating number)
+\item{8)} Extendedness parameter
+\item{9)} Aperture mag minus fit mag
+
+The format of the output lines is:
+
+\noindent {\tt "\%6d\%9.2f\%9.2f\%9.3f\%9.3f\%9.3f\%8d.\%9.2f\%9.3f}
+
+

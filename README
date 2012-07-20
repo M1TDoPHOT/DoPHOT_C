@@ -1,0 +1,44 @@
+INSTRUCTIONS FOR USING DOPHOT
+
+step 0: CFITSIO
+
+Install the CFITSIO library from http://heasarc.gsfc.nasa.gov/fitsio/.  Sorry.  I hate library dependencies too, but I wasn't going to reinvent the wheel on fits io routines.
+
+step 1: Makefile
+
+Look at the Makefile in this directory.  Check the cfitsio path information and make sure it's correct for your machine and cfitsio installation.  As packaged it's correct for a mac.
+
+step 2: Check your files
+
+A complete dophot set should include:
+     (1) a bunch of .c files
+     (2) a directory named headers/ with a bunch of .h files
+     (3) a directory named structs/ with a bunch of .h files
+     (4) a directory named verif_data/ which contains
+          an image: J0159.8.chip_01.fits
+          an input object list: obj_in_J0159.8
+          a default parameter file: param_default_c
+          a modified parameter file: pm
+          two subdirectories: (models (ignore for now) 
+                                 and compare_out)
+               compare_out contains the output files from the 
+               fits that you will compare with your own test run
+
+step 3: Make
+
+Type in "make dophot" at the top directory.  This should take a minute and populate your source directory with .o files for each of the .c files.  If your CFITSIO library wasn't installed properly or isn't properly declared in your Makefile, now's when you'll hear about it.  If any other errors or warnings pop-up, address them for your machine and/or contact rsobel@mit.edu.
+
+In absence of warnings, 'make dophot' will have created an executable in test_files called dophot. 
+
+step 4: Test
+
+Open the test_files directory and type './dophot' at the command line.  You should be prompted for a parameter modification file.  Type in 'pm' and hit return.  Dophot should execute in a number of seconds and report 6 output files matching the ones in the compare_out subdirectory. Feel free to examine all of them, but in particular diff 
+     obj_out_J0159.8.chip_01
+     shad_out_J0159.8.chip_01
+     image_out_J0159.8.chip_01.fits
+     psf_out_J0159.8.chip_01.fit
+with the compare_out files.  If there are any discrepancies, in obj_out_, something has gone wrong and you are not working with a pristine copy of dophot.  If there are any discrepancies wit the latter three files, please notify rsobel@mit.edu.  There may be nothing wrong, but I would like to know.
+
+step 5: Go
+
+Make a directory for your data, copy the executable (dophot), param_default_c, and parameter modification (pm) files there and start altering the pm file according to the manual instructions until you get photometry you are happy with.  Dophot's working, it's on you.

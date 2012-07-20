@@ -1,0 +1,218 @@
+\centerline{\bf 2.  GENERAL DESCRIPTION}
+
+A central feature of DoPHOT is the adoption of a {\it
+model} for every kind of object which one seeks to identify
+within the image.  The model for a cosmic ray is a single
+high pixel.  The model for a star might typically be an
+elliptical gaussian.  The model for a galaxy might {\it
+also} be an elliptical gaussian, but one which is
+signficantly bigger than those associated with stars.  The
+model for a double-star is composed of two single stars.  To
+classify an object, one chooses the model which fits the
+object best.
+
+With the exception of the model for a cosmic ray, these
+models are usually specified in terms of analytic functions with
+free parameters.  The output is
+therefore a list of object classifications and parameters
+for those objects.  Six parameters are associated with the
+simplest models: $x$ and $y$ position within the image, total
+(or central) intensity, and three shape parameters (length,
+width and tilt).  While one can obtain better models with
+more parameters, DoPHOT was written on the gamble (hunch)
+that one might do reasonably accurate photometry and
+classification using just these six parameters.
+
+``Object'' is a somewhat slippery concept.  Operationally,
+DoPHOT enters an object in its output list if it encounters
+an array of pixels which are significantly brighter than the
+surrounding sky when ``filtered'' through a model stellar
+profile, or ``mask'' as it is called later in this manual.
+The degree of significance and the size of that
+array must be specified by the user (although DoPHOT
+supplies defaults for these, and for all other user-specifiable inputs).
+
+``Stars'' are a special kind of object (celestial point
+sources) for which the three shape parameters are, to first
+order, the same throughout the image.  In obtaining
+magnitudes for stars, DoPHOT assumes that all stars have the
+same ``typical'' shape.  DoPHOT determines that ``typical''
+shape by fitting the brighter stars for the shape parameters
+and taking a suitably weighted average.  In some versions of the code,
+those shape parameters are allowed to vary smoothly across
+the image.
+
+If DoPHOT started out with no idea whatsoever of what the
+``typical'' shape of a star was, then it would be unable to
+decide whether the first object it encounters is a cosmic
+ray, a galaxy or a star.  The user must therfore supply an
+estimate of the FWHM in pixels of a stellar image.  DoPHOT
+takes that estimate and multiplies it by 1.2 to insure that
+none of the first stars encountered are accidentally
+classified as galaxies, but the user must not be too sloppy
+about the initial estimate of the FWHM.
+
+The models for various types of objects are fit to
+subrasters.  The sizes of these subrasters are
+specified by the user or, alternatively,
+determined by DoPHOT itself as some factor times the typical
+FWHM of stellar objects.    In fitting the object
+models the background sky level is treated as an additonal
+free parameter.  Fitting to a uniform background corresponds
+to taking a straight average of the pixels in the subraster
+in the limit of an infinitely faint object.
+
+This seemingly innocuous choice raises several interesting
+questions.  If the subraster contains objects other than the
+one being fitted, the parameters derived for the fitted
+object will err systematically.  DoPHOT therefore {\it
+removes} objects from the working image as they are
+identified, subtracting the best current model for the
+object.  This procedure is less likely to give poor results
+if one first identifies the brighter objects, and then,
+after removing them, identifies the fainter objects, much in
+the spirit of the CLEAN algorithm (H\" ogbom 1974, {\it A. A.
+Suppl.}, {\bf 15}, 417) used with
+aperture synthesis data.
+
+DoPHOT makes successive passes over the data, identifying
+progressively fainter objects at threshold levels specified
+by the user.  After each search the shape parameters for all
+objects are redetermined, new ``typical'' values are
+determined, and the stars are fit once again, now with the
+new ``typical'' values.  Since the objects have been
+subtracted from the image, they must be temporarily added
+back, fitted, and then subtracted again.  All this is done
+at considerable expense in computation, in the hope that the
+newly derived parameters will be more accurate.
+
+DoPHOT constructs and maintains a {\it noise image} which
+provides weights for each pixel used in its non-linear least square fitting
+subroutine.  It also produces, as part of its output, a
+star-subtracted image.  The failings of the analytic model
+for stellar objects are most obvious near bright stars,
+where one often sees a consistent pattern of residuals from one
+star to the next.  These positive residuals might be expected
+to trigger the false identification of spurious objects.
+
+To avoid such ``false hits,'' DoPHOT adds extra noise to the
+noise array every time it subtracts a star from the image.
+This is taken to be some fraction of the subtracted light,
+by default 30\% (for the analytic model PSF)
+ unless changed by the user.  Moreover, for
+the purpose of calculating this extra noise, the linear size
+of each image is taken to be bigger by some factor, by
+default 1.3 (for the analytic model only), 
+than its actual linear size.  The result of
+this extra noise is that potential ``objects'' found in the
+neighborhoods of previously identified objects are less
+significant than they otherwise would be, and are therefore
+less likely to be included in the output object list.
+[The current version of DoPHOT implements an empirical PSF: since 
+this is a much better match to the real stellar images, 
+the extra noise added by default (can be changed by user) is only
+3\%].
+
+While this avoids ``false hits,'' it has the negative
+consequence of making it more difficult to identify faint
+stars near brighter stars.  The extra noise associated with
+each object is temporarily subtracted from the noise array
+when that object is temporarily added back to the
+star-subtracted image for refitting.
+
+Fitting models to subrasters offers the advantage that one
+can solve for the parameters associated with a star even
+when some pixels are missing, as might be the case if there
+were a bad column, or if an object lies close to the edge of
+an image.  DoPHOT also removes pixels from further
+consideration whenever a cosmic ray is detected.  DoPHOT
+will attempt to obtain magnitudes and shapes for objects as
+long as some minimum number of pixels (which the user can
+adjust) are still contained in the subraster.
+
+Given the systematic pattern of residuals in the
+star-subtracted images, one would expect that the total
+fluxes derived from fitting the model point spread function
+(PSF) to the data will likewise suffer systematic errors.
+But to first order, one would expect to make the same
+systematic error for all stars.  As an aid in correcting for
+such systematic errors, DoPHOT calculates total fluxes in a
+rectangular aperture of a size specified by the user.
+
+Aperture magnitudes are very much more uncertain than fit
+magnitudes because there is much more ``shot'' noise from
+the sky inside the aperture than there is under the model
+profile.  One must compromise between making the aperture
+large enough  to collect most of the light from an
+object and yet small enough to minimize the noise contribution
+from the sky background.  While DoPHOT reports both fit and
+aperture magnitudes, it is left to the user to compare these
+two and to decide whether and how to correct the fit
+magnitudes.  For some purposes (e.g. looking for variable
+stars) the uncorrected fit magnitudes may be sufficient.
+
+When the footprint of an object (the half intensity contour,
+which in the present version is modelled as an ellipse) is
+bigger than that of the ``typical'' star, one faces the
+choice of classifying the object as a single star, a
+multiple star or a galaxy.  DoPHOT does not do a very
+thorough job of addressing this question.  If an object has
+shape parameters which make it significantly bigger than a
+star (by an amount which the user can adjust), it is
+declared to be big and DoPHOT attempts to fit 2 ``typical''
+stars to it.
+
+The goodness of fit parameters for the fit of one big object
+and two ``typical'' stars are then compared, and a decision
+is made (based on a user adjustable parameter) as to whether
+the object should be classified as a galaxy or ``split''
+into two stars.  Stars which are ``split'' may be further
+split, allowing at least in principle, for higher multiples.
+If the default value of this user adjustable parameter is
+used, the user will find spurious ``galaxies'' appearing
+in globular cluster images and spurious ``split'' stars in
+images with large numbers of galaxies.
+
+An as yet unrectified shortcoming of DoPHOT is that it does
+not maintain pointers linking such sibling objects.  The
+photometry for these objects is obtained using the single
+point spread function. It is more uncertain than it would be
+if the siblings were fit as a pair because of the extra
+noise added after the subtraction of the nearby sibling.
+
+DoPHOT allows for a ``warmstart'' in which it reads a list
+of objects and determines typical parameters from those
+objects.  It allows the user to force object types for the
+objects on the input list.  A special object type which is
+sometimes useful is an ``obliteration,'' a rectangular
+portion of the image which the program ignores.  While one
+might prefer to deal with such regions by blocking them out
+in pre-processing, including them in the object list gives
+one a record of the areas not considered.  The program
+automatically ``obliterates'' stars brighter than a
+user-adjustable threshold.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

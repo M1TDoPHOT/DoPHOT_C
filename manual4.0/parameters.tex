@@ -1,0 +1,1054 @@
+\centerline{\bf APPENDIX A:  DoPHOT PARAMETERS}
+
+DoPHOT contains a large number of user-specified parameters.
+This should not immediately panic most users because in
+practice, only a small number of these parameters typically
+need to be adjusted.  Moreover, many
+of the parameters can be allowed to scale with such quantities as the 
+FWHM of the stellar objects on an image or the 
+approximate mean sky level.  Many of the functions controlled
+by DoPHOT's parameters have been discussed
+in earlier sections of this manual, especially Sections 6-9.  
+The purpose of this Appendix is
+to describe the actual parameters used by DoPHOT
+and to illustrate how a user can adjust them.  Some hints as to how
+a user {\it should} adjust a given parameter are also provided where
+appropriate.  {\it It is
+very strongly recommended that users become acquainted 
+with the material described 
+in this Appendix before attempting to run DoPHOT on any
+of their own images.}  If you adjust the parameters
+blindly, you may get burned.  Used with care, however, they allow
+DoPHOT to successfully analyze a wide variety of images.
+
+\centerline{\bf A.1. A Brief Comment on Units}
+
+``Digital Numbers'' (DN) refer to the counts in an image that is 
+ready for processing by DoPHOT or any other photometry program.
+DN can be converted to electrons via the detector's 
+`gain' in electrons/data number.
+DN are sometimes referred to as Analog-Digital-Units
+(ADU), or Data Numbers (also DN).  DoPHOT does not care what the
+scale of a picture is; consequently all $(x,y)$ coordinates are
+expressed in pixels.  
+
+\centerline{\bf A.2 The Parameter File}
+
+When DoPHOT is started, it reads the default values of the parameters
+from a ``default parameters'' file that is specified by the user or
+in a ``modified parameters'' file.  The default parameters file suppled with 
+version 4.0 of DoPHOT is called {\bf param\_default\_c}.  This file includes
+{\it every} legal DoPHOT parameter and assigns a default value to
+each.  The values given for the parameters listed in the default parameters 
+file can be adjusted to suit the user's needs, but the names of the 
+parameters cannot. {\it A default parameters file that includes all legal 
+DoPHOT parameters must exist for} DoPHOT {\it to run.}  
+
+The modified parameters file is designed to include only
+the parameters whose values the user wishes to alter compared to what is
+provided in the default parameters file.  Thus, let's say that you have
+a frame where {\tt FWHM} = 3.2, not 2.0 as is listed in the default
+parameters file (we haven't defined the parameter {\tt FWHM} yet, but
+you can guess what it means).  The modification parameters file might
+then only include a line with the new value of {\tt FWHM}; all other values
+for DoPHOT parameters will then be taken from the default parameters file.
+Of course, you can explicitly list any or all other parameters
+in the modified parameters file, even if their assigned values do not
+differ from what is in the default parameters file.  The basic rule is that
+whatever values are assigned in the modified parameters file will be 
+adopted, and the values of any parameters not assigned in that file will be
+taken from the default parameters file.
+Ideally, when you run DoPHOT the program will ask you only for the modified
+parameters file name.  If all is well with this file and with the
+data, there will be no more questions or input of any sort as the program
+proceeds to reduce your data.  
+
+The remainder of this appendix describes the rules that govern the
+parameter files so that you can properly and reliably transmit your
+the parameter values you wish DoPHOT to use.  The rules that govern the 
+usage of default, modification, and output (see below) parameters files 
+are identical so we will usually just refer to ``parameter files'' in a generic 
+manner.
+
+A typical line in a parameter file may look like this:
+
+\noindent {\tt FWHM = 3.2\ \ \ \ \ \ \ \ Approx FWHM of objects in pixels.}
+
+\noindent The important features of this line are:  (a) a {\it keyword}
+-- in this case ``{\tt FWHM}'' -- that begins
+in the first column of the line, (b) an
+``equals sign'' character with at least one blank space immediately 
+before and after
+it, (c) a value -- in this case {\tt 3.2} -- that will be assigned to 
+the variable associated with the keyword, and (d) a comment statement
+that briefly describes the meaning of the keyword.  The comment is
+optional.   Additionally, the equals sign is optional which will tell dophot
+that the value assigned is NULL, however it is better practice to comment 
+out NULL assigned keywords with an equals sign as the first character of 
+the line.  DoPHOT parameter files look a little like FITS headers, but they 
+are not identical, and the differences should be appreciated.
+
+This example of a parameter file line illustrates the use of a
+keyword to assign a numeric
+value to a variable.  The variable {\it type} ({\it e.g.} REAL or INTEGER)
+is still specified using the standard FORTRAN convention, even though
+the code is now in C.  Thus, any keyword starting with a
+letter between ``{\tt I}'' and ``{\tt N}'' (inclusive) is assumed
+to represent an integer variable; otherwise the variable is 
+assumed to be real.
+
+That is, if it is not a character string.  The following line illustrates
+an example of how one specifies a character string in a parameter
+file:
+
+\noindent {\tt IMAGE\_IN = 'A\_nice\_picture'\ \ \ \ \ \ \  \ \ \ Input image name.}
+
+\noindent This line also includes a keyword that
+begins in the first column, an equals sign with blanks before
+and after, a character string (in quotes),
+and a comment.  Again, the comment is optional, and lack of an equals sign
+will indicate that the keyword is set to null, though it is better practice to
+indicate that the line is a comment by putting an equals sign at the beginning
+of the line. Unlike versions 3.0 and earlier, setting a character string equal to
+a string of one or more spaces will NOT set it equal to NULL and may cause 
+problems.  It is worth emphasizing that the character string {\it must} be 
+surrounded by single quotes as shown although trailing blanks are fine.  
+The valid FORTRAN convention of using two consecutive single quotes to 
+represent an apostrophe is {\it not} supported in DoPHOT parameter files.  
+There are no restrictions/conventions regarding the naming of keywords 
+associated with character strings -- the quotes tell DoPHOT what it needs to 
+know in such cases.
+
+As shown in the examples above, comments can be appended to the end of 
+a keyword line.  A full-line comment can be placed in any parameter file simply 
+by placing the equals sign in the first column.  The following is a valid full-line 
+comment:
+
+\noindent{\tt =  This is a full-line comment.  The `=' is in the first column.}
+
+\noindent Notice that the quotes and the righthand equals sign are valid since
+the position of the lefthand equals sign identifies the entire line as a
+comment.  Any line in a parameter file will be truncated at 200 characters when 
+it is read.   These rules are summarized using full-line comments that are 
+included in the file {\bf params\_default\_c} that is included with the code.  The
+contents of the default parameters file is listed below at the end of
+this appendix.
+
+The following are examples illegal parameter file lines:
+
+\noindent{\tt This is supposed to be a comment, but look where the `=' is!}
+
+\noindent{\tt ThreshMin = 20.0 \ \ \ \ Keywords CANNOT mix upper and lower case,
+unless of course you have defined new ones}
+
+\noindent{\tt OBJECTS\_IN=`file' \ \ \ \ \ Illegal; gotta have spaces on BOTH sides 
+of the `='.}
+
+\noindent{\tt OBJTYPE\_IN = `INterNAL' \ \ \ \ \ Character strings CANNOT mix
+upper and lower case, unless of course you have defined new ones}
+
+\noindent  If the illegal lines shown above were  included in a parameter 
+file, we'd hate to think what might happen.  You should be advised that
+the authors have not tried to program DoPHOT's parameter 
+input routines to cope with all possible contingencies, so be careful and follow 
+the rules laid out in this section.
+
+\centerline{\bf A.3  The {\bf structs/tuneable.h} File}
+
+This file is used to pass variables between DoPHOT subroutines
+using the C {\tt \#include} statement and it is not really designed to
+be user-adjustable.  However, if (a) the number of objects measured on
+a single image exceed 20000 DoPHOT's default array sizes 
+will be too small to cope and the corresponding parameter {\tt NSMAX} 
+should be changed here.  Of course, if memory is in short supply, the user 
+can likewise decrease {\tt NSMAX} here.  Unless you really mean business, 
+(i.e. are inserting a new model with a greater number of parameters than 
+the default) {\it no other parameters in this file should ever be adjusted!}   
+
+\noindent {\bf VERY IMPORTANT:} 
+If {\bf structs/tuneable.h} is ever changed, 
+{\it all} of the DoPHOT modules will have to be re-compiled or they 
+will be unaware of the changes you have made in the include file.  
+Makefiles to recompile all of DoPHOT are supplied with the code.  
+Because Makefiles look for modifications, Unix users must first delete all 
+the *.o (that is a lower-case letter o, not zero, not upper-case) files in their 
+working DoPHOT directory first.
+
+\centerline{\bf A.4 A Description of DoPHOT's Parameters.}
+
+This section describes the parameters found in the parameter
+files used by DoPHOT.  A full understanding of some of these
+can be best attained by looking carefully at the code.   The
+parameters described here are listed in the same order that
+they are found in the parameter file.  This order is not
+random.  Specifically, the most frequently-adjusted parameters
+are listed first, with subsequent sections describing parameters that
+are adjusted less frequently.
+
+\centerline{A.4.1 Frequently updated parameters.}
+
+Some or all of these parameters can be expected to vary from frame to frame.
+
+\noindent {\tt FWHM} -- The initial guess of the 
+full width at half maximum along the
+major axis of a typical, isolated stellar object in pixels.  A modest
+accuracy (say, 10-20\%) in the estimate of this is fine, but avoid 
+providing FWHM estimates that are significantly too small.
+
+\noindent {\tt AXIS\_RATIO} -- The initial guess of the
+ratio of the minor axis divided by
+the major axis for star objects.  This parameter is 1.0 for 
+perfectly round objects.  This parameter rarely needs to be
+changed from 1.0 unless the images are {\it very} elongated, say
+for axis ratios less than about 0.7 or so.
+
+\noindent {\tt TILT} -- The initial guess of the position angle
+of the major axis with respect to the positive $x$-axis 
+for a typical unblended stellar object on an image.  This
+parameter has no effect if the axis ratio is 1.0.  The tilt is
+given in degrees between $-$90 and +90, with the positive
+y-axis at +90 degrees.
+
+\noindent {\tt SKY} -- The initial guess of the mean sky value of
+the frame in DN.  An accuracy of 10-20\%\ is fine, but 
+a better estimate is advantageous.
+
+\noindent {\tt NFITBOX\_X, NFITBOX\_Y} -- The sizes of the
+sides of the fitting box
+in the x and y directions, respectively.  These parameters can be 
+automatically scaled
+by the FWHM using {\tt AUTOSCALE} (see below).
+
+\noindent {\tt MASKBOX\_X, MASKBOX\_Y} -- The sizes of the sides of
+the mask box used for finding objects in the x and y directions,
+respectively.  These parameters can be automatically scaled by
+the FWHM using {\tt AUTOSCALE} (see below).
+
+\noindent {\tt APBOX\_X, APBOX\_Y} -- The sizes of the sides of the
+aperture photometry box in the x and y directions, respectively.  
+In the current
+version of DoPHOT, the {\it sky} measurement for the aperture
+photometry is performed in a square annulus with outer side
+lengths equal to twice {\tt APBOX\_X} and {\tt APBOX\_Y} in x and
+y, respectively.  The inner boundary of this sky annulus is
+defined by the aperture photometry box.  These parameters
+are scalable by the FWHM using {\tt AUTOSCALE} (see below).
+
+\noindent {\tt THRESHMIN} -- The value above sky 
+of the lowest threshold that
+DoPHOT uses to search for objects, in DN.   Thus,
+if this parameter is 20, and the actual sky value is
+450, the final threshold will occur at 470.  This parameter
+can be scaled using the estimate of the sky value and the
+readout noise of the detector (see {\tt AUTOTHRESH} below).
+
+\noindent {\tt THRESHMAX} -- The maximum possible first threshold that
+DoPHOT  uses to search for objects, in DN.  
+Because of the function of 
+the following parameter, {\tt THRESHDEC}, it is important to 
+understand that THRESHMAX may {\it not} be the actual value used
+for the first threshold pass.
+
+\noindent {\tt THRESHDEC} -- The separation between successive
+thresholds in units of 2.0 raised to the power {\tt THRESHDEC}.  Thus if this
+parameter is 1.0, and {\tt THRESHMIN} = 20, and {\tt THRESHMAX} = 
+1000, the thresholds (relative to the sky value) would be
+640, 320, 160, 80, 40, and 20.  In this example, each level is separated by
+a factor of $2^1$ from its neighboring levels.
+
+\noindent {\tt THRESHEMP} -- If {\tt THRESHEMP} is less than {\tt THRESHMIN} 
+(0.0 is default), it does nothing. For positive 
+value V, once the threshold drops below V, empirical PSFs are fit. Ensure
+that stars will have been found by the time the threshold drops below V.
+
+\noindent {\tt EPERDN} -- Electrons per DN for the 
+detector.
+
+\noindent {\tt RDNOISE} -- The readout noise of the detector in
+electrons.
+
+\noindent {\tt AUTOSCALE} -- This flag can only be set to 
+YES or NO and if DoPHOT has any trouble reading the value of
+{\tt AUTOSCALE} it will default its value to NO.  
+If {\tt AUTOSCALE} is YES, then the box sizes described above are scaled by 
+the FWHM using the parameters {\tt SCALEFITBOX}, {\tt FITBOXMIN},
+{\tt SCALEAPBOX}, {\tt APBOXMIN}, {\tt SCALEMASKBOX},  and
+{\tt AMASKBOXMIN}.  If {\tt AUTOSCALE} is NO, then the values
+of the box sizes are taken directly from the parameter file 
+without any scaling.
+The scaling parameters used by {\tt AUTOSCALE} are described 
+as follows:
+
+\hang {\tt SCALEFITBOX, FITBOXMIN} -- 
+{\it These parameters are used
+only if {\tt AUTOSCALE} is} YES -- 
+{\tt NFITBOX\_X} and 
+{\tt NFITBOX\_Y} are set equal to the smallest odd integer
+that is larger than 
+{\tt SCALEFITBOX} times the object FWHM in the x and y
+directions (these do not necessarily equal the value
+of {\tt FWHM} described above), respectively.  If either or
+both of these 
+box sizes end up smaller than {\tt FITBOXMIN},
+then the relevant fit-box size is set equal the nearest
+odd integer larger than {\tt FITBOXMIN}.
+
+\hang {\tt SCALEAPBOX, APBOXMIN} -- 
+{\it These parameters are used
+only if {\tt AUTOSCALE} is} YES -- 
+{\tt APBOX\_X} and 
+{\tt APBOX\_Y} are set equal to the smallest odd integer
+that is larger than 
+{\tt SCALEFITBOX} times the object FWHM in the x and y
+directions, respectively.  If either or
+both of these 
+box sizes are computed to be smaller than {\tt APBOXMIN},
+then the relevant fit-box size is set equal the nearest
+odd integer larger than {\tt APBOXMIN}.
+
+\hang {\tt SCALEMASKBOX, AMASKBOXMIN} -- 
+{\it These parameters are used
+only if {\tt AUTOSCALE} is} YES -- 
+{\tt MASKBOX\_X} and 
+{\tt MASKBOX\_Y} are set equal to the smallest odd integer
+that is larger than 
+{\tt SCALEMASKBOX} times the object FWHM in the x and y
+directions, respectively.  If either or both of these 
+box sizes turn out to be smaller than {\tt AMASKBOXMIN},
+then the relevant fit-box size is set equal the nearest
+odd integer larger than {\tt AMASKBOXMIN}.
+
+\noindent As a rule of thumb, it is best not to use
+{\tt AUTOSCALE} ({\it i.e.}, set it to NO) until you are quite 
+familiar with DoPHOT.  Moreover, the default values for the
+scaling parameters might be expected to vary among different
+telescope/detector combinations, so be wary.
+
+\noindent {\tt AUTOTHRESH} -- This flag can only have the 
+values YES or NO.  Any illegal or unitelligible
+value for this keyword in the parameter file
+will cause this parameter to default to NO.
+If {\tt AUTOTHRESH} is YES, then {\tt IBOTTOM} and {\tt THRESHMIN}
+are scaled according to the sky+read noise
+using the scaling parameters {\tt SIGMAIBOTTOM} and 
+{\tt SIGMATHRESHMIN}.  If {\tt AUTOTHRESH} is NO, then
+DoPHOT takes the values of {\tt IBOTTOM} and 
+{\tt THRESHMIN} supplied by the user.  The threshold scaling
+parameters controlled by {\tt AUTOTHRESH} are described
+as follows:
+
+\noindent {\tt FIXPOS} -- This flag can only have the values
+YES or NO.  Any illegal or unitelligible
+value for this keyword in the parameter file
+will cause this parameter to default to NO.
+If {\tt FIXPOS} is YES, then the program assumes you have
+an input template file with the positions of objects as
+described in detail in Section 11.1 and 11.2.  This template
+file should be specified with the {\tt OBJECTS\_IN} parameter
+(see below).  Be careful:  the fixed-position version of
+DoPHOT is tricky to use and one should use this parameter
+with caution.  If {\tt FIXPOS} is NO, then DoPHOT runs without
+fixing any of the object positions regardless of what file
+(if any) is specified by {\tt OBJECTS\_IN}.
+
+\hang {\tt SIGMAIBOTTOM} -- 
+{\it This parameters is used
+only if {\tt AUTOTHRESH} is} YES -- 
+{\tt IBOTTOM} is set equal to 
+{\tt SKY} {\it minus} {\tt SIGMAIBOTTOM} times the sky+read
+noise.  This  noise equals $[g s + r^2]^{1/2}/g$, where
+$g$ = {\tt EPERDN} in electrons per DN, 
+$s$ = {\tt SKY} in DN, and $r$ = {\tt RDNOISE} in
+electrons.
+
+\hang {\tt SIGMATHRESHMIN} -- 
+{\it This parameters is used
+only if {\tt AUTOTHRESH} is} YES -- 
+The lowest threshold is set equal
+to the sky+read noise times {\tt SIGMATHRESHMIN} where the noise
+is defined as for {\tt SIGMAIBOTTOM}.
+
+\noindent As in the case of {\tt AUTOSCALE}, be wary of using
+the {\tt AUTOTHRESH} parameters until you become familiar
+with how DoPHOT works without using this switch.
+
+\noindent {\tt PARAMS\_DEFAULT} -- This keyword specifies 
+the name of the default parameter file.  If DoPHOT cannot find
+the file, it will be requested.  When you run DoPHOT, you must
+create a `modification' parameter file that only needs to contain
+the parameters you wish to change.  The values of any parameters that the
+program cannot find in the modification parameter file will be
+taken from the default parameter file.  Any bogus (or misspelled)
+parameters in the modification file are ignored.  However, a default
+parameter file with 
+{\it all} legitimate parameters {\it must} exist or DoPHOT will not
+run.  Such a file is provided with this release of the program, and
+it should be guarded carefully.
+
+\noindent {\tt PARAMS\_OUT} -- DoPHOT records the values of all
+the parameters it used for a given run in the file listed with
+this keyword.  If this line is blank (i. e., just two single
+quotes or
+any number of blanks surrounded by single quotes),
+then DoPHOT assumes you
+don't want such a file and none is  saved.
+
+Because DoPHOT does not check the legitimacy of all the required
+files read from the default and/or modified parameters file until
+after the output parameters file is written, some
+invalid file names can end up being saved in the output parameters file.
+This bug was identified too late to correct in version 2.0 of 
+DoPHOT.
+
+\noindent {\tt IMAGE\_IN} -- This keyword identifies the input
+image name.  It {\it must} exist, naturally, and if the name
+in the parameter file does not correspond to any existing file, 
+then DoPHOT will query the user for the correct file name.
+
+\noindent {\tt IMAGE\_OUT} -- While DoPHOT is reducing an image, the
+program continuously 
+updates a version of the original picture from which all known objects
+have been subtracted.  This subtracted picture can be saved when
+DoPHOT is finished in the file specified by {\tt IMAGE\_OUT}.
+If the string assigned to this keyword is blank,
+the program assumes you don't wish to save the subtracted 
+picture and none is written to disk.
+
+\noindent {\tt EMP\_SUBRAS\_OUT} -- File name for writing out the adopted 
+empirical PSF subraster and saving it when DoPHOT is finished.
+If left blank, the empirical PSF image is not saved.
+
+\noindent {\tt OBJECTS\_IN} -- This keyword specifies the name of
+the file with the input object list.  This file is mandatory 
+for a WARMSTART (see below) and will be requested if needed. 
+If no WARMSTART is desired, this keyword is ignored.
+
+\noindent {\tt OBJECTS\_OUT} -- This keyword identifies the name
+of the output photometry file.  Since you have gone to the
+trouble of using DoPHOT, you
+presumably want to keep the output photometry; thus, if no legal file is 
+specified here, the program will request its name until you
+give it something it likes. 
+
+\noindent {\tt SHADOWFILE\_IN} -- One option in DoPHOT is to 
+do a WARMSTART (see below) and continue a reduction that 
+failed due to an error in DoPHOT or a computer crash or
+any similar problem.  The shadow files contain the intermediate
+steps of the reductions, and if you have one you save a bit
+of time on a WARMSTART.  If you are doing a WARMSTART, DoPHOT
+will use this keyword to determine the name of the input
+shadow file.  If this line is blank, the program assumes you 
+don't have a shadow file (which is fine) even if the READSHD
+flag is set to YES (see below).   If the program
+finds a file name but can't open the file, it will ask for 
+a name.  Shadow files are only stored in {\tt INTERNAL} format
+(see {\tt OBJTYPE\_IN} and {\tt OBJTYPE\_OUT}, below).
+
+\noindent {\tt SHADOWFILE\_OUT} --  If you plan to do a warm
+start in the future or believe it would be prudent to have one
+in case of future problems, you can save a shadow file.  The name
+of such a file 
+is specified using this keyword.  If no name is given, then
+the program assumes you don't want an output shadow file.
+
+\noindent {\tt ERRORS\_OUT} -- {\it new feature} If you save a 
+shadow file, an identical file containing the errors on each of the 
+shadow parameters is automatically generated.  The name of such 
+a file is specified using this keyword.  If no name is given, the default 
+file `error\_out' is created.
+
+\noindent {\tt LOGFILE, LOGVERBOSITY} -- The user can specify
+varying levels of detail in the messages that 
+DoPHOT provides.  These messages range from information about
+which threshold the program is currently working on, to 
+iteration counters for the nonlinear least-squares fitting routine.
+{\tt LOGFILE} specifies the name of the file into which these
+messages are printed.  Any name that your operating system is
+happy with is valid except one.  If this keyword is set 
+equal to  TERM (all upper-case letters!), then DoPHOT's output
+is directed to the terminal.  {\tt LOGVERBOSITY} specifies the
+detail in the messages:  0 means no messages are printed out at
+all and no file is opened even if {\tt LOGFILE} is specified.
+Increasingly larger values of {\tt LOGVERBOSITY} (up to 4 is 
+currently supported) provide progressively
+more detailed messages.  Try different values to see what you 
+like, but be warned that at full verbosity (4) 
+you will get {\it many} messages, so
+make sure you have loads of disk space.  Also, the program
+(naturally) runs significantly slower if it is printing out
+many messages.  The messages {\it are} useful, though, if 
+things are going wrong. At low verbosity, DoPHOT's messages
+help to reassure the user that the program is at work and provide
+information how far along the reductions have proceeded.
+
+\centerline{A.4.2  Infrequently updated parameters.}
+
+These parameters are not typically changed very frequently
+but may vary for images obtained with different 
+detectors, for example.
+
+\noindent {\tt RESIDNOISE} -- This parameter specifies how
+much {\it extra} noise to add(subtract) to the noise file when
+subtracting(adding) an object to an image and is 
+designed to discourage DoPHOT from finding `phantom' objects
+in the wings of previously-subtracted bright objects.
+
+\noindent  {\tt EMP\_RESIDNOISE} -- If empirical PSFs are used, 
+the images of stars should subtract extremely well, so the 
+{\it extra} noise needed (see RESIDNOISE above) to prevent 
+detection of `phantom' objects is much smaller. This is implemented 
+via this parameter, which is used in lieu of RESIDNOISE when empirical 
+PSFs are being fitted.
+
+\noindent {\tt FOOTPRINT\_NOISE} --  The linear dimensions of a
+star's footprint in the
+noise file are enlarged by this amount.  The purpose of this
+parameter is -- as in the case of {\tt RESIDNOISE} described
+above -- to discourage DoPHOT from trying to find faint stars
+in the residuals of the wings of bright or extended objects.
+This linear expansion is {\bf not} performed when and empirical,
+rather than analytic PSF is subtracted.
+
+\noindent {\tt NPHSUB} -- When subtracting an object from an
+image, DoPHOT goes out to where the 
+PSF fitted to an object reaches this surface brightness.
+
+\noindent {\tt NPHOB} -- When obliterating objects,
+DoPHOT determines where the PSF that has been fitted
+to an `obliteratable' object (see the discussion of {\tt ICRIT}, 
+{\tt CENTINTMAX} and {\tt CTPERSAT} below) reaches a 
+surface brightness equal to {\tt NPHOB}, in DN.  
+The size of the side of an obliteration box for a given object is then set 
+equal to
+twice this linear distance.  The sizes of the $x$ and $y$ sides of 
+obliteration boxes can differ if the PSF that has been fitted to the 
+object is significantly elongated.  The calculation of the
+obliteration box using {\tt NPHOB} does {\it not}
+use the {\tt BETA4} and {\tt BETA6} parameters
+described below.
+
+\noindent {\tt ICRIT} -- If there are this many contiguous
+saturated pixels (as determined by testing the pixel
+values with {\tt ITOP}), then DoPHOT obliterates the object.
+The size of the obliteration box is controlled by {\tt NPHOB}
+(see above).  
+
+\noindent {\tt CENTINTMAX} -- If the fitted central intensity of
+an object exceeds this value, it is obliterated using {\tt NPHOB}
+to determine the obliteration box size.  
+
+\noindent {\tt CTPERSAT} -- If an object is to be obliterated
+-- either because it contains too many bright pixels (the
+{\tt ICRIT} test) or is simply too bright (the {\tt CENTINTMAX}
+test) -- then its central intensity is assumed to be 
+{\tt CTPERSAT} times the number of saturated pixels in the
+object.  This helps DoPHOT calculate reasonably-sized
+obliteration boxes.  
+
+\noindent {\tt STARCOSKNOB} -- Every object found by DoPHOT
+is initially fit as a single star and a cosmic ray.
+If {\tt STARCOSKNOB} times $\chi^2$(cosmic ray) $\geq$ 
+$\chi^2$(single star), the object is classified as a
+cosmic ray.  
+
+\noindent {\tt STARGALKNOB} -- Every non-cosmic ray
+object is fitted as a galaxy after being fitted to a single star.
+If the galaxy fit is significantly better than the fit for a
+single star, then the object is also fit as a double star 
+If {\tt STARGALKNOB} times $\chi^2$(galaxy) $\leq$ 
+$\chi^2$(double star), the object is classified as a 
+galaxy; otherwise as a double star.  
+
+\noindent {\tt SNLIM7} -- An object's S/N must exceed this limit
+to fit all seven parameters.  
+
+\noindent {\tt SNLIM} -- A given pixel's S/N must exceed this limit
+in order for it to be included in a fit subraster.
+
+\noindent {\tt SNLIMMASK} -- This parameter is the minimum S/N that
+must be detected through the mask in order for DoPHOT to 
+trigger on an object.   
+Excessively low values of
+{\tt SNLIMMASK} will cause DoPHOT to trigger on noise as it
+approaches the lower thresholds.  This increases execution time with 
+very little gain in detection efficiency.
+
+\noindent {\tt SNLIMCOS} -- This is the minimum S/N required for 
+an object to be classified as a cosmic ray.  Without
+this parameter, noise spikes (lots of them!) would be called cosmic rays at 
+low thresholds.  
+
+\noindent {\tt NBADLEFT, NBADRIGHT, NBADTOP, NBADBOT} -- Pixels
+that are located closer to the edges of the image than these 
+values are ignored
+by DoPHOT -- sort of like `software trimming'.  Left, right,
+top, and bottom correspond to small $x$, large $x$, large $y$, and
+small $y$, respectively.
+
+\noindent {\tt PSFTYPE} -- This flag specifies the form of the
+analytic PSF used in DoPHOT's fits for objects.  The only
+allowed response currently is PGAUSS, so no matter what you
+specify in the parameter file, you'll get PGAUSS.  Additional 
+PSF types may be available in future versions of DoPHOT.
+
+\noindent {\tt SKYTYPE} -- This flag identifies the form of the
+analytic sky function used by DoPHOT for finding objects.  
+It is worth emphasizing that the individual sky values for 
+fitted objects {\it are not} derived from this sky function --
+the sky function 
+is only used to help DoPHOT finding things on an image.  The
+currently allowed options for this flag are PLANE, HUBBLE, and MEDIAN.
+For a description of the latter, see Section 11.3.
+
+\noindent {\tt JHXWID, JHYWID} --  These specify the HALF size of the median
+filtering box along X and Y respectively. They must be integer values.
+If you specify a non-positive value, the size will be scaled
+automatically from the FWHM parameter.
+The default for both is 0, which forces auto-scaling.
+
+\noindent {\tt MPREC} --  This controls the precision to which 
+the median model is
+calculated. If the noise in the image background is say 100 DN, you do 
+not need a model computed to 1 DN precision. 
+You can ask instead for precision to $n$ DN by setting the value of the
+MPREC parameter to $n$. This must be an integer. 
+Non-positive values of MPREC will result in 
+setting MPREC to 0.25*THRESHMIN.
+The default is 1, the most conservative setting.
+
+\noindent{\tt NTHPIX} -- This is really not a filtering parameter, 
+but one used in 
+the search for objects. It controls how often the search routine updates
+the value of the background from the model (be it PLANE, HUBBLE or
+MEDIAN) when initially raster searching along X for peaks 
+in the data. NTHPIX is the 
+interval in pixels for this update. Setting NTHPIX 0 or negative (the
+default) sets NTHPIX = SQRT(X-size of image in pixels) to the nearest
+integer. This is adequate for all but the grottiest backgrounds.
+If you must have a smaller value you can change this to about 2*JHXWID.
+Smaller values cause the search routine to run considerably slower.
+
+\noindent {\tt OBJTYPE\_IN, OBJTYPE\_OUT} -- Three input/output formats are
+supported by DoPHOT.  These are identified by the character
+strings COMPLETE, INTERNAL, and INCOMPLETE.  The `COMPLETE' input/output
+format type provides all the information DoPHOT has to offer about the
+objects it has identified in an image using `friendly' units ({\it i.e.},
+magnitudes, FWHM, {\it etc.}; Appendix B describes DoPHOT's data formats
+in detail).  The 
+`INTERNAL' input/output type provides the same information that is
+provided in the `COMPLETE' format type but using the 
+units employed internally by DoPHOT.
+The `INCOMPLETE' output type is
+compatible with DAOPHOT standard output files, but some information 
+is lost if this format is chosen.  
+
+The {\tt OBJTYPE\_IN}
+flag identifies the input object file format type, and is needed if one
+will be doing a ``warmstart''.
+Only the COMPLETE, and INTERNAL format
+types are allowed because there is not enough information in 
+the  `INCOMPLETE' format files to initiate a warmstart.  The
+{\tt OBJTYPE\_OUT} flag identifies the output file format type, and
+all three options are allowed.  Note that shadow files 
+are only written and read using `INTERNAL' format types
+since these files are rarely of interest to most users.
+
+\noindent {\tt PSDIR, PSNAME\_ROOT, CPSNAME\_ROOT, 
+MPSNAME\_ROOT, RPSNAME\_ROOT} -- {\it new feature} If you want to 
+output a postage stamp (PS) image for each obj detected (i.e. an image 
+which is cut around the obj center and is the size of the model subtracted) 
+specify a keyword for PSNAME\_ROOT such that the desired PS file names 
+are `PSDIR/d\#\_PSNAME\_ROOT.fits' 
+where the number corresponds to the number of the object in the object 
+file.  Similar PS files can be created for the neighbor cleaned images of 
+the objects, images of the models for each object, and images of just the 
+residuals for each object once the neighbors and models have been 
+subtracted off, by 
+specifying names for CPSNAME\_ROOT, MPSNAME\_ROOT, or 
+RPSNAME\_ROOT respectively.  Specifying a postage stamp directory 
+PSDIR will not cause any files to be generated, but will properly direct files 
+if any of the PSNAME\_ROOT keywords are specified. Postage stamps are 
+a new feature DoPHOT 4.0 which are a useful diagnostic for seeing the 
+quality of neighbor subtraction and the fit of any individual object, but 
+generating PS images does slow down the run as individual images are 
+generated for each object detected.
+
+\centerline{A.4.3  Very rarely updated parameters.}
+
+Not only are these parameters rarely changed, but they can cause
+serious problems if adjusted indiscriminately.  Nevertheless,
+they are included in the parameter file to increase DoPHOT's
+flexibility in dealing with unforeseen reduction problems.  
+However, even more so than for the parameters described above,
+{\it be sure you understand the functions of these parameters
+before changing their values.}
+
+\noindent {\tt NFITITER} -- The value of this parameter controls
+the maximum number of iterations DoPHOT performs during its
+non-linear least-squares fits to individual objects on an
+image.
+
+\noindent {\tt NPARAM} -- NOW OBSOLETE- For developers, set to update 
+in tuneup.c automatically for an updated model type.  For users, if you do 
+not change the model, or if you use a model supplies with the package, this 
+number will set correctly (to 7 for a pseudogaussian) automatically. 
+Previously, NPARAM specified the maximum 
+number of fit-parameters in the analytic PSF function.  For example, the 
+fit-parameters used by the pseudo-gaussian function (which is specified by 
+setting {\tt PSFTYPE} = PGAUSS; see above) are the sky, the $(x,y)$ centroid 
+of the object, the central intensity, width parameters in $x$ and $y$ and a
+cross term to account for tilted images.
+
+\noindent {\tt NFITMAG} -- The maximum number of fit-parameters used
+in fitting the analytic PSF to objects when the shape fit-parameters
+are assumed.  Thus for the pseudo-gaussian function (see
+{\tt PSFTYPE} above) these fit-parameters are the sky, the $(x,y)$ centroid
+of the object, and the central intensity.  The shape fit-parameters 
+are assumed to be equal to the current best guess that DoPHOT has
+for these.
+
+\noindent {\tt NFITSHAPE} -- NOW OBSOLETE- For developers, set to update 
+in tuneup.c automatically for an updated model type.  For users, if you do 
+not change the model, or if you use a model supplies with the package, this 
+number will set correctly (to 7 for a pseudogaussian) automatically. 
+Previously, NFITSHAPE specified the maximum number of fit-parameters used
+in fitting the analytic PSF to objects when all the fit-parameters are
+free to vary.  For the pseudo-gaussian function (see the description
+for {\tt PSFTYPE} above) these fit-parameters are the same as 
+described for {\tt NPARAM} above.
+
+\noindent {\tt NFITBOXFIRST\_X, NFITBOXFIRST\_Y} --  Because the initial estimates
+of the shape parameters provided by the user may not be especially good
+(nor must they be), DoPHOT
+should use a particularly large fitting-box on the first threshold in which stars are
+detected.  This parameter controls the size of sides of the `first-pass' 
+fit subraster boxes (see {\tt NFITBOX\_X} and {\tt NFITBOX\_Y} for 
+related information).
+
+\noindent {\tt N\_EMP\_SKIP} -- Setting this to a positive value N 
+(0 is default) will tell DoPHOT to ignore the N brightest bonafide 
+stars when selecting a star to use as the empirical PSF.
+
+\noindent {\tt EMP\_STAR\_X, EMP\_STAR\_Y, EMP\_STAR\_Z} -- You can specify 
+a particular star in the data frame as the empirical PSF template
+by specifying its location in X and Y, and its approximate peak height
+(Z) through these parameters. The default values are zero, which 
+makes DoPHOT select a star itself, constrained by N\_EMP\_SKIP.
+
+\noindent {\tt EMP\_PSF\_BOX} -- is the size of the empirical PSF subraster
+
+\noindent {\tt EMP\_REJ\_RAD\_SIG} -- Used when selecting a PSF star. If a
+bad pixel is encountered within V*sigma of the center of a star, it 
+disqualifies it from being used as a template for the empirical PSF.
+(For this purpose, sigma is FWHM/2.35).
+
+\noindent {\tt CHI2MINBIG} -- This parameter specifies the critical
+value of $\chi^2$ for three degrees of freedom
+above which an object is classified as
+``VERY BIG'' ({\it i.e.}, either a double star or a galaxy).  
+Such objects are then subjected to fits as
+double stars, and DoPHOT decides whether they are best classified
+as galaxies or double stars. A related parameter is {\tt STARGALKNOB}
+described above.
+
+\noindent {\tt XTRA} -- This parameter has the same function as
+{\tt CHI2MINBIG} except that it is used if the object has
+previously already been classified as a member of a double star.
+
+\noindent {\tt SIGMA1, SIGMA2, SIGMA3} -- These parameters control
+the minimum fractional amount by which the PSF shape parameters
+of a galaxy must vary from the shape parameters of a single
+stellar object, and are used by DoPHOT to calculate the 
+$\chi^2$ statistic for galaxy objects.
+
+\noindent {\tt ENUFF4, ENUFF7} -- At least {\tt ENUFF4} of the 
+pixels in a fit subraster must be present in order to 
+perform a four-parameter fit (see {\tt NFITMAG} above).
+{\tt ENUFF7} specifies this limit for seven-parameter
+fits (see {\tt NFITSHAPE} above).
+
+\noindent {\tt COSOBLSIZE} -- This specifies the size of the
+obliteration box (in both $x$ and $y$ directions) that is
+employed to remove objects that have been classified as
+cosmic rays.
+
+\noindent {\tt APMAG\_MAXERR} -- Only aperture photometry 
+results with errors smaller than the value specified
+by this parameter are reported in the output photometry
+file.
+
+\noindent {\tt PIXTHRESH} -- This parameter allows DoPHOT's
+finding algorithm to trigger on pixels that are above
+{\tt PIXTHRESH} times the local noise.  This parameter
+represents one of the masking tape/baling wire type fixes
+that has been incorporated into the code in order to 
+allow the finding algorithm to find faint stars in 
+well-sampled data.  By setting {\tt PIXTHRESH} too low,
+however, you force the program waste time trying to
+find objects where only a single noisy pixel exists.  
+Binning well-sampled data and leaving {\tt PIXTHRESH}
+at 1.0 is usually more effective at finding faint stars.
+
+\noindent {\tt BETA4, BETA6} -- These parameters modify the
+$z^4$ and $z^6$ terms in the pseudo-gaussian PSF function
+as illustrated in Equation (1) of Section 7.2.  If you wish
+to experiment with these parameters, you can  
+plot Equation (1) with different values of
+{\tt BETA4} and {\tt BETA6} to appreciate how they 
+affect the shape of the pseudo-gaussian PSF function used
+in the present version of DoPHOT and to compare the
+analytic PSF with the radial profiles of actual PSFs.  For most
+real data, the pseudo-gaussian will never perfectly fit
+the observed PSF, but you will probably be able to find
+values of {\tt BETA4} and {\tt BETA6} that do a good job
+far out into the wings of the observed PSF.  We suggest letting
+{\tt BETA4} = {\tt BETA6} while varying them for the first time
+on new data sets.
+
+\noindent D. Fit-parameter limits.  
+
+The fit-parameter limits below provide convergence limits for
+DoPHOT's non-linear least squares fitting routine and help avoid the 
+program from producing absurd results or attempting to drive
+the fit-parameters to values that result in numeric overflows.  Two sets of 
+seven fit-parameter limits are used by DoPHOT and are identified
+with indices running from 1 to 7.    For reference, these indices represent 
+(1) sky, (2) $x$-position of center, (3) $y$-position of the center,
+(4) central intensity above sky, (5) pseudo-gaussian sigma in the 
+$x$-direction, (6) the pseudo-gaussian cross term, and (7) the pseudo-gaussian
+sigma in the $y$-direction, respectively.  These fit-parameters
+are defined by Equation (1) in Section 7.2.
+
+\noindent {\tt RELACC1} through {\tt RELACC11} -- These parameters control
+the convergence criteria for the fit-parameters.  Positive values for 
+any {\tt RELACC} parameter refer to fractional changes in the
+fit-parameters between successive iterations, 
+while negative values refer to absolute changes.
+For example, if {\tt RELACC1} = 0.01, then if the sky value 
+changes by less than 1\%\ between successive iterations, that parameter
+will be flagged as having converged.  Similarly, if
+{\tt RELACC3} = $-0.03$, then if the object's $y$ position  changes
+by less than 0.03 pixels between iterations, that parameter is flagged as
+having converged.    It should be noted, however, that DoPHOT
+continues to iterate until {\it all} of of the fit-parameters have
+satisfied their individual convergence criteria.  Because of this, the
+actual convergence achieved for most parameters is much better than
+one might guess from the values of the {\tt RELACC} parameters.  Note that for
+the standard pseudo gaussian model, only {\tt RELACC1-7} are used. 
+{\tt RELACC8-11} are left available for models with additional parameters.
+
+
+\noindent {\tt ABSLIM1} through {\tt ABSLIM7} -- These parameters
+control the permitted range of the fit-parameters and are 
+used between iterations of the non-linear least-squares PSF fit.  
+Positive
+values for any {\tt ABSLIM} parameter controls fractional changes
+in the fit-parameters between sucessive iterations.
+Negative values for 
+the {\tt ABSLIM} parameters restrict the absolute
+ranges of the fit-parameters.  Thus, setting {\tt ABSLIM1} = 100.0 causes
+DoPHOT to halt its attempt to fit the current object if the sky value
+changes by more than a factor of 100 between iterations.  
+Setting {\tt ABSLIM4} = $-1.0 \times 10^8$
+causes a fit to halt if the central intensity of an object ever
+exceeds $10 \times 10^8$ DN.
+
+\centerline{\bf A.5  A Sample DoPHOT 4.0 Parameter File}
+
+\vskip1em
+
+{\obeylines \baselineskip=12pt \parindent=0pt
+{\tt
+=  Default Parameter File for DoPHOT Version 4.0 .      June 2012; MIT.
+=
+=  THIS IS THE MASTER DoPHOT DEFAULT PARAMETER FILE AND IT SHOULD NOT BE 
+=  DELETED OR MODIFIED!
+=
+=  DoPHOT Parameter files are ALMOST pseudo-FITS headers.  
+=  Each line for which a keyword is assigned a value must have an 
+=  equals sign and at least one blank space immediately before and after it.  
+=  Comments may be placed after the parameter value on any line and the equal 
+=  sign may be located anywhere on a line.  A maximum of 80 characters is 
+=  allowed per line.  Character variables MUST be enclosed in single quotes.  
+=  All keyword names must start in the first column.  
+
+=  As a hold over from when this was in Fortran, normal Fortran naming 
+=  conventions are used to identify integer and real variables:  keywords 
+=  starting with letters between I and N (inclusive) represent integer 
+=  variables, all others are reals except for variables in quotes which are 
+=  assumed to be character variables.  No restrictions apply to character 
+=  variable keyword names except that all keyword names must be kept to under 
+=  20 characters.  
+
+=  Null character variables are represented as having
+=  no equals sign.  An equals sign means a value is assigned. This is 
+=  DIFFERENT THAN THE FORTRAN VERSION!!! 
+=
+=  In this master file, the parameters are grouped according to the typical 
+=  frequency with which they are modified.  Short descriptions for each 
+=  parameter are provided following the default value.   These defaults are 
+=  designed to work for a `typical' TI CCD image.
+=
+=
+=  FREQUENTLY UPDATED PARAMETERS.  These parameters mostly depend on the 
+=  typical size of stellar objects on a given frame and on the mean sky value 
+=  for the image.  These parameters tend to be different for every frame.  
+=  Also included are the bookkeeping parameters that specify file names.
+=
+FWHM = 2.0             Approx FWHM of objects (pixels) along major axis.
+AXIS\_RATIO = 1.0       For star objects.  AR=b/a; b=minor axis.
+TILT = 0.0             Angle of major axis in degrees; +x=0; +y=90.
+SKY = 10.0             Approximate mean sky value in data numbers.
+NFITBOX\_X = 7          Size of fit box in the x-direction.
+NFITBOX\_Y = 7          Size of fit box in the y-direction.
+MASKBOX\_X = 5          Size of mask box size in x.
+MASKBOX\_Y = 5          Size of mask box size in y.
+APBOX\_X = 13.0         Size of aperture photometry box in x.
+APBOX\_Y = 13.0         Size of aperture photometry box in y.
+IBOTTOM = -50          Lowest allowed data value in data numbers.
+ITOP = 16384           Maximum allowed data value in data numbers.
+THRESHMIN = 20.0       Value of lowest threshold.
+THRESHMAX = 10000.0    Value of maximum threshold.
+THRESHEMP = 0.0        Fit empirical PSF at and below this value.
+THRESHDEC = 1.0        Threshold decrement in powers-of-2.
+MAX\_SOUGHT = 32768     Quit after this number of improved stars.
+RANGE\_MAG = 30.        Sets threshhold some magnitudes fainter than brightest fit.
+EPERDN = 2.0           Electrons per data number.
+RDNOISE = 15.0         Readout noise in=
+AUTOSCALE = 'NO'       Auto-scaling of sizes by FWHM.
+AUTOTHRESH = 'NO'      Auto-scaling of thresholds.
+FIXPOS = 'NO'          Fix star positions?
+=
+PARAMS\_DEFAULT = 'param\_default\_c'  Default parameters file name.
+PARAMS\_OUT = 'param\_out'             Output parameters file name.
+IMAGE\_IN = 'image\_in'                Input image name. 
+IMAGE\_OUT = 'image\_out'              Output image name.
+EMP\_SUBRAS\_OUT                       Empirical PSF subraster (most recent).
+OBJECTS\_IN                           Input object list file name.
+OBJECTS\_OUT = 'objects\_out'          Output object list file name.
+SHADOWFILE\_IN                        Input shadow file name.
+SHADOWFILE\_OUT = 'shadowfile\_out'    Output shadow file name.
+ERRORS\_OUT = 'error\_out'  Errors on fit to be output if shadow file is requested
+LOGFILE = 'TERM'                     Log file name.  TERM for screen.
+LOGVERBOSITY = 1                     Verbosity of log file; (0-4).
+=
+=
+=  OCCASIONALLY UPDATED PARAMETERS.  These parameters tend to not change for a 
+=  set of images obtained during a single observing run or for frames of a 
+=  single field.  The defaults for the flags PSFTYPE, SKYTYPE, and OUTTYPE are
+=  PGAUSS, PLANE, and FULL, respectively.
+=
+RESIDNOISE = 0.3       Fraction of noise to ADD to noise file (analytic PSF).
+EMP\_RESIDNOISE = 0.03  Fraction of noise to ADD to noise file (empirical PSF).
+FOOTPRINT\_NOISE = 1.3  Expand stars in noise file by this amount (analytic).
+NPHSUB = 1             Limiting surface brightness for subtractions.
+NPHOB = 1              Limiting surface brightness for obliterations.
+ICRIT = 10             Obliterate if \# of pixels > ITOP exceeds this.
+CENTINTMAX = 20000.0   Obliterate if central intensity exceeds this.
+CTPERSAT = 1.0e4       Assumed intensity for saturated pixels.
+STARGALKNOB = 1.0      Star/galaxy discriminator.
+STARCOSKNOB = 1.0      Object/cosmic-ray discriminator.
+SNLIM7 = 7.0           Minimum S/N for 7-parameter fit.
+SNLIM = 0.5            Minimum S/N for a pixel to be in fit subraster.
+SNLIMMASK = 4.0        Minimum S/N through mask to identify an object.
+SNLIMCOS  = 3.0        Minimum S/N to be called a cosmic ray.
+NBADLEFT = 0           Ignore pixels closer to the left edge than this.
+NBADRIGHT = 0          Ignore pixels closer to the right edge than this.
+NBADTOP = 0            Ignore pixels closer to the top edge than this.
+NBADBOT = 0            Ignore pixels closer to the bottom edge than this.
+=
+PSFTYPE = 'PGAUSS'        PSF type: (PGAUSS)
+SKYTYPE = 'PLANE'         SKY type: (PLANE, HUBBLE, MEDIAN)
+=
+JHXWID = 0              X Half-size of median box (.le. 0 -> autoscale)
+JHYWID = 0              Y (same as above)
+MPREC = 1               Median precision in DN (use .le. 0 for autocalc)
+NTHPIX = 0              Frequency of sky updates in pixels for 1st pass
+=
+= Default value of NTHPIX is zero. DoPHOT translates it to SQRT(NFAST)
+= once the data frame is read. For MEDIAN sky, positive NTHPIX gives
+= control over NTHPIX for finer initial sky sample. 
+=
+=
+OBJTYPE\_IN = 'COMPLETE'   Input format: (COMPLETE, INTERNAL)
+OBJTYPE\_OUT = 'COMPLETE'  Output format: (COMPLETE, INCOMPLETE, INTERNAL)
+=
+PSDIR = './'               directory in which to put the PS files 
+PSNAME\_ROOT                ps files names: 'd\#\#\#\#\_PSNAME\_ROOT.fits'
+CPSNAME\_ROOT               cleaned  ps file names: 'd\#\#\#\#\_CPSNAME\_ROOT.fits'
+MPSNAME\_ROOT               model    ps file names: 'd\#\#\#\#\_MPSNAME\_ROOT.fits'
+RPSNAME\_ROOT               residual ps file names: 'd\#\#\#\#\_RPSNAME\_ROOT.fits'
+=
+=  RARELY UPDATED PARAMETERS.  These are specialized parameters that rarely
+=  need changing even when measuring images of very different sorts of fields
+=  and/or from different telescope/detector combinations.
+=
+NFITITER = 10          Maximum number of iterations.
+=NPARAM = 7            OBSOLETE Maximum number of PSF fit parameters. obsolete, now set with model
+NFITMAG = 4            No. of PSF parameters to get magnitudes.
+=NFITSHAPE = 7         OBSOLETE No. of PSF parameters to get shape and mags.  obsolete
+NFITBOXFIRST\_X = 31    Size of fit box in x for first pass.
+NFITBOXFIRST\_Y = 31    Size of fit box in y for first pass.
+N\_EMP\_SKIP = 0         Skip n stars brighter than empirical template.
+EMP\_STAR\_X = 0         X position of empirical template.
+EMP\_STAR\_Y = 0         Y position of empirical template.
+EMP\_STAR\_Z = 0         Central intensity of empirical template.
+NEMP\_PSF\_BOX = 33      Size of empirical PSF box
+EMP\_REJ\_RAD\_SIG = 2.0  Minimum distance of bad pixel from peak in sigma.
+CHI2MINBIG = 16        Critical CHI-squared for a large object.
+XTRA = 25              We need more S/N if some pixels are missing.
+SIGMA1 = 0.10          Max. frac. scatter in sigma\_x for stars.
+SIGMA2 = 0.10          Max. scatter in xy cross term for stars.
+SIGMA3 = 0.10          Max. frac. scatter in sigma\_y for stars.
+ENUFF4 = 0.50          Fraction of pixels needed for 4-param fit.
+ENUFF7 = 0.65          Fraction of pixels needed for 7-param fit.
+COSOBLSIZE = 0.9       Size of obliteration box for a cosmic ray.
+APMAG\_MAXERR = 0.1     Max anticipated error for aperture phot report.
+PIXTHRESH = 1.0        Trigger on pixels higher than noise*PIXTHRESH.
+BETA4 = 1.0            R**4 coefficient modifier.
+BETA6 = 1.0            R**6 coefficient modifier.
+=
+=
+=  AUTO SCALING PARAMETERS.  These parameters are used only if the auto-scaling
+=  flags are turned on.  Box sizes, and threshold levels can be scaled 
+=  according to the FWHM of objects and the sky and readout noise values.
+=
+SCALEFITBOX = 3.0      Size of fit box in units of FWHM.
+FITBOXMIN = 5.0        Smallest allowed fit box size.
+SCALEAPBOX = 6.0       Size of aperture phot box in units of FWHM.
+APBOXMIN = 7.0         Smallest allowed aperture phot box size.
+SCALEMASKBOX = 1.5     Size of mask box in units of FWHM.
+AMASKBOXMIN = 5.0      Smallest allowed mask box size.
+SIGMAIBOTTOM = 10.0    Level of IBOTTOM below sky in units of noise.
+SIGMATHRESHMIN = 2.0   Level of THRESHMIN above sky in units of noise.
+=
+=
+=  PARAMETER LIMITS.  These variables limit the legal ranges of the PSF and 
+=  sky parameters.  Be sure to understand their function well before changing 
+=  any of these values.  Positive values refer to fractional changes; negative
+=  values to absolute changes; zero ABSLIM's turn the corresponding tests off.
+=
+RELACC1 = 0.01         Convergence criterion for sky.
+RELACC2 = -0.03        Convergence criterion for x-position.
+RELACC3 = -0.03        Convergence criterion for y-position.
+RELACC4 = 0.01         Convergence criterion for for central intensity.
+RELACC5 = 0.03         Convergence criterion for sigma-x.
+RELACC6 = 0.1          Convergence criterion for sigma-xy.
+RELACC7 = 0.03         Convergence criterion for sigma-y.
+RELACC8 = 0.03         Convergence criterion for additional parameter 1
+RELACC9 = 0.03         Convergence criterion for additional parameter 2
+RELACC10 = 0.03        Convergence criterion for additional parameter 3
+RELACC11 = 0.03        Convergence criterion for additional parameter 4
+=
+ABSLIM1 = -1.0e8       Allowed range for sky value.
+ABSLIM2 = -1.0e3       Allowed range for x-position.
+ABSLIM3 = -1.0e3       Allowed range for y-position.
+ABSLIM4 = -1.0e8       Allowed range for central intensity.
+ABSLIM5 = -1.0e3       Allowed range for sigma-x.
+ABSLIM6 = -1.0e3       Allowed range for sigma-xy.
+ABSLIM7 = -1.0e3       Allowed range for sigma-y.
+END
+}
+}
+\vfill
+\eject

@@ -1,0 +1,410 @@
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "logh.h"
+#include "tuneable.h"
+#include "aperlist_struct.h"
+#include "estuff_struct.h"
+#include "changed_struct.h"
+#include "probpass_struct.h"
+#include "starlist_struct.h"
+#include "search_struct.h"
+#include "subraster_struct.h"
+#include "crudestat_struct.h"
+#include "fitarrays_struct.h"
+#include "eoff_struct.h"
+#include "unitize_struct.h"
+#include "passimp_struct.h"
+#include "fixpass_struct.h"
+#include "galpass_struct.h"
+#include "addobj_struct.h"
+#include "cast_arr.h"
+#include "mini_mathlib.h"
+#include "transmask.h"
+#include "offpic.h"
+#include "toofaint.h"
+#include "empiricals.h" //contains oneemp
+#include "guess.h"
+#include "fillerup.h"
+#include "chisq.h"
+#include "onefit.h"
+#include "elarea.h"
+#include "probgal.h"
+#include "addstar.h"
+#include "parupd.h"
+#include "errupd.h"
+#include "impaper.h"
+#include "improve.h"
+
+/* dophot int function converted to c int function 03-04-2012 */
+
+int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr)
+{
+
+     /* dereference pointers */
+     int NFAST = *NFAST_ptr;
+     int NSLOW = *NSLOW_ptr;
+     /* rename used common blocks */
+     int*      IMTYPE = starlist_.IMTYPE;
+     float**  STARPAR = starlist_.starpar;
+     float**    EMPAR = estuff_.empar;
+     short int* EMSUB = estuff_.emsub;
+     float*     EMERR = estuff_.emerr;
+     float**    APPLE = aperlist_.apple;
+     float* PROBG = probpass_.probg;
+     short int** ADDAREA = addobj_.addarea;
+     float XFRAC = eoff_.xfrac;
+     float YFRAC = eoff_.yfrac;
+     float UFACTOR = unitize_.ufactor;
+     int NSTOT   = search_.nstot;
+     int I       = passimp_.iii;
+//   not renamed because changed frequently and by subroutines
+//   crudestat_.npt (int)
+//   galpass_.bigfoot (int/ logical)
+//   changed_.useold (int/ logical)
+//   passimp_.inimp (int/ logical)
+//   fixpass_.fixxy (int/ logical)
+
+     short int* IRECT = tune2_.irect;
+     short int* KRECT = tune2_.krect;
+     float* ARECT = tune2_.arect;
+     int NFIT1    = tune4_.nfit1;
+     int NIT      = tune4_.nit;
+     int NPAR     = tune4_.npar;
+     float EPERDN = tune11_.eperdn;
+     float RNOISE = tune11_.rnoise;
+     int lverb    = tune14_.lverb;
+     float* ACC   = tune15_.acc;
+     float* ALIM  = tune15_.alim;
+     float APMAGMAXERR = tune19_.apmagmaxerr;
+     int FIXPOS   = tune21_.fixpos;
+     int EMENAB   = tune22_.emenab;
+     int EMPOK    = tune22_.empok;
+
+     /* only passed to probgal and elarea */
+     short int** XX = subraster_.xx;
+     float* Z  = subraster_.z;
+     float* YE = subraster_.ye;
+     float*  A = fitarrays_.a;
+     float* FA = fitarrays_.fa;
+     float* C_ptr = fitarrays_.c;
+
+     //for deciding if addstar should output copies of model images
+     // and/ or images Cleaned of neighbors (cf)
+     //flags and files [10-13] denote PS, CPS, MPS, and RPS flags
+     //and file name roots respectively.  See param_default_c for
+     //details
+     int w_models = 0, w_cleans = 0;
+     int len_mf_names = 0, len_cf_names = 0;
+     char **mf_names, **cf_names;
+     char *mf_root, *cf_root, *dir;
+     int indx_i;
+
+     if ((tune16_.flags[11][0] == 'Y') || (tune16_.flags[11][0] == 'y')){
+          dir     = tune16_.files[9];
+          cf_root = tune16_.files[11];
+          len_cf_names = strlen(cf_root) +strlen(dir) + 10;
+          cf_names = malloc_char_arr(NSTOT, len_cf_names);
+          for (indx_i = 0; indx_i < NSTOT; indx_i++){
+               sprintf(cf_names[indx_i],"%sd%04d%s.fits", dir, indx_i + 1, cf_root);
+          }
+          w_cleans = 1;
+     }
+     else{
+          cf_names = malloc_char_arr(NSTOT, 1);
+          for (indx_i = 0; indx_i < NSTOT; indx_i++){
+               cf_names[indx_i][0] = ' ';
+          }
+     }
+     if ((tune16_.flags[12][0] == 'Y') || (tune16_.flags[12][0] == 'y')){
+          dir     = tune16_.files[9];
+          mf_root = tune16_.files[12];
+          len_mf_names = strlen(mf_root) + strlen(dir) + 10;
+          mf_names = malloc_char_arr(NSTOT, len_mf_names);
+          for (indx_i = 0; indx_i < NSTOT; indx_i++){
+               sprintf(mf_names[indx_i],"%sd%04d%s.fits", dir, indx_i + 1, mf_root);
+          }
+          w_models = 1;
+     }
+     else{
+          mf_names = malloc_char_arr(NSTOT, 1);
+          for (indx_i = 0; indx_i < NSTOT; indx_i++){
+               mf_names[indx_i][0] = ' ';
+          }
+     }
+
+     /* substance of function begins here */
+     float*  ERR = malloc_float_1darr(NPMAX);    
+     float*    B = malloc_float_1darr(NPMAX);    
+     short int* JX    = malloc_si_1darr(2);
+     short int* JRECT = malloc_si_1darr(2);
+     static int IADD = 1;
+     static int ISUB = -1;
+     static int JADD = 2;
+     static int JSUB = -2;
+     static int NFIT0 = 2;
+     int SKIP, CONVERGE, SNOK, TRYEM;
+     int JMTYPE, NFIT, IIT;
+     int IX, IY;
+     float DX, DY;
+     int logic_ret;
+     double chisq_return, onefit_return, elarea_return, oneemp_return;
+     float SKY, STARCHI, EMCHI;
+     float dum = 0;
+     float TOTSTAR, VARSTAR, VARSKY, ERRELEC, ERRDN, SNPRED;
+     int K;
+     float this_C;
+
+     passimp_.inimp = 1; //true
+     TRYEM = (EMENAB && EMPOK);
+     for(I = 1; I <= NSTOT; I++){
+          K = I-1; //for array indexes
+          EMCHI = 2.0e10f;
+          fixpass_.fixxy = ( (IMTYPE[K] - (IMTYPE[K] % 10)) == 10);
+          fixpass_.fixxy = ( fixpass_.fixxy && FIXPOS ); 
+          if (fixpass_.fixxy){
+               JMTYPE = IMTYPE[K] - 10;
+          }
+          else{
+               JMTYPE = IMTYPE[K];
+          }
+          if ( (JMTYPE != 0) && (JMTYPE != 6) && (JMTYPE != 8) ){
+               // add back old model
+               if ( (EMSUB[K] >= 1) || (EMSUB[K] == -2) ){
+                    changed_.useold = 1; //true
+                    addstar_(&oneemp_, BIG, NOISE, 
+                             &NFAST, &NSLOW, 
+                             EMPAR[K],
+                             ADDAREA[K], &JADD,
+                             0, " ", 0, " ");
+                    changed_.useold = 0; //false
+                    if (EMSUB[K] == -2){
+                         EMSUB[K] = -1;
+                    }
+               }
+               else{
+                    galpass_.bigfoot = (JMTYPE == 2);
+                    addstar_(ONESTAR, BIG, NOISE, 
+                             &NFAST, &NSLOW, 
+                             STARPAR[K],
+                             ADDAREA[K], &IADD,
+                             0, " ", 0, " ");
+                    galpass_.bigfoot = 0; //false
+               }
+
+               SKY = (float)guess3_(A, STARPAR[K], &IX, &IY);
+               if (lverb > 20){
+                    fprintf(logfile,"IMPROVING STAR # %d AT %d %d \n",
+                                     I, IX, IY);
+               }
+     
+               if (EMSUB[K] == -1){
+                    JRECT[0] = IRECT[0];               
+                    JRECT[1] = IRECT[1];               
+                    IRECT[0] = KRECT[0];               
+                    IRECT[1] = KRECT[1]; 
+               }              
+               fillerup_(BIG, NOISE, &IX, &IY, 
+                                        &NFAST, &NSLOW); 
+               if (EMSUB[K] == -1){
+                    IRECT[0] = JRECT[0];               
+                    IRECT[1] = JRECT[1]; 
+               }              
+
+               if (fixpass_.fixxy){
+                    logic_ret = offpic_(A, &IX, &IY,
+                                        &NFAST, &NSLOW, 
+                                        &DX, &DY);
+                    SNOK = !logic_ret;
+                    NFIT = NFIT0;
+                    IIT  = 2;
+               }
+               else{
+                    /* here I've punted but I could easily 
+                       have made a mask from the input
+                       subraster */
+                    SNOK = transmask_(BIG, NOISE,
+                                        &NFAST, &NSLOW, 
+                                        &IX, &IY, &SKY, &dum);
+                    NFIT = NFIT1;
+                    IIT  = NIT;
+               }
+
+               if (SNOK){
+                    onefit_return = onefit_(ONESTAR, XX, Z, YE,
+                                    &crudestat_.npt, A, FA, C_ptr, 
+                                    &NFIT, ACC, ALIM, &IIT);
+                    STARCHI = (float)onefit_return;
+               }
+               else{
+                    if (lverb > 20){
+                         fprintf(logfile,"snok NG: star #,npt,ix,iy = ");
+                         fprintf(logfile,"%d %d %d %d \n",I,crudestat_.npt,IX,IY);
+                    }
+               }
+               logic_ret = offpic_(A, &IX, &IY,
+                                        &NFAST, &NSLOW, 
+                                        &DX, &DY);
+               SKIP = ( (!SNOK) || (logic_ret) );
+               if (!SKIP){
+                    CONVERGE = (STARCHI < 9.0e9f);
+                    if (CONVERGE){
+                         if (JMTYPE != 2){
+                              parupd_(A, STARPAR[K], &IX, &IY);
+                              errupd_(C_ptr, ERR, &NFIT);
+                              if (JMTYPE != 3){
+                                   logic_ret = toofaint_(
+                                           STARPAR[K], ERR); 
+                                   if (logic_ret){
+                                        JMTYPE = 7;
+                                   }
+                              } //end JMTYPE != 3
+
+                              /* Changed index. */
+                              elarea_return = elarea_(A+4, A+5, A+6);
+                              TOTSTAR = 2.0f*pi*STARPAR[K][1]
+                                        *(float)elarea_return;
+                              VARSTAR = TOTSTAR*EPERDN;
+                              VARSKY  = ARECT[0]*ARECT[1]
+                                        *(SKY*EPERDN + RNOISE*RNOISE);
+                              if ( (VARSTAR + VARSKY) > 0.0f ){
+                                   ERRELEC = sqrtf(VARSTAR + VARSKY); 
+                                   ERRDN   = ERRELEC/EPERDN;
+                                   SNPRED  = 1.086f*ERRDN/TOTSTAR;
+                                   if (SNPRED < APMAGMAXERR){
+                                        /* impaper uses starlist_.starpar 
+                                           so need to recast here */
+                                        impaper_(BIG, NOISE,
+                                                 &NFAST, &NSLOW, &I);
+                                   }
+                              }
+                              /* Changed index. */
+                              this_C = get_float_ij(C_ptr, NFIT1, 1, 1, 0);
+                              APPLE[K][3] = 1.086f*(1.0f/A[1])*this_C;
+                              if (fixpass_.fixxy){
+                                   this_C = get_float_ij(C_ptr, NFIT1-2, 1, 1, 0);
+                                   APPLE[K][3] = 1.086f*(1.0f/A[1])*this_C;
+                              }
+                              /* I'll risk using fa and c again; 
+                                 a is needed by probgal */
+                              if (TRYEM){
+                                   if (lverb > 20){
+                                        fprintf(logfile,
+                                        "EMPIRICAL FIT TO STAR # %d", I); 
+                                        fprintf(logfile,"AT %d %d\n",
+                                        IX, IY);
+                                   }
+                                   if (EMSUB[K] >= 1){
+                                        B[0] = EMPAR[K][0]/UFACTOR;
+                                        B[1] = EMPAR[K][1]/UFACTOR;
+                                        B[2] = EMPAR[K][2] - IX;
+                                        B[3] = EMPAR[K][3] - IY;
+                                   }
+                                   else{
+                                        B[0] = A[0];
+                                        B[1] = A[1]/10000.0f;
+                                        B[2] = A[2] - XFRAC;
+                                        B[3] = A[3] - YFRAC;
+                                   }
+                                   JX[0] = 0;
+                                   JX[1] = 0;
+                                   oneemp_return = oneemp_(JX, B, FA,
+                                                        &NPAR, &NPAR); 
+                                   chisq_return = chisq_(&oneemp_,
+                                                XX, Z, YE, &crudestat_.npt,
+                                                B, FA, C_ptr, 
+                                                &NFIT, ACC, ALIM, &IIT);
+                                   EMCHI = (float)chisq_return;
+                                   if (EMCHI < 9.0e9f){
+                                        EMPAR[K][0] = B[0]*UFACTOR;
+                                        EMPAR[K][1] = B[1]*UFACTOR;
+                                        EMPAR[K][2] = B[2] + IX;
+                                        EMPAR[K][3] = B[3] + IY;
+                                        this_C = get_float_ij(C_ptr, NFIT1, 1, 1, 0);
+                                        EMERR[K] = 1.086f*(1.0f/B[1])*this_C;
+                                        if (fixpass_.fixxy){
+                                             this_C = get_float_ij(C_ptr, NFIT1-2, 1, 1, 0);
+                                             EMERR[K] = 1.086f
+                                                 *(1.0f/B[1])*this_C;
+                                        }
+                                   }
+                              }// end TRYEM if
+                         }// end JMTYPE != 2 if
+          
+                         /* It doesn't make much sense to ask if it's 
+                            bigger than a star if the central intensity 
+                            is */
+                         if (A[1] > 0.0f){
+                              PROBG[K] =  (float)probgal_(ONESTAR,
+                                               XX, Z, YE, &crudestat_.npt, A, FA);
+                         }
+                         else{
+                              PROBG[K] = -9999.0f;
+                         }
+                    }
+                    else{
+                         if (JMTYPE != 3){
+                              JMTYPE = 4;
+                         }
+                    } // end CONVERGE if/else
+                                   
+                    /* should be .eq. but one thing at a time; 
+                       could get rid of -2 above */
+                    // given new parameters, subtract new model
+                    if ( (!TRYEM) || (EMCHI > 9.0e9f) 
+                         || (EMSUB[K] <= -1) ){
+                         EMSUB[K] = min(0, EMSUB[K]);
+                         if (EMSUB[K] >= 0){
+                              EMPAR[K][0] = 0.0f;
+                              EMPAR[K][1] = 0.0f;
+                              EMPAR[K][2] = 0.0f;
+                              EMPAR[K][3] = 0.0f;
+                         }
+                         galpass_.bigfoot = (JMTYPE == 2);
+                         addstar_(ONESTAR, BIG, NOISE,
+                                  &NFAST, &NSLOW, STARPAR[K], 
+                                  ADDAREA[K], &ISUB,
+                                  w_models, mf_names[K], 
+                                  w_cleans, cf_names[K]);
+                         galpass_.bigfoot = 0; //false
+                    }
+                    else{
+                         EMSUB[K] = 1;
+                         fprintf(logfile,"Subtracting empirical psf:\n");
+                         addstar_(&oneemp_, BIG, NOISE,
+                                  &NFAST, &NSLOW, EMPAR[K], 
+                                  ADDAREA[K], &JSUB,
+                                  w_models, mf_names[K],
+                                  w_cleans, cf_names[K]);
+                    }
+               }
+               else{
+                    JMTYPE = 6;
+                    if (lverb > 20){
+                         fprintf(logfile,"DEACTIVATING STAR # %d ", I);
+                         fprintf(logfile,"AT %d %d\n", IX, IY);
+                         fprintf(logfile,"emchi & emsub = %f %d\n",
+                                         EMCHI, EMSUB[K]);
+                    }
+               } // end !SKIP if/else
+          }
+
+          IMTYPE[K] = JMTYPE;
+          if (fixpass_.fixxy){
+               IMTYPE[K] = JMTYPE + 10;
+          }
+          fixpass_.fixxy = 0;//false
+          passimp_.iii += 1; //loop this variable as well as cleaner I
+     } //end I loop
+     passimp_.inimp = 0; //false
+
+     /* recast all changed pointers and common block vars */
+     free(ERR);
+     free(B);
+     free(JX);
+     free(JRECT);
+     free_char_arr(NSTOT, mf_names);
+     free_char_arr(NSTOT, cf_names);
+
+     return 1;
+}

@@ -1,0 +1,98 @@
+%--------------------------------%
+%  GENERALLY USEFUL DEFINITIONS  %
+%--------------------------------%
+%\def\singlespace{\baselineskip 12pt \lineskip 1pt \parskip 2pt plus 1 pt}
+%\def\mediumspace{\baselineskip 18pt \lineskip 6pt \parskip 3pt plus 5 pt}
+%\def\doublespace{\baselineskip 24pt \lineskip 10pt \parskip 5pt plus 10 pt}
+\def\today{\number\day\enspace
+     \ifcase\month\or January\or February\or March\or April\or May\or
+     June\or July\or August\or September\or October\or
+     November\or December\fi \enspace\number\year}
+\def\clock{\count0=\time \divide\count0 by 60
+    \count1=\count0 \multiply\count1 by -60 \advance\count1 by \time
+    \number\count0:\ifnum\count1<10{0\number\count1}\else\number\count1\fi}
+\footline={\hss -- \folio\ -- \hss}
+\def\draft{\headline={\hss \today \quad\quad \clock}}
+%-----------%
+%  SYMBOLS  %
+%-----------%
+\def\deg{\ifmmode^\circ\else$^\circ$\fi}
+\def\solar{\ifmmode_{\mathord\odot}\else$_{\mathord\odot}$\fi}
+%--------------%
+%  REFERENCES  %
+%--------------%
+\def\jref#1 #2 #3 #4 {{\par\noindent \hangindent=3em \hangafter=1 
+      \advance \rightskip by 5em #1, {\it#2}, {\bf#3}, #4.\par}}
+\def\ref#1{{\par\noindent \hangindent=3em \hangafter=1 
+      \advance \rightskip by 5em #1.\par}}
+%----------------------------------%
+%  INCREMENTAL EQUATION NUMBERING  %
+%----------------------------------%
+\newcount\eqnum
+\def\nexteq{\global\advance\eqnum by1 \eqno(\number\eqnum)}
+\def\lasteq#1{\if)#1[\number\eqnum]\else(\number\eqnum)\fi#1}
+\def\preveq#1#2{{\advance\eqnum by-#1
+    \if)#2[\number\eqnum]\else(\number\eqnum)\fi}#2}
+%----------%
+%  TABLES  %
+%----------%
+\def\endtable{\endgroup}
+\def\tableheight{\vrule width 0pt height 8.5pt depth 3.5pt}
+{\catcode`|=\active \catcode`&=\active 
+    \gdef\tabledelim{\catcode`|=\active \let|=\vbar
+                     \catcode`&=\active \let&=\nobar} }
+\def\table{\begingroup
+    \def\twidth{\hsize}
+    \def\tablewidth##1{\def\twidth{##1}}
+    \def\defaultheight{\vrule width 0pt height 8.5pt depth 3.5pt}
+    \def\heightdepth##1{\dimen0=##1
+        \ifdim\dimen0>5pt 
+            \divide\dimen0 by 2 \advance\dimen0 by 2.5pt
+            \dimen1=\dimen0 \advance\dimen1 by -5pt
+            \vrule width 0pt height \the\dimen0  depth \the\dimen1
+        \else  \divide\dimen0 by 2
+            \vrule width 0pt height \the\dimen0  depth \the\dimen0 \fi}
+    \def\spacing##1{\def\defaultheight{\heightdepth{##1}}}
+    \def\nextheight##1{\noalign{\gdef\tableheight{\heightdepth{##1}}}}
+    \def\end{\cr\noalign{\gdef\tableheight{\defaultheight}}}
+    \def\zerowidth##1{\omit\hidewidth ##1 \hidewidth}    
+    \def\hline{\noalign{\hrule}}
+    \def\skip##1{\noalign{\vskip##1}}
+    \def\bskip##1{\noalign{\hbox to \twidth{\vrule height##1 depth 0pt \hfil
+        \vrule height##1 depth 0pt}}}
+    \def\header##1{\noalign{\hbox to \twidth{\hfil ##1 \unskip\hfil}}}
+    \def\bheader##1{\noalign{\hbox to \twidth{\vrule\hfil ##1 
+        \unskip\hfil\vrule}}}
+    \def\spanloop{\span\omit \advance\mscount by -1}
+    \def\extend##1##2{\omit
+        \mscount=##1 \multiply\mscount by 2 \advance\mscount by -1
+        \loop\ifnum\mscount>1 \spanloop\repeat \ \hfil ##2 \unskip\hfil}
+    \def\vbar{&\vrule&}
+    \def\nobar{&&}
+    \def\hdash##1{ \noalign{ \relax \gdef\tableheight{\heightdepth{0pt}}
+        \toks0={} \count0=1 \count1=0 \putout##1\end 
+        \toks0=\expandafter{\the\toks0 &\end} \xdef\piggy{\the\toks0} }
+        \piggy}
+    \let\e=\expandafter
+    \def\putspace{\ifnum\count0>1 \advance\count0 by -1
+        \toks0=\e\e\e{\the\e\toks0\e&\e\multispan\e{\the\count0}\hfill} 
+        \fi \count0=0 }
+    \def\putrule{\ifnum\count1>0 \advance\count1 by 1
+        \toks0=\e\e\e{\the\e\toks0\e&\e\multispan\e{\the\count1}\leaders\hrule\hfill}
+        \fi \count1=0 }
+    \def\putout##1{\ifx##1\end \putspace \putrule \let\next=\relax 
+        \else \let\next=\putout
+            \ifx##1- \advance\count1 by 2 \putspace
+            \else    \advance\count0 by 2 \putrule \fi \fi \next}   }
+\def\tablespec#1{
+    \def\vdimens{\noexpand\tableheight}
+    \def\tabby{\tabskip=0pt plus100pt minus100pt}
+    \def\r{&################\tabby&\hfil################\unskip}
+    \def\c{&################\tabby&\hfil################\unskip\hfil}
+    \def\l{&################\tabby&################\unskip\hfil}
+    \edef\templ{\noexpand\vdimens ########\unskip  #1 
+         \unskip&########\tabskip=0pt&########\cr}
+    \tabledelim
+    \edef\body##1{ \vbox{
+        \tabskip=0pt \offinterlineskip
+        \halign to \twidth {\templ ##1}}} }

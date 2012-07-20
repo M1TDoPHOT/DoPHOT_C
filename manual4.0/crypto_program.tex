@@ -1,0 +1,41 @@
+\centerline{\bf 3.  CRYPTO-DoPHOT}
+
+The following is a schematic version of DoPHOT in an imaginary 
+computer language.  The main tasks are identified and their relative
+locations in the code are correctly illustrated.  Reference to 
+this listing of ``CRYPTO-DoPHOT'' may be useful in understanding some
+of the detailed descriptions in the following sections of this manual.
+
+\vskip3em
+
+{\obeylines \baselineskip=12pt
+\ crypto\_dophot
+\ \ \ INPUT\_PARAMETERS
+\ \ \ READ\_IMAGE
+\ \ \ MAKE\_NOISE\ ARRAY
+\ \ \ $\{$ \ if\ warmstart\ then
+\ \ \ \ \ \ \ READ\_OBJECT\_LIST
+\ \ \ \ \ \ \ DETERMINE\_TYPICAL\_SHAPE\_PARAMETERS\ $\}$
+\ \ \ $\{$ \ for\ threshold\ =\ highest\ to\ lowest
+\ \ \ \ \ \ \ [\ SEARCH\_FOR\_PIXELS\_ABOVE\_THRESHOLD
+\ \ \ \ \ \ \ \ \ \ (\ if\ high\_pixel\ then
+		\ \ \ \ \ \ \ CHECK\_FLUX\_THROUGH\_STAR\_MASK\ )
+\ \ \ \ \ \ \ \ \ \ (\ if\ significant\ then
+		\ \ \ \ \ \ \ CLASSIFY\_STAR/COSMIC/BADLY\_SATURATED
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ADD\_OBJECT\_TO\_LIST\ )\ ]
+\ \ \ \ \ \ \ [\ for\ all\ objects\ in\ list
+	\ \ DETERMINE\_OBJECT\_SHAPE\_PARAMETERS
+\ \ \ \ \ \ \ \ \ \ (\ if\ object\_is\_big\ then
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CLASSIFY\_GALAXY/DOUBLE\_STAR\ )]
+\ \ \ \ \ \ \ DETERMINE\_NEW\_TYPICAL\_SHAPE\_PARAMETERS
+\ \ \ \ \ \ \ [\ for\ all\ objects\ in\ list
+\ \ \ \ \ \ \ \ \ \ (\ if\ star\ then
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ DETERMINE\_FIT\_MAGNITUDE
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ DETERMINE\_APERTURE\_MAGNITUDE\ )
+\ \ \ \ \ \ \ \ \ \ DETERMINE\_EXTENDEDNESS\ ]
+\ \ \ \ \ \ \ WRITE\_OBJECT\_LIST\_TO\_DISK
+\ \ \ \ \ \ \ WRITE\_OBJECT\_SUBTRACTED\_IMAGE\_TO\_DISK\ $\}$
+\ \ \ END
+}
+
+

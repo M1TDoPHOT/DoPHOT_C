@@ -1,0 +1,69 @@
+\centerline{\bf 10. KNOWN BUGS AND SHORTCOMINGS}
+
+\centerline{\bf 10.1 Maximum Number of Objects}
+
+The maximum number of objects is compiled into DoPHOT through a
+\#define in {\bf structs/tuneable.h} 
+{\it The user must recompile and relink all} 
+DoPHOT {\it modules after changing any \#define s} 
+as described in Appendix A.  
+At present DoPHOT does {\it not} check this
+maximum before adding objects to the object list.
+
+\centerline{\bf 10.2 Initial FWHM Limitations}
+
+When DoPHOT encounters objects on its first pass through the
+data, it must decide whether they are single stars, galaxies
+or double-stars.  This decision is based on the user
+supplied full width at half maximum.  If this number is too
+small, DoPHOT will decide that {\it all} the single stars it
+encounters are galaxies and double-stars.  Since it
+encounters no single stars, it cannot update its notion of
+what a typical star looks like and single stars are
+classified as galaxies and double-stars on all subsequent
+passes through the data as well.  Thus, the user's best estimate of
+the FWHM is automatically multiplied by 1.2 to ensure that 
+DoPHOT's initial guess of the shape parameters are somewhat 
+overestimated.  Note that the FWHM provided by the user, 
+{\it not} the inflated value, is saved in the output parameters file.
+
+\centerline{\bf 10.3 Lost Siblings}
+
+DoPHOT does not maintain pointers linking those objects
+which are double-star siblings.  As a result, the values
+obtained at the moment when the stars are split are probably
+{\it better} than those ultimately reported.  When one
+sibling of a pair is encountered on a subsequent pass
+through the data, it is fit as a single star with the
+``typical'' shape parameters.  Since it's sibling has been
+subtracted, the noise in the nearby pixels is higher than it
+would otherwise be, increasing the formal uncertainties from
+the fit.  But since the sibling is {\it not} being fit
+simultaneously, the error estimates for the parameters do
+not take into account the covariance with the estimates for
+the sibling.  This second effect would underestimate errors.
+
+\centerline{\bf 10.4 No Longer and issue: Maximum Image Size}
+
+We assume that all modern computers can dynamically allocate 
+memory.  If your computer cannot, stick with DoPHOT 3.0 in Fortran.  
+The image size is read form the image header and the memory for 
+the image is dynamically allocated to the correct size.
+
+\vskip3em
+
+\centerline{\bf ACKNOWLEGEMENTS}
+
+The authors gratefully acknowledge the help of colleagues
+who generously agreed to try using early versions of DoPHOT,
+tested it on a variety of different kinds data, reported the
+results of their experiments, and suggested a great number
+of the improvements which have been incorporated into the
+present version: John Caldwell, Kem Cook, Eileen Friel,
+Wendy Freedman, Doug Geisler and John Tonry.  They also
+thank John Tonry for his routines to read ``disk fits''
+files, even though they are no longer implemented.  
+DoPHOT was originally written with the support of 
+the  U.S. National Science Foundation through grant AST83-18504.
+DoPHOT 4.0 modifications were supported by a NSF Graduate 
+Research Fellowship to Rebecca Levinson.

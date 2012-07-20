@@ -1,0 +1,456 @@
+\centerline{\bf 8. GUIDELINES FOR PROGRAMMERS}
+
+\centerline{\bf 8.1 DoPHOT 4.0 Improvements from Fortran}
+
+DoPHOT is now in C, but it was converted modularly from the
+Fortran 77 subroutines.  Thus, perhaps to a C expert's chagrin,
+it reads and executes just like the Fortran versions.  And just like 
+in the Fortran version, comments explaining the logic within the
+code are sparse. However, there are improvements over the
+Fortran version which have made the transition worthwhile, at 
+least for the person who converted it.
+
+\centerline{\bf 8.1.1 Obsolete cdiskio Routine Replaced with CFITSIO}
+
+No more cdiskio that uses obsolete (though admittedly still 
+functional) read write functions.  The tradeoff is dependence 
+on the CFITSIO library.  I am sorry to those who hate when 
+software comes with ``and add this library/package” strings, but I 
+was disinclined to reinvent the wheel when such a nice round one 
+was available.  If you are desperate for a version without CFITSIO, 
+email rsobel@mit.edu for an old, but clean copy of Dophot with 
+limited features but no CFITSIO dependence.  However, CFITSIO 
+is very nice, and I encourage you to just get it working and use the
+current and maintained DoPHOT version with all the features.
+
+\centerline{\bf 8.1.2 \#defines confined to {\bf structs/tuneable.h}}
+
+All \#defines (in Fortran, ‘parameter’) are confined to the header 
+file {\bf structs/tuneable.h}.  No others hide throughout the program.  
+To developers, please keep it that way.
+
+\centerline{\bf 8.1.3 Commonblocks Replaced by Structs}
+
+Common block variables are now anonymous structs.  While these 
+are seemly equal in their evil, there are subtle improvements which 
+I will lay out in this section.
+
+All struct definitions exist in a subdirectory called {\bf structs}.  If a 
+function uses struct ``thisone'', a dedicated file with the struct called 
+``thisone\_struct.h'' exists in the {\bf structs} subdirectory, and all routines 
+that use that struct must ‘\#include “thisone\_struct.h'' at the top of the 
+routine.  This structure makes (1) finding all routines that use a given struct 
+very easy because the word “thisone\_struct” will appear in every routine
+where the struct is used, and nowhere else.
+
+Additionall every time a variable is used in a routine, it is explicit which 
+struct it belongs to, the variable type, and whether or not the variable 
+is changed in the routine.  This is done differently for lower level and higher
+level subroutines.
+
+For lesser routines, the struct variables are renamed to a convenient 
+local variable name at the beginning of the routine and then 
+reassigned at the end if changed.  This makes both the type explicit 
+and if the struct variable is changed in the subroutine.  And when time 
+(and gold and pixie dust…) allows I will go through and make a comment 
+in the beginning of each routine and corresponding header file stating in 
+words which variables are changed.  
+
+For higher level routines ({\bf shape, isearch, improve, dophot}) 
+where the struct variables are changed frequently in the routine and 
+their updated values are needed by the subroutines called therein, 
+the variable types and the fact that they’re used in the routine are 
+mentioned in an appropriately commented area at the top of the 
+routine before the routine `substance’ begins.  Assume the struct 
+variables are changed throughout all higher level routines unless 
+otherwise stated.
+
+Tuneable variables, tune\#\#\_.variable, are ALMOST never changed 
+except in {\bf tuneup.c} where they are defined from the parameter 
+files.  The exception is in the routine {\bf bestab.c} where there are angry 
+comments letting developers know that this is happening and is 
+supposed to happen, although it’s uncharacteristic of the tunable 
+variables and will probably be changed at some point for consistency's 
+sake.  Changes and lack of changes to the tuneable variables aren't a 
+new feature of the C version, but worth mentioning since it is angrily 
+commented in the code.
+
+All struct {\it arrays} are actually pointers.  2d arrays are pointers to 
+pointers.   Their length is not fixed in the struct definition itself, but rather 
+malloced in each run in {\bf tuneup.c}, or at the very beginning of 
+{\bf dophot.c}, even if the theoretical length of the array is fixed. These 
+ARE THE ONLY TWO PLACES WHERE MEMORY FOR STRUCT 
+ARRAYS IS ALLOCATED.  Developers, please keep it that way.  The
+strict locations for memory allocation should make it easier when 
+swapping in PSF models, or debugging segfaults generally.  Also, here 
+is a good place to mention for those who care, the code is Valgrind 
+clean.  
+
+In a future version I should convert the anonymous structs into proper 
+C structs.  Their current shy nature is a hold over from the conversion 
+from Fortran 77, which happened subroutine by subroutine, and thus 
+required that the C structs were able to communicate with the Fortran 
+common blocks.
+
+\centerline{\bf 8.1.4 No EQUIVALENCES}
+
+The Fortran version of  DoPHOT had EQUIVALENCE statements which 
+took an array of two short ints (integer*2) and treated them as one float 
+(real*4) to be passed into structs (common blocks) that accepted floats.  
+This was useful for passing around two numbers within existing structs, 
+but is not really supportable (read: unclean).  Remnants of the 
+equivalences in C (bit math) are now gone.  Short ints never become floats 
+unless recast as such.
+
+\centerline{\bf 8.2 DoPHOT 4.0: Things Unimproved from Fortran}
+
+For the sake of fairness, I should lay out those aspects of the code that
+are as yet unimproved from Fortran 77.  For the first, I made a time call.  
+For the second, I learned better, but too late.  
+
+\centerline{\bf 8.2.1 Commenting}
+
+The Fortran code logic had very little commenting.  The C version has 
+the same logic and thus the same lack of commenting.  The few bits 
+which are ‘new’ in C, rather than just translated, {\it are} commented.
+
+\centerline{\bf 8.2.2 Naming Conventions}
+
+Fortran naming conventions and capitalizations are carried over from 
+the old code, especially in the smaller subroutines.  C conventions are 
+not used.  This flaw will be slowly rectified as new versions are 
+released.
+
+\centerline{\bf 8.2.3 Pointer Passing}
+Fortran passes everything by pointer, so so does the C version of 
+DoPHOT, even if the variable in question is not changed in the routine.  
+While this flaw has been fixed in a select few subroutines, it should be 
+fixed more globally in a subsequent version to make it more explicit 
+which variables are and aren’t changed in routines.
+
+
+\centerline{\bf 8.3 Keeping the Point Spread Function Hidden}
+
+When DoPHOT was written, a deliberate effort was made to
+keep the details of the point spread function hidden from
+most of the higher level subroutines.  It was hoped that
+this would make it possible to use DoPHOT with very
+different point spread functions.  The authors were only
+partly successful in approaching this ideal.  Some
+subroutines work even when the number and order of the
+parameters are changed.  Others work if one changes the
+dimensionality of the parameters (switching, say from
+central intensity to log central intensity), but not if the
+order of the parameters is changed.  Still others require
+intimate knowledge of the details of the PSF (e.g.  the
+subroutine which makes a first guess of the double-star
+separation when fitting two ``typical'' stars to a single
+``big'' image).
+
+Below is what you need to know and do when you make a new model, 
+referred to here as NEWMODEL.  This guide is somewhat step by step, 
+but will still require some user knowhow and should not be attempted 
+by the novice.  Moreover, this guide is good only for models which add
+additional parameters to the existing core 7 (SKY, X position, Y position,
+Peak Intensity, sigma\_x, sigma\_xy, sigma\_y) of the pseudogaussian
+model PGAUSS supplied with the code and/or change the space in which 
+they are fit (to log space etc.).  If one wishes to fit a model with {\it fewer} 
+parameters or change the order or nature of these core 7 parameters, this 
+guide will be helpful but incomplete.  However, we feel that a sky
+value, position, intensity, and some elliptical shape parameters are 
+necessary to most models and thus this guide will be helpful for many users.
+
+The instructions will start from the most seeming peripheral and end with the 
+most core.  This is by design to maintain usability of the code.  If you do get 
+a new model working, consider it to be worthwhile,and are willing to share, 
+please submit your proposed updated to github!
+
+\item{1.)} Change {\bf params\_default\_c} to reflect the newly available 
+	model type. Keep the default as 'PGAUSS'. Note: DoPHOT only 
+	checks for model type by reading the first five characters of a model name, 
+	so make these characters unique to your model, (i.e. EXT\_PGAUSS, not 
+	PGAUSS\_EXTENDED). The relevant line in the {\bf params\_default\_c} 
+	file should now read something like:
+
+	PSFTYPE = `PGAUSS'        PSF type: (PGAUSS, GAUSS, NEWMODEL)
+
+
+\item{2.)} Update {\bf tuneup.c} to recognize NEWMODEL as a new model
+	type.  Additionally, make certain that it updates tune4\_.npar and 
+	tune4\_.nfit2 to the appropriate number of shape parameters of your model, 
+	as well as tune15\_.ava[] to the appropriate average shape values. Last, 
+	ensure that the appropriate number of tune15\_.acc values are drawn from
+	the parameter files.
+	Remnants of a SERSIC model with 8 shape parameters exist in the code, 
+	though the model itself was deemed far less worthwhile than the PGAUSS 
+	model and therefore abandoned.  The SERSIC model switches can be used 
+	as a guide within the code for necessary updates for new models.
+
+\item{3.)} Add the header file for the NEWMODEL to {\bf dophot.c}.  The header
+	file must match the PGAUSS header file {\bf structs/pgauss.h} exactly 
+	except for the defines and the name of the relevant `2d' and 4d' functions.
+	The `2d' function is for isolated objects.  The `4d' function is for double stars.
+	These functions needn't have the same form.
+
+\item{4.)} In {\bf dophot.c} add the model to the list of options which can be switched 
+	by the model flags.  	This statement will tell DoPHOT to use your model 
+	everywhere an analytic model is called for.  If newmodel2d\_ and newmodel4d\_ 
+	are the names of your analytic models for single objects and double stars that you 
+	had declared in the header file, your statement should look like:
+
+	if (strncmp(flags[0], "NEWMODEL", 5) == 0)\{
+
+	\indent \indent	model2d = \&newmodel2d\_;
+
+	\indent \indent	model4d = \&newmodel4d\_;
+
+	\}
+
+
+\item{5.)} Modify the files which generate INCOMPLETE, COMPLETE, and SHADOW 
+	outputs to display the fits of your new variables (if there are new variables).  
+	These files are {\bf sumout.c, stdotpt.c} and {\bf shdout.c} respectively.  The type of
+	output should be toggled by a switch on the flag, and we recommend that the new
+	variables are displayed immediately after the sigma or semi-major and tilt fit 
+	variables where appropriate.  If you follow the next steps, your new variables will 
+	likely be stored in STPARR[7-10] (or more) in this routine, so feel free to output 
+	these variables if you're intending to follow the remainder of this instruction guide.  
+	(Actually struct 2darray starlist\_.starpar contains the fit parameters for all stars.  
+	The 1d array corresponding to the parameters for each output star are passed to 
+	the output routines as STPARR.) Again, look for the SERSIC example for a guide 
+	within the code.
+
+\item{6.)} Modify the files which read INCOMPLETE and COMPLETE warmstart files, 
+	namely {\bf suminpt.c} and {\bf stdinpt.c}.  They should read files of the type you
+	just designated as output and put the new variables in STARPAR[7-10] (or more) 
+	as appropriate.
+
+\item{7.)} Write the model function {\bf newmodel.c}.  DoPHOT uses models in two 
+	ways, for fitting shape parameters to found 
+	objects and for subtracting off the models of objects once appropriate shape 
+	parameters are found.  Therefore each model must take four parameters: 1.)
+	a pointer to an x,y position of a pixel in the field at which the model value is to be 
+	computed, 2.) a pointer to the array of fit parameters, 3.) a pointer to the array of 
+	derivatives of the fit parameters which are only needed
+	for the fitting routine, and 4.) a pointer to an int, fitcall\_ptr, which can be used to
+	tell the function if it is being called by the adding or subtracting routine 
+	{\bf addstar.c} or the fitting routine {\bf chisq.c}.  The function must return the value
+	of the analytic function at the position of the pixel passed in the first parameter.
+	There is a fifth passed parameter, m\_ptr, which remains for historical reasons but 
+	which has no utility in any of the supplied model routines.	
+	With these parameters passed to your fitting function, you should be able to write
+	the analytic model of your choice.  Follow {\bf pgauss.c} as a guide for the set up
+	of both the one star and double object functions and necessary parameter updates.
+	The fit parameters 'a' passed to the routine are taken from the struct starlist\_.starpar
+	or fitarrays\_.a depending on if the analytic model is being subtracted/added to the 
+	image or fit by {\bf chisq.c}.  If you have followed the guide so far, your additional
+	parameters should appear there after the core 7 parameters of the 
+	pseudogaussian model (beginning at a[7]).  The same goes for the derivative 
+	matrix 'fa' which is taken from the struct fitarrays\_.fa.
+	
+\item{8.)}  Update the {\bf onefit.c} and {\bf twofit.c} chisq wrappers for the fit of the analytic 
+	model. The onefit.c wrapper was created to support the fitting of models in a different 
+	parameter space than that in which they are subtracted from the images and 
+	displayed to the user.  Twofit.c was created to minimize the number of free 
+	parameters used in the fitting of double objects, but it also allows the same parameter 
+	space switching for fits.  The one star fitting functions and double star fitting functions 
+	needn't be the same. 
+	Regardless your model type, you should check these wrappers and make sure they 
+	are still valid your model.  If you have chosen to fit your 
+	model in a different space than that in which you add and subtract it from the image, 
+	you will have to change your variables to the fitting space and update your covariance 
+	matrix back from that fitting space after the fit in these two functions.
+
+\item{9.)}  Add your new model, {\bf newmodel.c} to the {\bf Makefile}.  Compile the code.
+
+\item{10.)}  Test that the PGAUSS model still works on the {\bf verif\_data} images.  
+	You should still get exact results.
+
+\item{11.)} Test your model.  
+
+Troubleshooting.  If you run into a segfault, check NPMAX in {\bf structs/tuneable.h} to 
+ensure that it is greater than or equal to the number of parameters in your new model.
+Check that MMAX is 3+ NPMAX.  If either of these conditions does not hold, fix them,
+remove all .o files and remake dophot.  
+	
+
+
+\centerline{\bf 8.4 ``Typical'' Parameters and the Shadow List}
+
+The output object list uses the ``typical'' shape parameters
+for the listed stars.  But those typical values are computed
+from actual values determined from the individual stars.  A
+``shadow'' list with these individual values is stored in
+memory, and is used to compute the ``typical'' values.
+
+The errors in the shadow parameters are also stored in
+memory.  The simplest ``typical'' value is a weighted mean
+of the parameters.  Some versions of DoPHOT (but not this one) 
+allow the shape
+parameters to vary with position on the chip, in which case
+the shadow list and the associated errors are used to
+constrain models for that variation.
+
+
+\centerline{\bf 8.5 Magic Values and the Noise Array}
+
+DoPHOT works on an image which is stored in a (as of 4.0)
+32 bit signed integer array. The noise is stored as a variance 
+(the square of the noise) in a 32 bit integer array.  In 3.0 and 
+earlier the data was stored as a 16 bit signed integer array.  In 
+a still earlier version of DoPHOT, the noise itself was stored 
+as a 16 bit integer, but the repeated additions, subtractions 
+and square roots had round off errors which led to negative 
+variances.
+
+In the routine which computes the noise array, image pixel
+values are compared to user-specified upper and lower
+limits.  When the data value lies outside this range, the
+variance for that pixel is set to a ``magic'' value, $2^{31}
+- 1$. The routine which extracts a subraster from the image
+for fitting with an object model does not include pixels for
+which the noise array has this magic value.  If the
+subtraction (or addition) of the model for an object ever
+causes the data value in the object-subtracted image to be
+smaller than a \#defined OBLITVAL set to $-60000$ or greater 
+than the user-specified max obliteration value CENTINTMAX,
+the variance in the noise array is likewise set to this
+magic value, and the pixel is henceforth ignored.  When a
+subraster around a saturated star is ``obliterated,'' the
+associated elements of the noise array are likewise set
+equal to this magic value.
+
+\centerline{\bf 8.6 First Guesses}
+
+DoPHOT uses an iterative nonlinear weighted least squares
+fitting for estimating the parameter values associated with
+the various models it uses.  The particular nonlinear least
+squares scheme converges rapidly if the current guess of the
+parameter values is close to the best value.  But one needs
+a good first guess -- a bad first guess will leave the
+routine through wandering the valleys of the goodness of fit
+parameter, searching for a minimum.  For this reason the
+shape parameters for individual objects are saved in the
+above mentioned ``shadow'' lists, for use as starting values
+on subsequent fits.
+
+The initial guesses which have proved the most difficult to
+obtain and the least satisfying, both esthetically and as
+measured by ultimate convergence, have been the choices of
+the separation and central intensity ratio for the two
+components of a double-star.  One knows the footprint of the
+typical star, the ``oversized'' footprint of the object to be split, and
+the positions and brightnesses obtained, respectively, using
+the typical footprint and the best fitting footprint.  The
+initial brightness ratio is arbitrarily taken to be 2, with
+the brighter object taken to be closer to the position
+obtained using the typical profile.
+
+The separation vector is taken to be along the position
+angle of the oversized footprint.  While this is reasonable
+for a typical spherical footprint which is circular, one
+could imagine a situation in which the ``typical'' footprint
+is elliptical and the ``oversized'' footprint is more nearly
+circular, but with its elongation perpendicular to the
+separation vector.  Modifications which would help in this
+situation have been suggested but have not been incorporated
+into the present version.
+
+\centerline{\bf 8.7 Nonlinear Weighted Least Squares}
+
+At the core of DoPHOT lies an iterative nonlinear weighted
+least squares routine in which Bevington's (1969)
+implementation of Marquardt's algorithm has been imitated.
+There are user-specifiable parameters which control the
+convergence criteria, expressed either in terms of relative
+accuracy, suitable for intensities and some shape
+parameters, or absolute accuracy, which is more appropriate
+for positions.  The user can also specify extreme upper and
+lower bounds beyond which the routine declares itself to be
+hopelessly lost in parameter space and gives up.  This last
+feature permits the DoPHOT to recover relatively gracefully
+from bad initial guesses and badly confused object
+configurations.
+
+\centerline{\bf 8.8 Data for PSF Fitting}
+
+Since pixels can be excised from the image for a variety of
+reasons, not every pixel contained within the requested
+subraster is passed to the fitting program.  The $x$ and $y$
+coordinates for each usable pixel, computed with respect to
+the center of the subraster, are passed to the fitting
+program, along with the data value for that pixel.  The
+fitting program was written to fit a scalar function of
+scalar variable, both of which are represented as 32 bit
+floating point numbers.  Since the subraster is centered on
+a pixel, the pixel coordinates can be represented as two
+``short'' 16 bit integers.  These numbers are recast to
+floats for fitting, and NO LONGER EQUIVALENCED in 4.0
+
+\centerline{\bf 8.9 Switches versus Custom Versions}
+
+A limited number of switches are provided which allow the
+user to choose among image formats, 
+among parameter output formats, and among models
+for the background sky.  Switches both complicate and slow
+down the program, but they avoid the need for multiple
+versions of subroutines.  As a rule of thumb, switches
+should be incorporated only when one expects them to
+get frequent use.  The authors suggest that the user modify
+the program rather than incorporate new switches.
+
+\centerline{\bf 8.10  Variable Point Spread Functions}
+
+There are versions of DoPHOT which allow the PSF to vary as
+a function of one or both of the positions within an image.
+The subroutines in DoPHOT are small and modular.
+At most four of these must be changed in order to
+accommodate a variable PSF.  Since the model for the
+variation of the PSF across an image will depend upon the
+details of the instrument used, the present version of
+DoPHOT incorporates only the simplest of models, a constant
+PSF.
+
+\centerline{\bf 8.11  Subtracting a Smooth Image}
+
+There are cases in which the user will want to subtract a
+smooth model for the background light, but to keep the
+photon statistics as they were prior to subtracting the
+smoothed model.  There are several ways in which one might
+do this, but one method that has been somewhat  successful involves subtracting
+the model of the smooth background as part of the
+preprocessing, but then using that smooth model to insure
+that the photon statistics of the noise array are correct.
+One could imagine running DoPHOT on an image, finding the
+brighter objects, smoothing the object subtracted images,
+subtracting them and iterating.
+
+\centerline{\bf 8.12  Analytic/Empirical PSF }
+
+It is the authors' suspicion that the greatest losses
+involved in the use an analytic, as opposed to an empirical,
+point spread function are associated with the
+object-subtracted image.  If the residuals were smaller, one
+could obtain more complete identifications, and better
+photometry and classification.  
+
+In the Version 3 release, DoPHOT was extended to include 
+the option of using an empirical PSF. 
+Tests show that the residuals after subtraction
+are dramatically smaller, and the number of `outliers' in 
+photometry of severely crowded fields is significantly 
+smaller. A fuller account of this implementation is 
+given in section 11 (Enhancements).
+
+%One might achieve this
+%without sacrificing the speed and simplicity of analytic
+%point spread functions if one used a hybrid scheme,
+%computing an empirical PSF for the purpose of creating
+%better object-subtracted images but continuing to use an
+%analytic PSF for the purpose of obtaining positions and
+%magnitudes.  Such a hybrid scheme is {\it not} implemented in
+%the current version of DoPHOT.
+
+
+
+

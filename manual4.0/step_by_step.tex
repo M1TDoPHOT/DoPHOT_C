@@ -1,0 +1,278 @@
+\centerline{\bf 6. INSTRUCTIONS FOR NOVICES}
+
+This section assumes that you have successfully compiled
+DoPHOT and would now like to try running it. Naturally
+you would like to try running it on your own data.
+{\it Avoid} that temptation, and instead, try running it
+on one of the test images which are distributed with
+DoPHOT. This will be very much easier and will teach
+you some things about the program
+
+\centerline{\bf 6.1  Running DoPHOT on the Test Images}
+
+In addition to the executable file which resulted from
+compiling and linking DoPHOT, you will need up to four additional
+files (all of which are supplied with the test images):
+
+\item{1)} an input image
+\item{2)} a default parameter file
+\item{3)} an image-specific parameters modification file
+\item{4)} an input object list
+
+The test images are written in ``FITS'' format, the parameter
+files are written in a format which looks very much like FITS header
+format (but isn't!).  
+The object list is an ASCII table.  An input object list is only 
+needed for ``warmstarts.''
+
+The command needed to run the executable file will be different
+for different computers, but likely `./dophot'.  When DoPHOT is 
+finished, it produces up to six output files:
+\item{1)} an object-subtracted output image
+\item{2)} an output object list
+\item{3)} an parameter report
+\item{4)} a diagnostic log
+\item{5)} a shadow file
+\item{6)} an error file
+
+Before you do anything else, run the program on the first of the test
+images.  
+You can do this by executing the dophot in the `verif\_data'
+subdirectory, and supplying 'pm' as the image-specific parameters 
+modification file.
+
+Most computers have some means of comparing files, looking
+for differences.  Under both the UNIX and VMS operating systems, that
+command is ``diff''.  Compare the output object file with the output list in 
+the `compare\_out' subdirectory supplied with the test images.  These 
+should be {\it identical}, not merely similar.  If they are not, there is a very 
+good chance that youare not working with the original version of DoPHOT.
+
+Look at the output object list file.  Each row gives data
+for a different object.  If you have chosen DoPHOT's external format for
+the output photometry file ({\it i.e.} {\tt OBJTYPE\_OUT} = COMPLETE; see
+Appendix A), then the columns are interpreted as follows:
+
+\item{1)}  sequential object number, with the objects in the input
+list at the beginning
+\item{2)}  object classification, with 1 $\Leftrightarrow$ a single star, 
+2 $\Leftrightarrow$ galaxy,
+3 $\Leftrightarrow$ one sibling of a multiple,  7 $\Leftrightarrow$ a 
+faint object for
+which the shape was not determined and 8 $\Leftrightarrow$ an object which
+could not be modeled and has, instead been excised.
+Other object classifications are described in Section 7.
+\item{3)}  $x$ position (x=0.5 $\Leftrightarrow$ centered on first pixel)
+\item{4)}  $y$ position (y=0.5 $\Leftrightarrow$ centered on first pixel)
+\item{5)}  ``fit'' instrumental apparent magnitude, computed from
+the model of the object {$-2.5 \times \log_{10}$[total intensity in DN]).
+\item{6)} formal uncertainty in the fit magnitude
+\item{7)}  sky level (in Digital Numbers, DN)
+\item{8)}  $a$, the long dimension (FWHM) of the footprint
+\item{9)}  $b$, the short dimension (FWHM) of the footprint
+\item{10)}  $\theta$, position angle of the footprint in degrees
+\item{11)} ``extendedness'' parameter
+\item{12)} ``aperture'' instrumental magnitude
+\item{13)} uncertainty in the aperture magnitude
+\item{14)} aperture sky value
+\item{15)} difference between the aperture and fit magnitudes
+
+The objects in the input list (if one was used) 
+should be the first objects on
+the output list.  The difference between the aperture and
+fit magnitudes, while redundant, is a useful diagnostic.
+This number should be the same (to within the quoted
+uncertainties) for all stars.  The scatter in this quantity
+should be small for the brightest stars, but grows rapidly
+for the fainter stars.  While the fit magnitudes have
+smaller uncertainties, and give good relative magnitudes for
+objects within the image, an {\it average} correction to
+aperture magnitudes is needed to compare measurements
+obtained from different images and to calibrated frames using
+external standards.
+
+The values for the footprint ellipses are different for each
+of the galaxies, but are identical for all of the stars.
+There are versions of DoPHOT which allow the typical
+parameters to vary in a smooth fashion across the image, in
+which case the footprint parameters would not be the same.
+For the case of ``obliterated'' objects the FWHM refer to the sizes
+of the $x$ and $y$ sides of the corresponding rectangular 
+obliteration boxes.
+
+The parameter report file should be nearly identical to
+the default parameter file, with the only differences
+being the parameters specified by the parameter modification
+file, or those changed when prompted by DoPHOT due to
+invalid inputs in the parameter modification file.
+
+The output, object-subtracted image file is a 32bit int FITS
+format file.  Regions which have been
+excluded from consideration because of bright stars or
+blemishes will appear black if stars are displayed as bright
+on a dark background.
+
+If the galaxy model and point spread function were perfect, 
+one would see only noise in the object-subtracted image.  
+Since these are only approximate, even when using the 
+empirical PSF, one sees a characteristic pattern in the
+residuals at the positions of the objects.  If the user is interested 
+in seeing the comparative improvement of the empirical PSF 
+over the elliptical PSF, he should refit the images after commenting
+out THRESHEMP, EMP\_STAR\_(X,Y,Z), and 
+EMP\_SUBRAS\_OUT in the parameter modifications file.  The 
+residuals on the star objects will now be larger as an analytic 
+model is subtracted. 
+ 
+An interesting exercise is to subtract the object-subtracted
+image from the input image.  This generates a synthetic
+image which contains only the information in the object
+list, and is noise-free.  This is often a useful diagnostic,
+since it can indicate, for example, when ``objects'' have
+been incorrectly detected on the diffraction spikes of
+bright stars.
+
+The shadow file and error file contain the fitted shape parameter
+information for each of the objects.  Unlike the output object file,
+the shadow file contains the unique shape information from the 
+fit of each star object rather than the average star shape subtracted 
+from the image.  The error file reflects the same.  Details on the
+row information can be found in Appendix A.
+
+\centerline{\bf 6.2 Running DoPHOT}
+
+If the user has two images of the same field, taken through
+the same filter, he or she would be well advised (other
+things being equal) to reduce these first, and to compare in
+detail the completeness and the relative accuracy of the magnitudes
+and positions obtained for the two images.
+
+Before running DoPHOT, an image should have had any
+electronic bias level subtracted and should have been
+corrected for pixel-to-pixel photometric variations across
+the image.  Any regions (bad columns, overscan, bloomed
+images) for which the data are ``obviously'' a problem
+should be masked off, either by setting the data values in
+such regions equal to the lowest allowable value consistent
+with the data format (often -32768) or by entering such
+regions as ``objects'' in the ``input object'' file as
+regions to be obliterated.  If one is too stingy about
+masking off such regions, DoPHOT will consume a great many
+CPU cycles finding spurious ``objects'' in the wings of
+objects which extend beyond the masked region.
+
+The ``modified parameters'' file will at the bare minimum need a
+specification of the full width at half maximum (FWHM) of
+the typical stellar image.  Better classifications will be
+obtained on the first pass through the program if an
+approximate sky level, good to 10\%, is also specified.
+
+The user may specify file names for the input and output
+image files, the input and output object lists, and input
+and output parameter files and the output diagnostic log.
+The very first thing that DoPHOT does is ask the user to
+specify the name of the parameter modification file.  A valid file
+{\it must} be specified because it is from the modified parameters file
+that DoPHOT determines where the default parameters file exists.
+
+Two user-specified numbers are used to compute the noise
+array: the read noise (in photons) per pixel and the number
+of photons associated with each digital number (DN) in the
+image.  The number of photons per DN can be estimated by
+looking at the pixel-to-pixel variations in high intensity
+flat field images.  The read noise can be estimated by
+looking at the pixel-to-pixel variations in low intensity
+dark or bias images.
+
+There are {\it two ways} in which the user controls the
+faintest objects identified by DoPHOT.  Arrays of pixels in
+the vicinity of potential objects are filtered through a
+model stellar ``mask''.  Entries are added to the object list
+only when the signal through this mask is significantly
+greater than the surrounding sky.  This minimum
+signal-to-noise ratio, measured in terms of Gaussian sigma,
+is user specifiable.  Relatively few spurious objects are
+detected when it is set to 5, but large numbers of spurious
+objects pass the test when it is set to 3.  The calculation
+of the noise passing through the filter depends upon the
+noise in the individual pixels, which in turn depend upon
+the read noise and the ratio of photons per DN.
+
+Upstream of the filter, a decision must be made about which
+groups of pixels are to be tested.  This is done looking for
+{\it single high pixels}.  When a single pixel is
+significantly higher than the sky, a group of pixels
+surrounding this pixel is tested through the filter.  In
+retrospect, the best single pixel test might have been a
+simple signal-to-noise test.  Unfortunately, in the
+present version of DoPHOT the test is more complicated.  The
+pixel must have a value higher which is greater than the sky
+by a pixel threshold and the noise level must be lower
+than a specified fraction (by default unity) of this
+threshold.
+
+This pixel threshold is decremented in steps, starting with
+a high value, so as to trigger on only the brightest stars,
+and proceeding to the fainter stars.  The user should specify
+both the highest and lowest value desired and the
+logarithmic decrement between steps.  The highest threshold
+should be chosen to trigger on the brightest few stars.  At
+lower thresholds, great numbers of pixels pass the pixel
+test only to fail on the more time consuming stellar filter.
+The user should carefully choose a lower threshold value
+that allows DoPHOT to trigger on mostly real stars 
+and not waste too much CPU time on false alarms.
+
+It is often the case that data values outside certain limits
+are suspect and should not be used in estimating identifying
+of measuring objects.  The user has the option of specifying
+these limits.  Astronomical detectors often exhibit
+complicated non-linear behavior when exposed to high light
+levels.  There is a user specifiable upper limit to the
+central intensity of the stars the program will attempt to
+fit.  Brighter stars will be excised from the image, if the
+user hasn't already done so.
+Also, if the absolute data value of a given pixel is less than 
+a constant (user changeable through parameter SNLIM -- set to 0.5 
+by default) times the noise, 
+the pixel will be ignored during PSF fitting. This can happen
+if the image has been sky subtracted. We recommend that you use 
+the original data so that the noise model is calculated correctly, 
+but if you must subtract the sky, make sure SNLIM is set to zero
+to avoid problems.
+
+Having read the above paragraphs, the user should now look
+at the default input parameter file distributed with the
+source code and displayed in Section A.5 of Appendix A. The names
+of the parameters and the comments next to them should
+indicate which ones will need to be changed to accommodate
+the user's image.  The user should create a modification parameters
+file with values for these parameters (starting
+with the FWHM) appropriate to the image.  Only parameters
+that differ from those in the default file need to be
+specified.  Before running DoPHOT, the user should make
+sure, at the very least, that the FWHM of the stellar images
+is specified and that the sky level, and the highest and
+lowest pixel thresholds, as specified either in the default
+parameter file or the parameter modification file, are
+suitable.
+
+Having run DoPHOT, the user would do well to mull over 
+the output object list and to look at the original image,
+the object-subtracted image, and the difference between the
+two.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

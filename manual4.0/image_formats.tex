@@ -1,0 +1,15 @@
+\centerline{\bf 5.  IMAGE FORMATS}
+
+All image reading and writing in DoPHOT 4.0 is handled 
+by CFITSIO, and the only accepted file types are FITS format images.  
+CFITSIO can handle almost all standard types of data, but DoPHOT 
+4.0 will process the pixel data as 32bit ints regardless.  DoPHOT 
+veterans may recall that versions 3.0 and earlier only accepted 16bit 
+signed integer data and processed it as the same- this has been 
+modified in DoPHOT 4.0.  As DoPHOT 4.0 processes data as 32bit 
+ints, it outputs FITS files of the same type.  DoPHOT will preserve all
+header information from input files in the output files if the input
+files have 32 bits per pixel (BITPIX = 32 or -32).  Barring this matching
+file size for input and output files, a minimal header is created for the 
+output files.
+

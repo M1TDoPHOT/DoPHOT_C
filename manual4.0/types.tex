@@ -1,0 +1,51 @@
+\centerline {APPENDIX C: SUMMARY OF OBJECT TYPES}
+
+\vskip1em
+
+Type 1:  A `perfect' star. Was used in computing weighted mean shape
+         parameters for stars.
+
+Type 2:  Object is not as peaked as a star, and has been interpreted 
+         to be a `galaxy'. Shape parameters were calculated specifically
+         for this object.
+
+Type 3:  An object found to be not as peaked as a single star was 
+         interpreted to be two very close stars. This is one component 
+         of such a close pair. Final fit to this component used mean shape 
+         parameters for single star.
+
+Type 4:  Failed to converge on a 4-parameter fit using mean single 
+         star shape. See section 7.9.
+         Photometry is extremely unreliable.
+
+Type 5:  Not enough points with adequate S/N could be found around this
+         object while attempting a 7-parameter fit to determine shape.
+         Indicates a problem with the local environment, although a
+         4-parameter fit with mean star shape succeeded. Photometry is 
+         suspect, and this may not be a bona-fide star. See section 7.9.
+
+Type 6:  Too few points with adequate S/N to do even a 4-parameter fit
+         with mean star shapes. Object NOT subtracted from image.
+         See section 7.9. 
+
+Type 7:  Object was too faint to attempt a 7-parameter fit. No object 
+         classification could be done, so it might be a faint galaxy 
+         or two closely spaced stars. Photometry is OK (from successful 
+         4-parameter fit with mean shapes) provided the 
+         object is really a star. See section 7.4 for discussion 
+         of star/galaxy discrimination for such objects.
+
+Type 8:  These are obliterated regions due to data saturation or 
+         identification of cosmic rays. See Section 7.8. The shape 
+         descriptors are different for Type 8s than for other types:
+         see Appendix B.
+         
+Type 9:  If an attempt to determine the shape of an object fails to 
+	converge, it is classified as object type 9.  See section 7.9.
+	Photometry is unreliable.
+          
+
+\vskip1em
+
+Adding 10 to any of these image types means that the position was fixed
+if {\tt FIXPOS} was set equal to {`YES'}.

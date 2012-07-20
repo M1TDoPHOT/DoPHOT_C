@@ -1,0 +1,106 @@
+\centerline{\bf 4.  CONTENTS OF VERSION3\_0 AND HOW TO USE THEM}
+
+	The program and data files provided to you have been arranged 
+into a subdirectory structure, which you are strongly urged to maintain.
+As necessary, these structures, and a few essential files are slightly 
+different for UNIX and VMS versions, but the underlying intent in both 
+cases is identical: to maintain always a pristine ORIGINAL copy of the
+code as reference, and to have an easy facility to check
+ that code that
+has been modified produces IDENTICAL results when run on the supplied 
+test images with the supplied input data and parameters. What follows 
+is the description of the subdirectory structure and the files contained 
+in them, and how we hope you will work with them.
+
+\centerline{\bf 4.1 UNIX Systems}
+
+	The tar tape supplied to you, should, when properly read, 
+produces a main-level directory (which can be a sub-directory in 
+your general subdirectory tree), which will be referred to as MAIN.
+MAIN contains general information and instruction file(s) that you 
+should read before proceeding.
+MAIN has five sub-directories (all one level down from MAIN), namely:
+{\bf manual, verif\_source, verif\_data, working\_source, and working\_data}.
+The {\bf manual} subdirectory should contain a TEXable version 
+of this manual.
+
+	The {\bf verif\_source} subdirectory contains the original Version3\_0
+code. All source files are named {\bf *3\_0.f, *3\_0.c}, along with an 
+`include' file called {\bf TUNEABLE3\_0}. THESE FILES SHOULD NEVER BE ALTERED,
+as they serve as verification and/or reference copies of what 
+Version3\_0 provides.
+In addition to the source code files, there are 3 other files in this 
+directory: {\bf verif\_to\_working, verif\_to\_compilable} and {\bf Makefile3\_0}.
+As the name suggests, {\bf Makefile3\_0} contains the contents of a `Makefile'
+but it cannot be run on the source files in this directory, given the ways
+the files are named. This is an intentional feature, since we recommend 
+against directly compiling the reference code. Instead we
+ strongly urge that you first copy over the code to the {\bf working\_source}
+directory, and compile things there.  We recommend that you execute 
+the `command' file {\bf verif\_to\_working} to do this, 
+as explained below.
+
+
+	A pristine copy of DoPHOT version3\_0 should contain only one
+file in {\bf working\_source}, namely, {\bf working\_to\_compilable}.
+When you execute {\bf verif\_to\_working} from the {\bf verif\_source}
+subdirectory, the `3\_0' source files will be copied over as `\_wkg'
+source files; even {\bf Makefile3\_0} is copied over as {\bf Makefile\_wkg}.
+However, even this set is not intended for compilation, but is to be 
+used for storing modifications made to `3\_0'. Execute the 
+{\bf working\_to\_compilable} command file. This will make 
+a third copy of the files where 
+the `\_wkg' labels are stripped from the file names. As a result you will 
+also get a {\bf Makefile}, which can make DoPHOT from the source files that 
+do not
+have the qualifier labels. The executable file called {\bf dophot} is put 
+in the {\bf working\_data} subdirectory. We should mention that executing
+{\bf verif\_to\_compilable} from the {\bf verif\_source} subdirectory
+will produce copies of the `3\_0' source files in the {\bf working\_source}
+sub-directory that are suitable for compilation (i.e. have no labels on 
+the file-names).
+
+	On a pristine copy of DoPHOT version3\_0, the {\bf working\_data}
+subdirectory is empty. By running the `make' described above, an executable
+image of {\bf dophot} is created here. You may choose to use this 
+as your work area for DoPHOT: we urge that you do. Before you can do so, 
+you will need proper parameter files and other optional input files
+(as described elsewhere in this manual) in addition to the image on which
+you wish to run DoPHOT. 
+
+	The {\bf verif\_data} subdirectory comes with several test images,
+the default parameter file {\bf param\_default3\_0}, and other optional 
+input files. These are intended for verification that the supplied 
+program or any modification you make is executing correctly. Details are 
+described elsewhere for the various test images. For now let us walk
+through and see how to do this for the triple quasar image called
+{\bf image\_in\_trqso}. Look at the contents of the file {\bf check\_trqso}.
+You will see that executing this command file will 
+copy the default parameter file {\bf param\_default3\_0}, the 
+modified parameter file {\bf param\_mod\_trqso3\_0, param\_emp\_trqso3\_0}
+and two other 
+optional input files over to the {\bf working\_data} subdirectory. It also 
+copies over the test image and files called {\bf doin\_trqso3\_0} and 
+{\bf doin\_emp\_trqso3\_0} which
+answers the interactive question(s) DoPHOT will ask, so that it can be run 
+in batch mode. Next this command file will run DoPHOT in batch in the 
+{\bf working\_data} subdirectory. Actually it will run DoPHOT twice: once 
+using {\bf param\_mod\_trqso3\_0} which calls for DoPHOT to use only 
+the analytic PSF, and again using {\bf param\_emp\_trqso3\_0}, which 
+causes DoPHOT to invoke the newly implemented (version 3.0) empirical PSF.
+It will also compare the output 
+results file with the supplied check file for results, and write a 
+file called DIFFLIST (and DIFFLIST\_EMP) containing the differences. 
+As you have guessed,
+we want DIFFLIST to contain nothing, signifying that the version of 
+DoPHOT you are running faithfully reproduces the results of the 
+original version.
+
+
+
+
+
+
+
+
+

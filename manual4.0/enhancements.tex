@@ -1,0 +1,330 @@
+
+
+\centerline {\bf 11. VERSION 2.0 and 3.0 ENHANCEMENTS}
+
+Since its first release (version 1.0), several enhancements have been 
+incorporated in succeeding versions 2.0 and 3.0. These are in addition to 
+bug fixes and other minor changes that have improved the running of DoPHOT.
+We have thus far been able to keep DoPHOT reverse compatible: specifically 
+DoPHOT should run exactly the same way (aside from bug fixes) with your 
+modified parameters file, with the only change being to point to the new
+DEFAULT parameters file and, as of 4.0, a slight change in how empty 
+parameters should be designated in the modified parameter files.  
+Details in the Appendix.
+
+\centerline {\bf 11.1 Fixed Position Warmstarts}
+
+An option introduced with version 2.0, called a ``fixed
+position warmstart'' permits a user to specify the $x$ and $y$
+coordinates of stars.  The photometry reported for
+appropriately flagged stars is then the result of a two
+parameter fit (sky and central intensity), with the two
+position parameters fixed at the specified values.
+This option might be used to advantage if one had a deep
+frame taken in good seeing, and wanted to do photometry (or
+set upper limits) on less deep images obtained at a
+different epoch, or an image obtained with a different
+filter.
+
+While we had long considered this option among those we had
+hoped to implement, we were spurred to do so by the success
+of D. Bennett of the Lawrence Livermore Laboratory's MACHO
+project.  At the 178th meeting of the American Astronomical
+Society in Seattle,  Bennett reported that his implementation of the
+fixed position idea in a program called SoDoPHOT produced
+substantial improvement in accuracy over that obtained
+using 4 parmeter fits on the less deep frames.  Our
+implementation is within {\tt DoPHOT} itself, allowing for new
+stars (and galaxies) to be found in addition to those
+specified on the input list.  Since the positions for the newly found
+objects are not specified, the photometry is based on four parameter fits
+in IMPROVE.
+
+{\tt DoPHOT} uses the image type associated with each star to
+distinguish between stars for which 4 parameter fits are to
+be carried out and those for which the positions are fixed.
+In the latter case, the image types in the input file are
+augmented by 10.  Hence an object of type 11 is a star for
+which 7 parameter fits are to be carried out (to determine
+the shape parameters), but for which the magnitude is to be
+determined from a 2 parameter fit.  An object of type 17 is
+too faint for 7 parameter fits.  The meanings of all image types are
+summarized in Appendix C.
+
+The input list is much like the input to an ordinary
+``warmstart'', but with the image types augmented by 10.
+Since the deregistration between images is likely to be more
+than 1\% width of a typical stellar image, the user will need
+to transform the positions from his starting list
+(henceforth the ``template'') to those of the ``program''
+image.  For this purpose one needs to obtain positions of
+the brighter stars on the program image.  A working example
+of a program to do this ({\tt OFFSET}) is given in the subdirectory
+``transform'', described in more detail below.
+It uses output from a standard {\tt DoPHOT} run on
+the program image in conjunction with the template positions
+to produce a warmstart file.  In addition to transforming
+the coordinates from the template system, a crude
+photometric transformation is also made.  
+Preliminary tests indicate that {\tt DoPHOT} does run faster and provides
+somewhat better photometry reproducibility when the coordinates
+are fixed.  Reports of additional tests by {\tt DoPHOT} users would be 
+most welcome.
+
+When the user requests a {\tt DoPHOT} run with fixed positions, the program
+goes through the first threshold differently than if the positions
+were not fixed (see the crypto program in Section 3 for reference).  
+Specifically, rather than run {\tt ISEARCH}, {\tt DoPHOT} goes directly to 
+{\tt IMPROVE}, calculating only two-parameter fits for the appropriate objects
+read in from a template object list.  It is a good idea at this point
+to have at least rough estimates of the offsets between
+the template and program photometry results.  Nevertheless, if these
+estimates are poor, it is the job of this first pass in {\tt IMPROVE} to
+improve the sky values and central intensities of
+each star using some initial guess of the shape parameters.  
+Then, {\tt DoPHOT}
+re-enters the ``standard'' reduction stream in {\tt SHAPE} where full
+seven-parameter fits are performed on stars will sufficient S/N.  
+Additional passes through {\tt DoPHOT} allow the program to find stars that
+-- for whatever reason -- may not be in the template list.  The only 
+difference between these subsequent passes and ``normal'' passes in
+{\tt DoPHOT} is that the positions of most objects from the template
+list remain fixed and only two-parameter fits (for sky and central 
+intensity) are performed in {\tt IMPROVE}.
+
+\centerline{\bf 11.2 Running Fixed-Position Warmstarts}
+
+Fixed-position warmstarts are as yet untested with version 4.0.  
+We are happy to receive reports.
+
+Within the {\bf verif\_data} directory are a number of files designed
+to allow the user to test the fixed-position option in {\tt DoPHOT}.  This 
+section provides step-by-step instructions of how to run these tests and
+make sure that {\tt DoPHOT} is running correctly on your machine.  For 
+simplicity, the directories and file names will be referred to in their
+!TEX encoding = UTF-8 UnicodeUnix versions;  it should be obvious how to translate these to 
+the corresponding VMS names.
+The basic aims of the test described below are (1) reduce two frames of
+the same field obtained on different nights and exhibiting large 
+positional offsets, (2) make a ``template'' file that will serve as the
+input to the fixed-position version of {\tt DoPHOT}, (3) reduce a frame using
+this template file.  {\it Be sure to copy all files from the} {\bf
+verif\_data} {\it directory to the} {\bf working\_data} {\it or else you will
+overwrite the files supplied with {\tt DoPHOT}.}
+
+Two disk-fits files are supplied in the {\bf verif\_data} directory called
+{\bf image\_in\_template} and {\bf image\_in\_program}.  Assuming you have 
+now compiled {\tt DoPHOT} 4.0 (see Section 4), simply run the program twice to
+reduce these frames.  The input parameter file for the first image is
+(naturally) {\bf param\_in\_template} and for the second image 
+{\bf param\_in\_program}.   The results of these runs will be two files
+({\bf obj\_out\_template1} and {\bf obj\_out\_program1}, respectively) that
+correspond to full-blown, standard {\tt DoPHOT} reductions of these frames.
+You should check to ensure that these files are identical to their 
+counterparts in the {\bf verif\_data} directory as described at the end of
+Section 4.1.   You might also want to look at the various output (subtracted)
+images generated by these (and subsequent) {\tt DoPHOT} runs.
+These reductions will serve as benchmarks for the steps
+that follow.  Note that if all went well, 2382 stars were found in the
+template image, and only 1838 in the program image.  Both images are of the
+same field (NGC~2031 in the LMC), but the seeing is somewhat worse on the
+program image.
+
+The whole point of the fixed-position option is that one can, and should
+use positions obtained from a deeper or better-seeing frame to reduce 
+any given image.  Although we fully reduced the program image above, we
+really didn't have to.  All we need are enough positions to be able to
+precisely transform the template coordinates to the program positions.  
+In general, only a few dozen stars are needed to do this, not 1838.  Thus,
+a more efficient method of running the fixed-position option is to reduce
+the program frame ``once over lightly''.  To illustrate this, run 
+{\tt DoPHOT} 4.0 using {\bf param\_program1} as the input parameter file.  If you
+look at this parameter file (and study the meanings of the relevant 
+parameters in Appendix A) you will see that this reduction of the program
+image stops at a very high minimum threshold (200, in fact); 
+no attempt is made to find
+and measure all the stars.  In fact, if all went well, only 315 stars
+will have been found, and you should note that the run was much faster then
+when you reduced the frame to completion.  The resulting file, 
+{\bf obj\_out\_program1} will only be used to transform the template results
+to the program frame coordinate system.
+
+To do this, we have supplied a routine called {\tt OFFSET} in the 
+{\bf transform} subdirectory.  {\it This routine is not thoroughly tested
+and is intended only to give the user an idea of how one might change
+the program coordinates to the template system.}  That said, one should now
+run {\tt OFFSET}, answering the questions as follows.
+The primary file name is {\bf obj\_out\_program1};  this file represents the
+``target'' coordinate system.  The secondary file name is 
+{\bf obj\_out\_template1}.  The ratio of the scales is 1.0 and a tolerance
+of 0.02 (in pixels) is fine.   The resulting offsets in $x$ and $y$ are -1.45 and
+9.17 pixels, respectively;  the scales are nearly 1.0, and the rotations
+tiny.  After this information is spewed out, answer the next
+query with a `yes' and name the 
+output file {\bf obj\_in\_template2}.  You should answer the final question
+with `no'.   
+For the curious, {\tt OFFSET} matches coordinate lists 
+by identifying similar triangles.  It is supposed to be able to handle 
+linear offsets (assuming the $x$ and $y$ scales are the same), rotations,
+and reflections.   You might want to supply a different routine to do this
+task;  however, {\tt OFFSET} is still useful as a guide for what the 
+format of the output file should be.
+
+Now that you have a transformed version of the template file, run 
+{\tt DoPHOT} 4.0 again using {\bf param\_program2} as the input parameter
+file.  The key feature of this parameter file is that the parameter
+{\tt FIXPOS} is set equal to {\tt YES}, and the {\tt OBJECT\_IN}
+parameter is set equal to the file {\bf obj\_in\_template2}.  The latter
+tells {\tt DoPHOT} this is a ``warmstart'', the former informs the program that
+this is the special sort of warmstart which assumes fixed positions from
+a template file.   You will note two very special points about this final
+run of {\tt DoPHOT}.  First, the initial threshold is 35.44!!  Since you are now
+using positions from a (deep) template file, there is no need to search
+for new stars at a high threshold. In fact, this final run has been 
+set up so that {\tt DoPHOT} will only search once for any possible stars not
+in the template file, but present in the program frame ({\it e. g.} 
+variables, objects beyond the edge of the template frame, {\it etc.}).
+Second, the final list contains 2458 objects, compared to the 1838 objects
+in the list generated by the `straight' run of {\tt DoPHOT} without a template
+file.    To be sure, not all the objects in the output list are 
+reliable stars, but a number of objects that would not have been
+split as two or more objects on the program frame, were treated as such 
+because of the independent positional information from the template list.
+Note too that some stars have {\it negative} fluxes.  This is OK, and 
+simply represents cases where a star in the template frame was not 
+recovered in the program frame (cosmic ray? very faint star? variable?).
+The errors for such stars are negative, reflecting the fact that the error
+is computed as 1.086*(($\Delta$ Flux)/Flux).  Upper limits may be computed
+from the reported flux and the reported magnitude of the error.
+For certain applications, this might be quite useful.
+One final point:  you should have noticed that this final run of {\tt DoPHOT}
+was somewhat faster than the original reduction of the program frame.
+
+The best way to understand what files are needed is to study the parameter
+files mentioned above.  The nomenclature of the file names has been 
+designed to help you understand how the various files interact.  Although
+the procedure described above is a bit cumbersome for a program designed
+originally to run in an automatic manner, it provides a method of 
+using a pre-determined position list in {\tt DoPHOT}.  We hope to try to 
+implement a more automated version of the fixed-position option, but making
+it bullet-proof will probably not be simple.
+
+\centerline {\bf 11.3   Median-Filtered Background Model }
+  
+The object finding algorithm relies on a MODEL sky for initial 
+estimation of the background when finding new objects. A candidate
+object must then have sufficient signal to noise relative to a local 
+average sky computed from the actual image data to be included in the 
+object list for subsequent processing. If the model overestimates the 
+background in the vicinity of an object, the initial object recognition
+may fail, and the object will not be found. For images where the
+background is not well described by a PLANE or HUBBLE model, 
+it is possible to describe the background by median filtering the data 
+image with a filtering box. The size of the filtering box corresponds
+to the minimum length scale of features that can be tracked by this 
+model, while features smaller than the box are suppressed. By keeping 
+this box a little larger than the size of a star (say 2*FWHM), an 
+adequate model of the background can be realized that tracks irregular 
+backgrounds on scales larger than those for stars.
+
+Note that just as for the PLANE and HUBBLE models, this option 
+uses the background image as a MODEL for initial background estimation 
+only:   ALL PHOTOMETRY IS DONE ON THE DATA IMAGE.
+
+This procedure is invoked by setting the SKYTYPE parameter to 
+MEDIAN. A background model picture is then created before the first pass
+at the top threshold level. It may take some time to compute this image.
+It should not be necessary to compute this model at every threshold
+level: it is computed once again at the last but one pass after all the
+bright objects have been subtracted. If you are really, really unhappy 
+about this and want to change the frequency of updating the model, 
+you will need to change the relevant controlling code, all of which is 
+in the main DOPHOT module.
+
+The median filtering routine itself has been tailored to the needs
+of DoPHOT. We have used an algorithm that is fairly fast. It will use 
+only legal values of the data between ITOP and IBOTTOM (parameters), and
+will make appropriate compensations in saturated regions and `holes'.
+It works only for I*2 data. Images with smoothly varying backgrounds are 
+filtered much faster than those where the backgrounds fluctuate wildly.
+There are several associated parameters you will need to set when
+using a MEDIAN skytype.  These are {\tt JHXWID}, {\tt JHYWID}, {\tt MPREC},
+and {\tt NTHPIX}.  Their function are described in Appendix A.
+
+\centerline {\bf 11.4  EMPIRICAL Point Spread Function}
+
+The principal change in version 3 is the addition of empirical PSF
+fitting to the analytic PSF fitting of versions 1 and 2.  The
+empirical fitting proceeds in parallel with the analytic fitting,
+starting at a specified threshold (which ought to be somewhat lower
+than the initial threshold, say a factor of 10, to give the program
+some time to clean up the template star).  The empirical PSF, rather
+than the analytic PSF, is used for the creating the star subtracted
+image (with the significant exception that the analytic PSF is
+subtracted from the template star itself).  The empirical template may
+be written out as a subraster for examination.  The analytic PSF is
+used for those objects classified as galaxies.
+
+Version 3 includes a new function which interpolates values from
+the empirical PSF using a 12 point scheme which is third order
+in displacement.  It represents a compromise between using only
+the nearest pixels (which clips peaks and fills valleys) and using
+distant pixels which may be dominated by noise.  
+We are anxious to receive feedback and comments from users regarding 
+this particular approach to interpolation, which is different from 
+the commonly used one of first subtracting an analytic function, such 
+as a Gaussian, and then interpolating quadratically.
+
+In principal empirical PSF fitting ought to produce better photometry
+and cleaner star subtracted images.  Version 3 therefore permits a
+different (and presumably smaller) residual noise factor to be used.
+
+We have been slightly inconsistent in not using the empirical PSF in
+splitting suspected double stars, though it might be especially useful
+for this purpose.
+
+For the moment a single star (cleaned of its neighbors) is used as the
+template.  It is chosen automatically, starting from the brightest
+star and working down.  One can ask that the n brightest stars be
+skipped.  One can choose the size of the subraster required.  The
+larger the subraster the more stars will be disqualified, either
+because they lie close to the edge of the image or because there are
+bad pixels close to the center.  Single bad pixels far from the center
+are smoothed over by linear interpolation.  Adjacent (same row or same
+column) bad pixels cause a star to be rejected.  
+Alternatively, one can {\bf specify} the empirical PSF star manually
+by giving its x, y and approximate central intensity.
+The code was written
+with an eye to future construction of the template from more than one
+star. The use is controlled by new parameters THRESHEMP, N\_EMP\_SKIP, 
+EMP\_STAR\_X(YZ), EMP\_PSF\_BOX, EMP\_REJ\_RAD\_SIG, and EMP\_SUBRAS\_OUT. A 
+fuller description of what these parameters do can be found in Appendix A.
+
+The empirical central intensities and positions are scaled and shifted 
+by the best analytic fit to the template star, so as to make the two agree.
+Thus reported positions and magnitudes from empirical fitting have 
+{\bf no systematic difference}. The version 3 output files in COMPLETE and 
+INTERNAL modes have 5 new additional columns with the results from 
+empirical PSF fitting. The results from analytic fitting are also reported 
+(in their original columns). Note that even the analytic fitting 
+benefits from the improved object subtraction when empirical fitting 
+is invoked. The output columns are described in detail in Appendix B.
+
+An example of using the empirical PSF mode is provided: see the modified 
+parameter file `pm' provided with the test image (in 
+the verif\_data subdirectory). 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
