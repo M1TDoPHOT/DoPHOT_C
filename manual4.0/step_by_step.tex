@@ -37,8 +37,8 @@ finished, it produces up to six output files:
 
 Before you do anything else, run the program on the first of the test
 images.  
-You can do this by executing the dophot in the `verif\_data'
-subdirectory, and supplying 'pm' as the image-specific parameters 
+You can do this by executing DoPHOT in the `verif\_data'
+subdirectory, and supplying `pm' as the image-specific parameters 
 modification file.
 
 Most computers have some means of comparing files, looking
@@ -46,7 +46,7 @@ for differences.  Under both the UNIX and VMS operating systems, that
 command is ``diff''.  Compare the output object file with the output list in 
 the `compare\_out' subdirectory supplied with the test images.  These 
 should be {\it identical}, not merely similar.  If they are not, there is a very 
-good chance that youare not working with the original version of DoPHOT.
+good chance that you are not working with the original version of DoPHOT.
 
 Look at the output object list file.  Each row gives data
 for a different object.  If you have chosen DoPHOT's external format for
@@ -106,7 +106,7 @@ being the parameters specified by the parameter modification
 file, or those changed when prompted by DoPHOT due to
 invalid inputs in the parameter modification file.
 
-The output, object-subtracted image file is a 32bit int FITS
+The output, object-subtracted image file is a 32 bit integer FITS
 format file.  Regions which have been
 excluded from consideration because of bright stars or
 blemishes will appear black if stars are displayed as bright
@@ -159,7 +159,7 @@ regions as ``objects'' in the ``input object'' file as
 regions to be obliterated.  If one is too stingy about
 masking off such regions, DoPHOT will consume a great many
 CPU cycles finding spurious ``objects'' in the wings of
-objects which extend beyond the masked region.
+objects that extend beyond the masked region.
 
 The ``modified parameters'' file will at the bare minimum need a
 specification of the full width at half maximum (FWHM) of

@@ -10,17 +10,17 @@ code are sparse. However, there are improvements over the
 Fortran version which have made the transition worthwhile, at 
 least for the person who converted it.
 
-\centerline{\bf 8.1.1 Obsolete cdiskio Routine Replaced with CFITSIO}
+\centerline{\bf 8.1.1 Obsolete diskio.c Routine Replaced with CFITSIO}
 
-No more cdiskio that uses obsolete (though admittedly still 
+No more diskio.c that uses obsolete (though admittedly still 
 functional) read write functions.  The tradeoff is dependence 
-on the CFITSIO library.  I am sorry to those who hate when 
-software comes with ``and add this library/package” strings, but I 
-was disinclined to reinvent the wheel when such a nice round one 
+on the CFITSIO library.  We are sorry to those who hate when 
+software comes with ``and add this library/package” strings, but we 
+were disinclined to reinvent the wheel when such a nice round one 
 was available.  If you are desperate for a version without CFITSIO, 
 email rsobel@mit.edu for an old, but clean copy of Dophot with 
 limited features but no CFITSIO dependence.  However, CFITSIO 
-is very nice, and I encourage you to just get it working and use the
+is very nice, and we encourage you to just get it working and use the
 current and maintained DoPHOT version with all the features.
 
 \centerline{\bf 8.1.2 \#defines confined to {\bf structs/tuneable.h}}
@@ -32,18 +32,18 @@ To developers, please keep it that way.
 \centerline{\bf 8.1.3 Commonblocks Replaced by Structs}
 
 Common block variables are now anonymous structs.  While these 
-are seemly equal in their evil, there are subtle improvements which 
-I will lay out in this section.
+might seem to be no better, there are subtle improvements which 
+we will lay out in this section.
 
 All struct definitions exist in a subdirectory called {\bf structs}.  If a 
 function uses struct ``thisone'', a dedicated file with the struct called 
 ``thisone\_struct.h'' exists in the {\bf structs} subdirectory, and all routines 
-that use that struct must ‘\#include “thisone\_struct.h'' at the top of the 
-routine.  This structure makes (1) finding all routines that use a given struct 
+that use that struct must ``\#include thisone\_struct.h'' at the top of the 
+routine.  This structure makes finding all routines that use a given struct 
 very easy because the word “thisone\_struct” will appear in every routine
 where the struct is used, and nowhere else.
 
-Additionall every time a variable is used in a routine, it is explicit which 
+Additionally every time a struct variable is used in a routine, it is explicit which 
 struct it belongs to, the variable type, and whether or not the variable 
 is changed in the routine.  This is done differently for lower level and higher
 level subroutines.
@@ -52,16 +52,16 @@ For lesser routines, the struct variables are renamed to a convenient
 local variable name at the beginning of the routine and then 
 reassigned at the end if changed.  This makes both the type explicit 
 and if the struct variable is changed in the subroutine.  And when time 
-(and gold and pixie dust…) allows I will go through and make a comment 
+(and gold and pixie dust…) allows we will go through and make a comment 
 in the beginning of each routine and corresponding header file stating in 
 words which variables are changed.  
 
 For higher level routines ({\bf shape, isearch, improve, dophot}) 
 where the struct variables are changed frequently in the routine and 
 their updated values are needed by the subroutines called therein, 
-the variable types and the fact that they’re used in the routine are 
+the variable types and the fact that they are used in the routine are 
 mentioned in an appropriately commented area at the top of the 
-routine before the routine `substance’ begins.  Assume the struct 
+routine before the routine `substance' begins.  Assume the struct 
 variables are changed throughout all higher level routines unless 
 otherwise stated.
 
@@ -86,7 +86,7 @@ swapping in PSF models, or debugging segfaults generally.  Also, here
 is a good place to mention for those who care, the code is Valgrind 
 clean.  
 
-In a future version I should convert the anonymous structs into proper 
+In a future version we should convert the anonymous structs into proper 
 C structs.  Their current shy nature is a hold over from the conversion 
 from Fortran 77, which happened subroutine by subroutine, and thus 
 required that the C structs were able to communicate with the Fortran 
@@ -95,18 +95,18 @@ common blocks.
 \centerline{\bf 8.1.4 No EQUIVALENCES}
 
 The Fortran version of  DoPHOT had EQUIVALENCE statements which 
-took an array of two short ints (integer*2) and treated them as one float 
+took an array of two short integers (integer*2) and treated them as one float 
 (real*4) to be passed into structs (common blocks) that accepted floats.  
 This was useful for passing around two numbers within existing structs, 
-but is not really supportable (read: unclean).  Remnants of the 
+but is not really supportable (read: trefe).  Remnants of the 
 equivalences in C (bit math) are now gone.  Short ints never become floats 
 unless recast as such.
 
 \centerline{\bf 8.2 DoPHOT 4.0: Things Unimproved from Fortran}
 
-For the sake of fairness, I should lay out those aspects of the code that
-are as yet unimproved from Fortran 77.  For the first, I made a time call.  
-For the second, I learned better, but too late.  
+For the sake of fairness, we should lay out those aspects of the code that
+are as yet unimproved from Fortran 77.  For the first, we made a time call.  
+For the second, we learned better, but too late.  
 
 \centerline{\bf 8.2.1 Commenting}
 
@@ -126,7 +126,7 @@ Fortran passes everything by pointer, so so does the C version of
 DoPHOT, even if the variable in question is not changed in the routine.  
 While this flaw has been fixed in a select few subroutines, it should be 
 fixed more globally in a subsequent version to make it more explicit 
-which variables are and aren’t changed in routines.
+which variables are and aren't changed in routines.
 
 
 \centerline{\bf 8.3 Keeping the Point Spread Function Hidden}
