@@ -37,6 +37,7 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
      int lverb  = tune14_.lverb;
      float SKYGUESS = tune1_.skyguess;
      float* AVA = tune15_.ava;
+     int MAX_PERF = tune15_.max_perf;
      float* PARMS = parpred_.parms;
      float*  Z = subraster_.z;
      short int** XX = subraster_.xx;
@@ -145,7 +146,7 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
           TYPE3    = ( (IMTYPE[I] == 3) || (IMTYPE[I] == 13) );
           PERFECT  = ( (GOODSTAR) && (TYPE1) );
           GOODSTAR = ( (GOODSTAR) && (TYPE1 || TYPE3) );
-          if (PERFECT){
+          if ( (PERFECT) && (NPERF <= MAX_PERF) ){
                PARWT[0]  += 1.0f;
                PARVAL[0] += STARPAR[I][0];
                for (J = 1; J < NK; J++){

@@ -13,6 +13,7 @@
 
 void tuneup_()
 {
+     int I; //iterator here forward
 
 //printf("here0\n");
      // get the default and modified parameters from the files
@@ -580,28 +581,19 @@ void tuneup_()
      tune13_.nbadtop   = get_int_item_(keywords, items, "NBADTOP", nlines);
      tune13_.nbadbot   = get_int_item_(keywords, items, "NBADBOT", nlines);
 
+     tune15_.max_perf = get_int_item_(keywords, items, "MAX_PERF", nlines);
+
      float* acc = malloc_float_1darr(NPMAX);
      acc[0]          = get_float_item_(keywords, items, "RELACC1", nlines);
      acc[1]          = get_float_item_(keywords, items, "RELACC4", nlines);
      acc[2]          = get_float_item_(keywords, items, "RELACC2", nlines);
      acc[3]          = get_float_item_(keywords, items, "RELACC3", nlines);
-     acc[4]          = get_float_item_(keywords, items, "RELACC5", nlines);
-     acc[5]          = get_float_item_(keywords, items, "RELACC6", nlines);
-     acc[6]          = get_float_item_(keywords, items, "RELACC7", nlines);
-     if((strncmp(flags[0], "GALTMODEL",  5 ) == 0) ||
-        (strncmp(flags[0], "PGALTMODEL", 5 ) == 0)){
-          acc[7]  = get_float_item_(keywords, items, "RELACC8", nlines);
-          acc[8]  = get_float_item_(keywords, items, "RELACC9", nlines);
-          acc[9]  = get_float_item_(keywords, items, "RELACC10", nlines);
-          acc[10] = get_float_item_(keywords, items, "RELACC11", nlines);
-     }
-     if(strncmp(flags[0], "SERSIC", 5) == 0){
-          acc[7] = get_float_item_(keywords, items, "RELACC8", nlines);
-     }
-     if(strncmp(flags[0], "EXTPGAUSS", 5) == 0){
-          acc[7] = get_float_item_(keywords, items, "RELACC8", nlines);
-//          acc[8] = get_float_item_(keywords, items, "RELACC9", nlines);
-     }
+    
+     char* relacc_str; 
+     for (I = 4; I < tune4_.nfit2; I++){
+          sprintf(relacc_str, "RELACC%d", I+1);
+          acc[I] = get_float_item_(keywords, items, relacc_str, nlines);
+     } 
      // NOTE INTENTIONAL WRONG ORDER OF RELACC FOR HISTORICAL REASONS
      tune15_.acc = acc;
 
@@ -747,7 +739,6 @@ void tuneup_()
         assign to correct tuneable varibales */
      
 //printf("here26\n");
-     int I;
      for (I = 14; I < NFF; I++){
           files[I] = malloc(1*sizeof(char));
           files[I][0] = '\0';

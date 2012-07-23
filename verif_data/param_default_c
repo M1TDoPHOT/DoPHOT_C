@@ -51,6 +51,7 @@ THRESHMAX = 10000.0    Value of maximum threshold.
 THRESHEMP = 0.0        Fit empirical PSF at and below this value.
 THRESHDEC = 1.0        Threshold decrement in powers-of-2.
 MAX_SOUGHT = 32768     Quit after this number of improved stars.
+MAX_PERF  = 2000       Only average up to this number of stars to get shape parameters.
 RANGE_MAG = 30.        Sets threshhold some magnitudes fainter than brightest fit.
 EPERDN = 2.0           Electrons per data number.
 RDNOISE = 15.0         Readout noise in=

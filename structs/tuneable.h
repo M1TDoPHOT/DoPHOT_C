@@ -129,10 +129,12 @@ struct{
     float* acc; //length NPMAX
     float* alim; //length NPMAX
     float* ava; //length NPMAX
+    int max_perf; 
 }tune15_;
 /*ACC- RELACC */
 /*ALIM- ABSLIM */
 /*AVA- guess at average values? */
+/*max_perf- maximum number of perfect stars to be used for computing average shape parameters.  useful as dimmer stars are often problematic beyond what their noise might indicate. */ 
 
 struct{
 //    char flags[NFF][?], files[NFF][?];
