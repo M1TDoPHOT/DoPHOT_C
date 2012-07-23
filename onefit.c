@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
@@ -21,17 +22,24 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
-
      int i;
-     float ALIM1, ACC1;
+     float ALIM1, ACC1, ALIM7, ACC7;
      double chisq_return;
+
+     int model = 0;  // default gauss, pseudogauss, or not a 
+                     // shape fit is 0
+     if ((strncmp(tune16_.flags[0], "EXTPGAUSS", 5) == 0) &&
+         (M > 7) ){
+          model = 1;
+//          printf("FA[7] = %f \n", FA[7]);
+     }
 
      /* move intensity to log space for fitting
         linear space variable I.  log space variable N.
         currently, A[1]  = Intensity I = exp(N);
         currently, FA[1] = 1/denom */
 
-     // set value
+     // set value for A[1]
      if( A[1] > 0.00f ){
           A[1] = logf(A[1]);
      }
@@ -50,6 +58,34 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      ACC[1]  = -0.01f;
      ALIM[1] = -10.0f;
 
+     // set value, derivative and limits for A[7] for extended 
+     // pseudogaussian model to log space for fitting
+     /* if expanded pseudogaussian model 
+        linear space variable beta4.  log space variable R.
+        currently, A[7]  = beta4 = exp(R)
+        currently, FA[7] = val.  in log space should be beta4*val */ 
+        
+     if (model == 1){
+          //set value
+          if( A[7] > 0.00f ){
+               A[7] = logf(A[7]);
+          }
+          else{
+               fprintf(logfile, 
+                    "caution: negative beta4 in fit, %f\n", A[7]);
+               A[7] = -9.999f;
+          } // now A[7] = R = log(Beta4).  Beta4 = exp(R) 
+
+          // set Derivative
+          FA[7] = A[7]*FA[7]; //now FA[7] = Beta4*val = exp(R)*val
+
+          // set limits
+          ACC7  = ACC[7];
+          ALIM7 = ALIM[7];
+          ACC[7]  = -0.01f;
+          ALIM[7] = 0.0f; //test off
+     }
+          
      // C_ptr is updated by chisq_ not used by it, 
      // so no need to set covariance, only reassign it
      
@@ -72,12 +108,38 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      // reset limits
      ACC[1]  = ACC1;
      ALIM[1] = ALIM1;
+     
+     // set value, derivative and limits for A[7] for extended 
+     // pseudogaussian model back to linear space
+     /* if expanded pseudogaussian model 
+        linear space variable beta4.  log space variable R.
+        currently, A[7]  = R = log(Beta4)
+        currently, FA[7] = Beta4*val.  in linear space should be val */ 
+        
+     if (model == 1){
+          // set value
+          A[7]  = expf(A[7]); // now A  = Beta4
+
+          // set Derivative
+          float fa7_log = FA[7];
+          FA[7] = FA[7]/A[7]; // now FA = val
+          if (isnan(FA[7])){
+               FA[7] = A[7]/fabsf(A[7]) * fa7_log * 1000000.0;
+          } //if prevents NANs in the case of small A[7]
+
+          // reset limits
+          ACC[7]  = ACC7;
+          ALIM[7] = ALIM7;
+     }
 
      // set Jacobian
      for(i = 0; i < M; i++){
           J[i] = 1.0f;
      }
      J[1] = A[1]; 
+     if (model == 1){
+          J[7] = A[7]; 
+     }
 
      // set covariance
      recast_float_1dto2darr(M, M, D_ptr, D);

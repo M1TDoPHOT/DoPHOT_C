@@ -68,9 +68,9 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      short int* IRECT = tune2_.irect;
      short int* KRECT = tune2_.krect;
      float* ARECT = tune2_.arect;
-     int NFIT1    = tune4_.nfit1;
+     int NFIT1    = tune4_.nfit1; //usually 4, sky, x, y, intensity
      int NIT      = tune4_.nit;
-     int NPAR     = tune4_.npar;
+     int ZERODUM  = 0;
      float EPERDN = tune11_.eperdn;
      float RNOISE = tune11_.rnoise;
      int lverb    = tune14_.lverb;
@@ -309,7 +309,7 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                    JX[0] = 0;
                                    JX[1] = 0;
                                    oneemp_return = oneemp_(JX, B, FA,
-                                                        &NPAR, &NPAR); 
+                                                        &NFIT, &ZERODUM); 
                                    chisq_return = chisq_(&oneemp_,
                                                 XX, Z, YE, &crudestat_.npt,
                                                 B, FA, C_ptr, 
@@ -397,6 +397,7 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
           passimp_.iii += 1; //loop this variable as well as cleaner I
      } //end I loop
      passimp_.inimp = 0; //false
+ 
 
      /* recast all changed pointers and common block vars */
      free(ERR);

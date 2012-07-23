@@ -176,7 +176,7 @@ void tuneup_()
 
                free(flags[0]);
                do{
-                    printf("Enter valid sky type (PGAUSS, GAUSS, SERSIC, GALTMODEL): "); 
+                    printf("Enter valid sky type (PGAUSS, GAUSS): "); 
                     scanf("%s",tempstring);
                }while( (strncmp(tempstring, "PGAUSS", 5) != 0) &&
                        (strncmp(tempstring, "GAUSS", 5)  != 0) &&

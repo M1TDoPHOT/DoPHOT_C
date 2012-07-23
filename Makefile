@@ -46,6 +46,7 @@ DoPhotCOBJECTS = $(odir)mini_mathlib.o $(odir)cast_arr.o \
         $(odir)transmask.o $(odir)makemask.o \
         $(odir)guess.o \
 	$(odir)pgauss.o $(odir)gauss.o \
+	$(odir)extpgauss.o \
         $(odir)empiricals.o \
 	$(odir)onefit.o $(odir)twofit.o \
         $(odir)fillerup.o \
@@ -62,7 +63,7 @@ DoPhotCOBJECTS = $(odir)mini_mathlib.o $(odir)cast_arr.o \
 	$(odir)tuneup.o \
         $(odir)dophot.o 
 
-#	$(odir)sersic.o $(odir)extpgauss.o \
+#	$(odir)sersic.o \
 
 dophot: $(DoPhotCOBJECTS)
 	     $(CC) $(DoPhotCOBJECTS) \

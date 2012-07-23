@@ -16,7 +16,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      // a[1] = max intensity
      // a[2], [3], x, y, positions in field
      // a[4], [5], [6], sigmax^2, sigmaxy, sigmay^2
-     // a[7], a[8] b4, b6
+     // a[7], beta4
 
      // if call from chisq, the parameters may be in a different
      // space, i.e. log space and will need to be converted.
@@ -33,8 +33,9 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double tx, ty, z, z2, a1;
      double denom, dddt, pexp;
      double pseud2d;
-     double beta4  = a[7];
-     double beta6  = (double)tune17_.beta6; //a[8];
+     double beta4; 
+     double beta6;
+     double fa7_old = fa[7];
 
      double half   = 0.5;
      double third  = 0.3333333;
@@ -43,6 +44,14 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      /* changed indices */
      x = (double)(ix[0]) - a[2];
      y = (double)(ix[1]) - a[3];
+     
+     if (fitcall == 1){
+          beta4 = exp(a[7]);
+     }
+     else{
+          beta4 = a[7];
+     }
+     beta6 = (double)tune17_.beta6; //a[8];
 
      sigx = 1.0/a[4];
      sigy = 1.0/a[6];
@@ -57,7 +66,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
           pexp  = 1.0/denom;
      }
      else{
-          z    = max1(z, expmin);
+          z     = max1(z, expmin);
           pexp  = exp(-z);
           denom = 1.0;
           dddt  = 1.0;
@@ -83,7 +92,11 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
           fa[4] = half*tx*tx*fa[5]   ;
           fa[6] = half*ty*ty*fa[5]   ;
           fa[5] = -x*y*fa[5]         ;
-          fa[7] = -a1/(denom*denom) * (z2) ;
+
+          fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
+          if (isnan(fa[7])){
+               fa[7] = 1.2*fa7_old;
+          }
 //          fa[8] = -a1/(denom*denom) * (third*z*z2) ;
           fa[0] = 1.0                ;
      }
