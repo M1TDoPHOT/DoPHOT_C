@@ -70,10 +70,10 @@ char* sumout_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float* 
           PROBG, t1, t2, t3, t4, EMERR[K]);
      }
      if( strncmp(flags[0], "EXTPGAUSS", 5) == 0)  {
-          sprintf(OUTSTRING," %4d %2d %10.4E %10.2f %10.2f %10.3E %10.3E %10.3E %10.3E %10.2f  %10.3E %10.3E %7.3f %7.3f %10.2E %10.3E %10.3E %10.2f %10.2f %7.3f\n",
+          sprintf(OUTSTRING," %4d %2d %10.4E %10.2f %10.2f %10.3E %10.3E %10.3E %10.3E %10.2f %10.2f  %10.3E %10.3E %7.3f %7.3f %10.2E %10.3E %10.3E %10.2f %10.2f %7.3f\n",
           I, ITYPE,  STPARR[0], STPARR[2], STPARR[3],
           STPARR[1], STPARR[4], STPARR[5], STPARR[6], 
-          STPARR[7], 
+          STPARR[7], STPARR[8], 
           APPARR[0], APPARR[1], APPARR[2], APPARR[3],
           PROBG, t1, t2, t3, t4, EMERR[K]);
      }

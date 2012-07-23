@@ -119,9 +119,9 @@ double twofit_( double (*TWOSTAR)(short int*, float*, float*, int*, int*), float
                B[I+3] = AVA[I];
           }
      } 
-     if (model == 1){
-          B[10] = logf(B[10]);
-     }
+//     if (model == 1){
+//          B[10] = logf(B[10]);
+//     }
 
      for(I = 0; I < 4; I++){
           BACC[I+3] = ACC[I];
@@ -165,9 +165,9 @@ double twofit_( double (*TWOSTAR)(short int*, float*, float*, int*, int*), float
           /* Changed indices. */
           B[1] = expf(B[1]);
           B[4] = expf(B[4]);
-          if (model == 1){
-               B[10] = expf(B[10]);
-          }
+//          if (model == 1){
+//               B[10] = expf(B[10]);
+//          }
 
 
           //final output array must read Aa[0-NPAR] Ab[0-NPAR]

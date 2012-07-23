@@ -202,8 +202,8 @@ void tuneup_()
           tune4_.nfit2 += 1;
      }
      if(strncmp(flags[0], "EXTPGAUSS", 5) == 0){
-          tune4_.npar  += 1;
-          tune4_.nfit2 += 1;
+          tune4_.npar  += 2;
+          tune4_.nfit2 += 2;
      }
 
 //printf("here11\n");
@@ -340,8 +340,9 @@ void tuneup_()
      }
      if(strncmp(flags[0], "SERSIC", 5) == 0) ava[7] = 2.0f; //sersic index
      if(strncmp(flags[0], "EXTPGAUSS", 5) == 0) {
-          ava[7] = 2.5f; //B4
-//          ava[8] = 1.0f; //B6
+//          ava[7] = 2.5f; //B4
+          ava[7] = 1.0f; //B4
+          ava[8] = 1.0f; //B6
      }
      tune15_.ava = ava;
      
@@ -610,6 +611,7 @@ void tuneup_()
      }
      if(strncmp(flags[0], "EXTPGAUSS", 5) == 0){
           alim[7] = -10.0f;
+          alim[8] = -10.0f;
      }
      if((strncmp(flags[0], "GALTMODEL",  5 ) == 0) ||
         (strncmp(flags[0], "PGALTMODEL", 5 ) == 0)){

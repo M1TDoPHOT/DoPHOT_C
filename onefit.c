@@ -23,7 +23,9 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
      int i;
-     float ALIM1, ACC1, ALIM7, ACC7;
+     float ALIM1, ACC1;
+//     float ALIM7, ACC7, ALIM8, ACC8;
+//     float fa7_log, fa8_log;
      double chisq_return;
 
      int model = 0;  // default gauss, pseudogauss, or not a 
@@ -31,7 +33,6 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      if ((strncmp(tune16_.flags[0], "EXTPGAUSS", 5) == 0) &&
          (M > 7) ){
           model = 1;
-//          printf("FA[7] = %f \n", FA[7]);
      }
 
      /* move intensity to log space for fitting
@@ -61,10 +62,11 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      // set value, derivative and limits for A[7] for extended 
      // pseudogaussian model to log space for fitting
      /* if expanded pseudogaussian model 
-        linear space variable beta4.  log space variable R.
-        currently, A[7]  = beta4 = exp(R)
+        linear space variable beta4.  log space variable R4.
+        linear space variable beta6.  log space variable R6.
+        currently, A[7]  = beta4 = exp(R4)
         currently, FA[7] = val.  in log space should be beta4*val */ 
-        
+/*        
      if (model == 1){
           //set value
           if( A[7] > 0.00f ){
@@ -74,18 +76,31 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
                fprintf(logfile, 
                     "caution: negative beta4 in fit, %f\n", A[7]);
                A[7] = -9.999f;
-          } // now A[7] = R = log(Beta4).  Beta4 = exp(R) 
+          } // now A[7] = R4 = log(Beta4).  Beta4 = exp(R4) 
+          if( A[8] > 0.00f ){
+               A[8] = logf(A[8]);
+          }
+          else{
+               fprintf(logfile, 
+                    "caution: negative beta6 in fit, %f\n", A[8]);
+               A[8] = -9.999f;
+          } // now A[8] = R6 = log(Beta6).  Beta6 = exp(R6) 
 
           // set Derivative
-          FA[7] = A[7]*FA[7]; //now FA[7] = Beta4*val = exp(R)*val
+          FA[7] = A[7]*FA[7]; //now FA[7] = Beta4*val = exp(R4)*val
+          FA[8] = A[8]*FA[8]; //now FA[8] = Beta6*val = exp(R6)*val
 
           // set limits
           ACC7  = ACC[7];
           ALIM7 = ALIM[7];
           ACC[7]  = -0.01f;
           ALIM[7] = 0.0f; //test off
+          ACC8  = ACC[8];
+          ALIM8 = ALIM[8];
+          ACC[8]  = -0.01f;
+          ALIM[8] = 0.0f; //test off
      }
-          
+*/          
      // C_ptr is updated by chisq_ not used by it, 
      // so no need to set covariance, only reassign it
      
@@ -115,31 +130,40 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
         linear space variable beta4.  log space variable R.
         currently, A[7]  = R = log(Beta4)
         currently, FA[7] = Beta4*val.  in linear space should be val */ 
-        
+/*        
      if (model == 1){
           // set value
           A[7]  = expf(A[7]); // now A  = Beta4
+          A[8]  = expf(A[8]); // now A  = Beta6
 
           // set Derivative
-          float fa7_log = FA[7];
+          fa7_log = FA[7];
           FA[7] = FA[7]/A[7]; // now FA = val
           if (isnan(FA[7])){
                FA[7] = A[7]/fabsf(A[7]) * fa7_log * 1000000.0;
           } //if prevents NANs in the case of small A[7]
+          fa8_log = FA[8];
+          FA[8] = FA[8]/A[8]; // now FA = val
+          if (isnan(FA[8])){
+               FA[8] = A[8]/fabsf(A[8]) * fa8_log * 1000000.0;
+          } //if prevents NANs in the case of small A[8]
 
           // reset limits
           ACC[7]  = ACC7;
           ALIM[7] = ALIM7;
+          ACC[8]  = ACC8;
+          ALIM[8] = ALIM8;
      }
-
+*/
      // set Jacobian
      for(i = 0; i < M; i++){
           J[i] = 1.0f;
      }
      J[1] = A[1]; 
-     if (model == 1){
-          J[7] = A[7]; 
-     }
+//     if (model == 1){
+//          J[7] = A[7]; 
+//          J[8] = A[8]; 
+//     }
 
      // set covariance
      recast_float_1dto2darr(M, M, D_ptr, D);

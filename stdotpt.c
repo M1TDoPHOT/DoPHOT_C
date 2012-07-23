@@ -142,10 +142,10 @@ char* stdotpt_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float*
           apmag, err_apmag, apsky, diff_fit_ap */
      }
      if (strncmp(flags[0], "EXTPGAUSS", 5) == 0){
-          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f  %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
+          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f %6.2f  %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
           I+1, ITYPE, XC, YC, FMAG, 
           APPARR[3], STPARR[0], AMAJOR, AMINOR, TILT,
-          STPARR[7], PROBG,
+          STPARR[7], STPARR[8], PROBG,
           APMAG, APERUNC, APPARR[1], APPARR[2], t1, t2, t3, t4, EMERR[I]);
           /* Order is:  No., obtype, xpos, ypos, fitmag, 
           err_fitmag, fitsky, FWHM_major, FWHM_minor, Tilt, 

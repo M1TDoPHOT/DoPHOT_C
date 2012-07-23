@@ -45,13 +45,13 @@ int suminpt_(int* I1, int* I2, float* STARPAR, int* NPAR, char* objectline)
           noerr = (nitems == 10);
      }
      if (strncmp(flags[0], "EXTPGAUSS", 5) == 0){
-          nitems = sscanf(objectline, "%d %d %e %e %e %e %e %e %e %f",
+          nitems = sscanf(objectline, "%d %d %e %e %e %e %e %e %e %f %f",
                             I1, I2 , STARPAR+0, STARPAR+2,
                                      STARPAR+3, STARPAR+1,
                                      STARPAR+4, STARPAR+5,
-                                     STARPAR+6, STARPAR+7
-                                     );
-          noerr = (nitems == 10);
+                                     STARPAR+6, STARPAR+7,
+                                     STARPAR+8);
+          noerr = (nitems == 11);
      }
  
      return noerr;

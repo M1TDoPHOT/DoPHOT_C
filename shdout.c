@@ -37,10 +37,10 @@ char* shdout_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr)
           STPARR[7]); 
      }
      if (strncmp(flags[0], "EXTPGAUSS", 5) == 0){ 
-          sprintf(OUTSTRING," %4d %2d %10.4E %10.2f %10.2f %10.3E %10.3E %10.3E %10.3E %10.2f \n",
+          sprintf(OUTSTRING," %4d %2d %10.4E %10.2f %10.2f %10.3E %10.3E %10.3E %10.3E %10.2f %10.2f \n",
           I, ITYPE,  STPARR[0], STPARR[2], STPARR[3],
           STPARR[1], STPARR[4], STPARR[5], STPARR[6], 
-          STPARR[7]); 
+          STPARR[7], STPARR[8]); 
      }
 
      return OUTSTRING;

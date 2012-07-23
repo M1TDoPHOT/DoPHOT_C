@@ -16,7 +16,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      // a[1] = max intensity
      // a[2], [3], x, y, positions in field
      // a[4], [5], [6], sigmax^2, sigmaxy, sigmay^2
-     // a[7], beta4
+     // a[7], a[8], beta4 beta6
 
      // if call from chisq, the parameters may be in a different
      // space, i.e. log space and will need to be converted.
@@ -36,6 +36,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double beta4; 
      double beta6;
      double fa7_old = fa[7];
+     double fa8_old = fa[8];
 
      double half   = 0.5;
      double third  = 0.3333333;
@@ -45,13 +46,14 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      x = (double)(ix[0]) - a[2];
      y = (double)(ix[1]) - a[3];
      
-     if (fitcall == 1){
-          beta4 = exp(a[7]);
-     }
-     else{
+//     if (fitcall == 1){
+//          beta4 = exp(a[7]);
+//          beta6 = exp(a[8]);
+//     }
+//     else{
           beta4 = a[7];
-     }
-     beta6 = (double)tune17_.beta6; //a[8];
+          beta6 = a[8];
+//     }
 
      sigx = 1.0/a[4];
      sigy = 1.0/a[6];
@@ -92,13 +94,19 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
           fa[4] = half*tx*tx*fa[5]   ;
           fa[6] = half*ty*ty*fa[5]   ;
           fa[5] = -x*y*fa[5]         ;
+          fa[0] = 1.0                ;
 
-          fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
+          fa[7] = -a1*(half*z*z)/(denom*denom) ; //linear space derivative
+          fa[8] = -a1*(half*third*z*z*z)/(denom*denom) ; //linear space derivative
+//          fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
+//          fa[8] = -a1*(beta6*half*third*z*z*z)/(denom*denom) ; //log space derivative
           if (isnan(fa[7])){
                fa[7] = 1.2*fa7_old;
           }
-//          fa[8] = -a1/(denom*denom) * (third*z*z2) ;
-          fa[0] = 1.0                ;
+          if (isnan(fa[8])){
+               fa[8] = 1.2*fa8_old;
+          }
+
      }
      return pseud2d;
 }
@@ -113,7 +121,7 @@ double extpgauss4d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      // a[4] = max intensity for obj 1
      // a[5], [6], x, y, positions in field for obj 1
      // a[7], [8], [9], sigmax^2, sigmaxy, sigmay^2 for both gaussians
-     // a[10], [11] b4 and b6 for both gaussians
+     // a[10], [11] beta4 and beta6 for both gaussians
 
      /* substance of function begins here */
      double pp[2];
@@ -125,10 +133,14 @@ double extpgauss4d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double denom, dddt, fac;
      double pseud4d;
      double beta4  = a[10];
-     double beta6  = (double)tune17_.beta6; //a[11];
+     double beta6  = a[11];
 
      double half   = 0.5;
      double third  = 0.3333333;
+
+     //changed to back from log space of fit
+//     beta4  = exp(beta4);
+//     beta6  = exp(beta6);
 
      sigx = 1.0/a[7];
      sigy = 1.0/a[9];    
