@@ -327,41 +327,40 @@ int main()
 //     printf("here before makemask\n");
 
           if( (tune21_.fixpos) && (first) ){
-//               printf("here before improve fixpos\n");
-               improve_(model2d, big, noise, &nfast, &nslow);
-//               printf("here after improve fixpos\n");
-          
-               // improving for empiricals         
+               //printf("here before shape\n");
+               shape_(model2d, model4d, big, noise, &nfast, &nslow);
+               //printf("here after shape\n");
                if (tune22_.emenab){
-//                    printf("here before bestab\n");
+                    //printf("here before bestab\n");
                     bestab_(model2d, big, noise, &nfast, &nslow);
-//                    printf("here after bestab\n");
+                    //printf("here after bestab\n");
                }
-
-//               printf("here before improve fixpos\n");
+               //printf("here before improve fixpos\n");
                improve_(model2d, big, noise, &nfast, &nslow);
-//               printf("here after improve fixpos\n");
+               //printf("here after improve fixpos\n");
           }
 
           if ((WARM) && (first) && !(tune21_.fixpos)){
-//               printf("here before improve fixpos\n");
-               improve_(model2d, big, noise, &nfast, &nslow);
-//               printf("here after improve fixpos\n");
-          
-               // improving for empiricals         
-               if (tune22_.emenab){
-//                    printf("here before bestab\n");
-                    bestab_(model2d, big, noise, &nfast, &nslow);
-//                    printf("here after bestab\n");
-               }
-
-//               printf("here before improve fixpos\n");
-               improve_(model2d, big, noise, &nfast, &nslow);
-//               printf("here after improve fixpos\n");
-
                //output the warmstart subtracted object image
                if(flags[4][0] == 'Y'){ //output image
                     newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
+               }
+
+               //printf("here before shape\n");
+               shape_(model2d, model4d, big, noise, &nfast, &nslow);
+               //printf("here after shape\n");
+               if (tune22_.emenab){
+                    //printf("here before bestab\n");
+                    bestab_(model2d, big, noise, &nfast, &nslow);
+                    //printf("here after bestab\n");
+               }
+               //printf("here before improve fixpos\n");
+               improve_(model2d, big, noise, &nfast, &nslow);
+               //printf("here after improve fixpos\n");
+
+               //output the shape corrected image
+               if(flags[4][0] == 'Y'){ //output image
+                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
                }
           }
           first = 0;

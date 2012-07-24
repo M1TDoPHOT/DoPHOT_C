@@ -29,7 +29,7 @@ CPSNAME_ROOT  'clean' model file names will be 'MNAME_ROOT####.fits'
 MPSNAME_ROOT  'model' model file names will be 'MNAME_ROOT####.fits'
 RPSNAME_ROOT  'resid' model file names will be 'MNAME_ROOT####.fits'
 =
-MAX_PERF  = 200       Only average up to this number of stars to get shape parameters.
+MAX_PERF  = 2000       Only average up to this number of stars to get shape parameters.
 THRESHMIN = 20.0       Value of lowest threshold.
 CENTINTMAX = 42000.0   Obliterate if central intensity exceeds this.
 CHI2MINBIG = 9.00 
