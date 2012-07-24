@@ -18,6 +18,7 @@
 #include "fixpass_struct.h"
 #include "galpass_struct.h"
 #include "addobj_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "mini_mathlib.h"
 #include "transmask.h"
@@ -34,11 +35,12 @@
 #include "parupd.h"
 #include "errupd.h"
 #include "impaper.h"
+#include "pgauss.h"
 #include "improve.h"
 
 /* dophot int function converted to c int function 03-04-2012 */
 
-int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr)
+int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr)
 {
 
      /* dereference pointers */
@@ -70,7 +72,6 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      float* ARECT = tune2_.arect;
      int NFIT1    = tune4_.nfit1; //usually 4, sky, x, y, intensity
      int NIT      = tune4_.nit;
-     int ZERODUM  = 0;
      float EPERDN = tune11_.eperdn;
      float RNOISE = tune11_.rnoise;
      int lverb    = tune14_.lverb;
@@ -80,6 +81,7 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      int FIXPOS   = tune21_.fixpos;
      int EMENAB   = tune22_.emenab;
      int EMPOK    = tune22_.empok;
+     int* WHICH_MODEL = model_.which_model;
 
      /* only passed to probgal and elarea */
      short int** XX = subraster_.xx;
@@ -154,11 +156,22 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      float TOTSTAR, VARSTAR, VARSKY, ERRELEC, ERRDN, SNPRED;
      int K;
      float this_C;
+     int zero_dum = 0;
+
+     double (*ONESTAR)(short int*, float*, float*, int*, int*);
 
      passimp_.inimp = 1; //true
      TRYEM = (EMENAB && EMPOK);
      for(I = 1; I <= NSTOT; I++){
           K = I-1; //for array indexes
+
+          if (WHICH_MODEL[K] == 0){ //normal specified model
+               ONESTAR = ONESTAR_7P;
+          }
+          if (WHICH_MODEL[K] == 1){ //pgaussogaussian
+               ONESTAR = &pgauss2d_;
+          }
+
           EMCHI = 2.0e10f;
           fixpass_.fixxy = ( (IMTYPE[K] - (IMTYPE[K] % 10)) == 10);
           fixpass_.fixxy = ( fixpass_.fixxy && FIXPOS ); 
@@ -309,7 +322,7 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                    JX[0] = 0;
                                    JX[1] = 0;
                                    oneemp_return = oneemp_(JX, B, FA,
-                                                        &NFIT, &ZERODUM); 
+                                                        &NFIT, &zero_dum); 
                                    chisq_return = chisq_(&oneemp_,
                                                 XX, Z, YE, &crudestat_.npt,
                                                 B, FA, C_ptr, 
@@ -397,7 +410,6 @@ int improve_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
           passimp_.iii += 1; //loop this variable as well as cleaner I
      } //end I loop
      passimp_.inimp = 0; //false
- 
 
      /* recast all changed pointers and common block vars */
      free(ERR);

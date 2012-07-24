@@ -8,6 +8,7 @@
 #include "fitarrays_struct.h"
 #include "skyvar_struct.h"
 #include "hubvar_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "mini_mathlib.h"
 #include "skyfun_plane.h"
@@ -50,6 +51,7 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
      float**  STARPAR = starlist_.starpar;
      float**  SHADOW  = starlist_.shadow;
      float**  SHADERR = starlist_.shaderr;
+     int*  WHICH_STAR_MODEL = model_.which_model;
 
      /* substance of subroutine begins here */
      float* PARWT  = malloc_float_1darr(NPMAX);
@@ -145,6 +147,7 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
           TYPE1    = ( (IMTYPE[I] == 1) || (IMTYPE[I] == 11) );
           TYPE3    = ( (IMTYPE[I] == 3) || (IMTYPE[I] == 13) );
           PERFECT  = ( (GOODSTAR) && (TYPE1) );
+          PERFECT  = ( (PERFECT) && (WHICH_STAR_MODEL[I] == 0));
           GOODSTAR = ( (GOODSTAR) && (TYPE1 || TYPE3) );
           if ( (PERFECT) && (NPERF <= MAX_PERF) ){
                PARWT[0]  += 1.0f;
@@ -275,7 +278,8 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
           if (NPERF >= MINRMS){
                for(I = 0; I < NSTOT; I++){
                     PERFECT = ( (IMTYPE[I] == 1) || (IMTYPE[I] == 11) );
-                    PERFECT = ( PERFECT && (SHADOW[I][0] != 0.0f) );
+                    PERFECT = ( (PERFECT) && (SHADOW[I][0] != 0.0f) );
+                    PERFECT = ( (PERFECT) && (WHICH_STAR_MODEL[I] == 0) );
                     if (PERFECT){
                          /* Changed indices. */
                          parinterp_return = parinterp_(STARPAR[I]+2, STARPAR[I]+3, A);

@@ -3,6 +3,7 @@
 #include "tuneable.h"
 #include "starlist_struct.h"
 #include "search_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "mini_mathlib.h"
 #include "paravg.h"
@@ -21,11 +22,13 @@ void paravg_()
      int* IMTYPE = starlist_.IMTYPE;
      float** SHADOW  = starlist_.shadow;
      float** SHADERR = starlist_.shaderr;
+     int* WHICH_MODEL = model_.which_model;
  
      /* substance of subroutine begins here */ 
      float** SUM = malloc_float_2darr(NPAR, 2);
      int I,J;
      int N = 0;
+     int CONDIT;
 
      for (J = 0; J < NPAR; J++){
           SUM[J][0] = 0.0f;
@@ -34,7 +37,9 @@ void paravg_()
 
      if (NSTOT >= 1){
           for (I = 0; I < NSTOT; I++){
-               if ( (IMTYPE[I] == 1) || (IMTYPE[I] == 11) ){
+               CONDIT = ((IMTYPE[I] == 1) || (IMTYPE[I] == 11));
+               CONDIT = ((CONDIT) && (WHICH_MODEL[I] == 0));
+               if (CONDIT){
                     N += 1;
                     for (J = 0; J < NPAR; J++){
                          if (SHADERR[I][J] == 0.0f){
@@ -52,7 +57,7 @@ void paravg_()
                } 
           }
           if (lverb > 10){
-               fprintf(logfile, "AVERAGE values so far of 7 parameters for stars:\n");   
+               fprintf(logfile, "AVERAGE values so far of NPAR parameters for stars:\n");   
                for (J = 0; J < NPAR; J++){
                     fprintf(logfile, "%9.5f  ", AVA[J]);
                }

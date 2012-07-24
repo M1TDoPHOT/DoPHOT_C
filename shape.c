@@ -13,6 +13,7 @@
 #include "fitarrays_struct.h"
 #include "byvirtue_struct.h"
 #include "addobj_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "offpic.h"
 #include "toofaint.h"
@@ -24,15 +25,14 @@
 #include "fillerup.h"
 #include "addstar.h"
 #include "guess.h"
+#include "pgauss.h" //even if ONESTAR is unique from PGAUSS, will need in !converge case
 #include "onefit.h"
 #include "twofit.h"
 #include "shape.h"
 
 /* dophot subroutine converted to c void function 3-13-2012 */
-//onestar is a pointer to the function name ONESTAR which returns double
-//onestar is usually pseud2d
-//twostar is usually pseud4d which takes the same parameters
-void shape_( double (*ONESTAR)(short int*, float*, float*, int*, int*), double (*TWOSTAR)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr )
+//onestar is a pointer to the function name ONESTAR7P which returns double
+void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), double (*TWOSTAR)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr )
 {
 
      /* dereference pointers */
@@ -64,10 +64,11 @@ void shape_( double (*ONESTAR)(short int*, float*, float*, int*, int*), double (
      float*  B = fitarrays_.b;
 //     float* FB = fitarrays_.fb;
      float* CHI = byvirtue_.chi;
+     int* WHICH_MODEL = model_.which_model;
 
      short int* IRECT = tune2_.irect;
      int NIT      = tune4_.nit;
-     int NFIT2    = tune4_.nfit2;
+     int NFIT2_7P = tune4_.nfit2;
      float STOGRAT = tune8_.stograt;
      float XTRA   = tune9_.xtra;
      float ENUFF7 = tune10_.enuff7;
@@ -96,6 +97,9 @@ void shape_( double (*ONESTAR)(short int*, float*, float*, int*, int*), double (
      int ITFIT;
      int LAST;
 
+     double (*ONESTAR)(short int*, float*, float*, int*, int*);
+     int NFIT2;
+
 /*   NEXT WE GO THROUGH PREVIOUSLY IDENTIFIED STARS AND FIT AGAIN */
 
 /*   91-Oct-27: We've introduced jmtype which is the "reduced" imtype of
@@ -106,6 +110,15 @@ C:   its value to imtype(i).  -PLS  */
      NSPREV = search_.nstot;
      for (I = 1; I <= NSPREV; I++){
           K = I-1;
+          if (WHICH_MODEL[K] == 0){ //normal specified model
+               ONESTAR = ONESTAR_7P;
+               NFIT2   = NFIT2_7P;
+          }
+          if (WHICH_MODEL[K] == 1){ //pseudogaussian
+               ONESTAR = &pgauss2d_;
+               NFIT2   = 7;
+          }
+
           funnypass_.funny = 0; //false
           GOTFAINT         = 0; //false
           if (lverb > 20){
@@ -170,7 +183,7 @@ C:   its value to imtype(i).  -PLS  */
                fillerup_(BIG, NOISE, &IX, &IY,
                              &NFAST, &NSLOW);
                NOTNUFF = (crudestat_.npt < (int)(ENUFF7*IRECT[0]*IRECT[1]));
-               if (NOTNUFF){
+               if (NOTNUFF){  //not enough pts for 7 parameter fit, enough for 4
                     if (lverb > 20){
                          fprintf(logfile,
                          "Obj#, NPTS, IX & IY = %d %d %d %d \n",
@@ -222,7 +235,7 @@ C:   its value to imtype(i).  -PLS  */
                                   0, " ", 0, " ");
                          galpass_.bigfoot = 0; //false
                     }
-               }
+               } //faint and missing pixel objects are now resubtracted from image
                else{
                     if (lverb > 20){
                          fprintf(logfile,
@@ -245,6 +258,59 @@ C:   its value to imtype(i).  -PLS  */
                     CONVERGE = (GALCHI < 1.0e10f);
                     OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
                     VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
+
+                    // test # 1 for convergence.  
+                    // if the model is > 7 parameters and it didn't converge, 
+                    // try pgauss fit before we claim non-convergence and type 9
+                    if ((!VERYBIG) || (fixpass_.fixxy)){
+                         if ((!CONVERGE) && (tune4_.nfit2 > 7) 
+                             && (WHICH_MODEL[K] == 0)){
+                              if (lverb > 20){
+                                   fprintf(logfile,"Obj# %d at %f %f\n",
+                                      I, STARPAR[K][2], STARPAR[K][3]);
+                                   fprintf(logfile,"FAILED TO CONVERGE on 7+ parameter model!\n");
+                                   fprintf(logfile,"     trying PGAUSS model \n");
+                              }
+                              ONESTAR = &pgauss2d_;
+                              NFIT2   = 7;
+                              SKY = guess2_(A, STARPAR[K], &IX, &IY);
+                              GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
+                                       &crudestat_.npt, A, FA, C_ptr,
+                                       &NFIT2, ACC, ALIM, &NIT);
+                              NIT = ITFIT;
+                              parupd_(A, SHADOW[K], &IX, &IY);
+                              errupd_(C_ptr, SHADERR[K], &NFIT2);
+
+                              VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
+                              if (JMTYPE == 3){
+                                   VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
+                              }
+                              CONVERGE = (GALCHI < 1.0e10f);
+                              OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
+                              VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
+                              if (CONVERGE){
+                                   WHICH_MODEL[K] = 1; //specifying pgauss model hence
+                                   if (lverb > 20){
+                                        fprintf(logfile,"Obj# %d at %f %f\n",
+                                                I, STARPAR[K][2], STARPAR[K][3]);
+                                        fprintf(logfile,"CONVERGED with PGAUSS model \n");
+                                   }
+                              }
+                              else{
+                                   WHICH_MODEL[K] = 0; //no change
+                                   ONESTAR = ONESTAR_7P;
+                                   NFIT2   = tune4_.nfit2;
+                                   if (lverb > 20){
+                                        fprintf(logfile,"Obj# %d at %f %f\n",
+                                                I, STARPAR[K][2], STARPAR[K][3]);
+                                        fprintf(logfile,"FAILED to CONVERGE with PGAUSS model \n");
+                                   }
+                                   if (JMTYPE != 3){
+                                        JMTYPE = 9;
+                                   }
+                              }
+                         }
+                    }
 
                     /* 91-Oct-27 If the object position is fixed then 
                        we don't test for duplicity.  If it failed to 
@@ -319,6 +385,9 @@ C:   its value to imtype(i).  -PLS  */
                                    fprintf(logfile," GAL-CHI: %f  STAR-CHI: %f\n",
                                                      GALCHI, STARCHI);
                               }
+                              ONESTAR = ONESTAR_7P; //make sure no longer pgauss
+                              NFIT2   = tune4_.nfit2; //make sure no longer pgauss
+                              WHICH_MODEL[K] = 0; //make sure no longer pgauss
                               JMTYPE   = 3;
                               EMSUB[K] = 0;
                               parupd_(B, SHADOW[K],  &IX, &IY); 
@@ -350,7 +419,8 @@ C:   its value to imtype(i).  -PLS  */
                               JMTYPE   = 2;
                               EMSUB[K] = 0;
                               parupd_(A,  STARPAR[K], &IX, &IY); 
-                              twoupd_(B,  TWOFPAR[K], &IX, &IY); //CHANGED from FB
+                              twoupd_(B,  TWOFPAR[K], &IX, &IY);
+                              // keep whatever model (ONSTAR_7P or pgauss) had converged earlier)
                               galpass_.bigfoot = 1; //true
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 

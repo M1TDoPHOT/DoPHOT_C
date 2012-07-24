@@ -590,7 +590,7 @@ void tuneup_()
      acc[2]          = get_float_item_(keywords, items, "RELACC2", nlines);
      acc[3]          = get_float_item_(keywords, items, "RELACC3", nlines);
     
-     char* relacc_str; 
+     char relacc_str[80]; 
      for (I = 4; I < tune4_.nfit2; I++){
           sprintf(relacc_str, "RELACC%d", I+1);
           acc[I] = get_float_item_(keywords, items, relacc_str, nlines);

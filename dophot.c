@@ -27,6 +27,7 @@
 #include "passmask_struct.h"
 #include "skyvar_struct.h"
 #include "addobj_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "tuneup.h"
 #include "readfits.h"
@@ -97,6 +98,9 @@ int main()
 
      float* chi_       = malloc_float_1darr(4);
      byvirtue_.chi     = chi_;
+
+     int* which_model  = malloc_int_1darr(NSMAX);
+     model_.which_model= which_model;
 
      float*  a         = malloc_float_1darr(NPMAX);
      fitarrays_.a      = a;

@@ -14,6 +14,7 @@
 #include "changed_struct.h"
 #include "clobber_struct.h"
 #include "addobj_struct.h"
+#include "model_struct.h"
 #include "cast_arr.h"
 #include "parinterp.h"
 #include "guess.h"
@@ -21,6 +22,7 @@
 #include "tagi4.h"
 #include "empiricals.h" //contains oneemp and oldemp
 #include "addstar.h"
+#include "pgauss.h"
 #include "bestab.h"
  
 /* dophot subroutine converted to c void function 3-14-2012 */
@@ -37,7 +39,7 @@ c     taking care of a single bad pixel.  Adjacent pairs of bad pixels
 c     will kill the template.  Moments of the empircal PSF are computed
 c     for use in addlims */
 
-void bestab_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr )
+void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr )
 {
      
      /* dereference pointers */
@@ -55,6 +57,7 @@ void bestab_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** B
      float XFRAC = eoff_.xfrac;
      float YFRAC = eoff_.yfrac;
      int NSTOT = search_.nstot;
+     int* WHICH_MODEL = model_.which_model;
 
      float**   DXOMP = oimdev_.dxomp; 
      float**   DYOMP = oimdev_.dyomp;
@@ -108,6 +111,8 @@ void bestab_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** B
      float AVEX, AVEY, XXMOM, YYMOM, XYMOM, DENOM;
      float T1, T2, T3, T4;
      int ISEE;
+
+     double (*ONESTAR)(short int*, float*, float*, int*, int*);
 
      for(I = 0; I < NSTOT; I++){
           IT1[I] = 0;
@@ -172,6 +177,13 @@ void bestab_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** B
                big_iok_flag = 0; //unless otherwise toggled, do not loop again
                EMPOK = 1; //true TUNEABLE CHANGED IN ROUTINE!!!!! FIX ME
                IBEST = IT2[IOK-1];
+               if (WHICH_MODEL[IBEST-1] == 0){ //normal specified model
+                    ONESTAR = ONESTAR_7P;
+               }
+               if (WHICH_MODEL[IBEST-1] == 1){ //pgaussogaussian
+                    ONESTAR = &pgauss2d_;
+               }
+
                SKY   = (float)(guess3_(A, STARPAR[IBEST-1], &IX, &IY));
                CINT  = STARPAR[IBEST-1][1];
                XFRAC = STARPAR[IBEST-1][2] - IX;
