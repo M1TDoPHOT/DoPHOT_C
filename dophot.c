@@ -422,7 +422,8 @@ int main()
                     for (I = 0; I < search_.nstot; I++){
                          K = I+1;
                          outputline = sumout_(&K, IMTYPE+I, STARPAR[I], 
-                                &tune4_.npar, APPLE[I], &napple_dum, PROBG+I);
+                                &tune4_.npar, APPLE[I], &napple_dum, 
+                                PROBG+I, which_model[I]);
                          fputs(outputline, outfile);
                     }
                     break;
@@ -430,7 +431,8 @@ int main()
                     for (I = 0; I < search_.nstot; I++){
                          K = I+1;
                          outputline = stdotpt_(&K, IMTYPE+I, STARPAR[I], 
-                                &tune4_.npar, APPLE[I], &napple_dum, PROBG+I);
+                                &tune4_.npar, APPLE[I], &napple_dum, 
+                                PROBG+I, which_model[I]);
                          fputs(outputline, outfile);
                     }
                     break;
@@ -438,7 +440,8 @@ int main()
                     for (I = 0; I < search_.nstot; I++){
                          K = I+1;
                          outputline = badotpt_(&K, IMTYPE+I, STARPAR[I], 
-                                &tune4_.npar, APPLE[I], &napple_dum, PROBG+I);
+                                &tune4_.npar, APPLE[I], &napple_dum,
+                                PROBG+I);
                          fputs(outputline, outfile);
                     }
                     break;
@@ -446,7 +449,8 @@ int main()
                     for (I = 0; I < search_.nstot; I++){
                          K = I+1;
                          outputline = sumout_(&K, IMTYPE+I, STARPAR[I], 
-                                &tune4_.npar, APPLE[I], &napple_dum, PROBG+I);
+                                &tune4_.npar, APPLE[I], &napple_dum,
+                                PROBG+I, which_model[I]);
                          fputs(outputline, outfile);
                     }
                     break;
@@ -461,11 +465,13 @@ int main()
                for (I = 0; I < search_.nstot; I++){
                     K = I+1;
                     if (SHADOW[I][0] != 0){
-                         outputline = shdout_(&K, IMTYPE+I, SHADOW[I], &tune4_.npar);
+                         outputline = shdout_(&K, IMTYPE+I, SHADOW[I], 
+                                 &tune4_.npar, which_model[I]);
                          fputs(outputline, shadowfile);
                     }
                     else{
-                         outputline = shdout_(&K, IMTYPE+I, STARPAR[I], &tune4_.npar);
+                         outputline = shdout_(&K, IMTYPE+I, STARPAR[I],
+                                 &tune4_.npar, which_model[I]);
                          fputs(outputline, shadowfile);
                     }
                }
@@ -475,7 +481,8 @@ int main()
                errfile = openac_(&ierr, errfilename, rwa);
                for (I = 0; I < search_.nstot; I++){
                     K = I+1;
-                    outputline = shdout_(&K, IMTYPE+I, SHADERR[I], &tune4_.npar);
+                    outputline = shdout_(&K, IMTYPE+I, SHADERR[I],
+                                 &tune4_.npar, which_model[I]);
                     fputs(outputline, errfile);
                }
 

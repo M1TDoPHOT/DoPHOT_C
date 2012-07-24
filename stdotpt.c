@@ -10,7 +10,7 @@
 
 /* dophot subroutine converted to c void function 02-06-2012 */
 
-char* stdotpt_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float* APPARR, int* lNAPPLE_ptr, float* PROBG_ptr)
+char* stdotpt_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float* APPARR, int* lNAPPLE_ptr, float* PROBG_ptr, int which_model)
 {
 
      /* dereference the pointers */
@@ -120,36 +120,36 @@ char* stdotpt_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float*
      }
      if ((strncmp(flags[0], "PGALTMODEL", 5) == 0) ||
          (strncmp(flags[0], "GALTMODEL",  5) == 0)) {
-          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %10.3E %10.3E %10.3E %10.3E %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
+          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %10.3E %10.3E %10.3E %10.3E %2d %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
           I+1, ITYPE, XC, YC, FMAG, 
           APPARR[3], STPARR[0], AMAJOR, AMINOR, TILT,
-          STPARR[7], STPARR[8], STPARR[9], STPARR[10], PROBG,
+          STPARR[7], STPARR[8], STPARR[9], STPARR[10], which_model, PROBG,
           APMAG, APERUNC, APPARR[1], APPARR[2], t1, t2, t3, t4, EMERR[I]);
           /* Order is:  No., obtype, xpos, ypos, fitmag, 
           err_fitmag, fitsky, FWHM_major, FWHM_minor, Tilt, 
-          NEWI1, NEWI2, NEWI3, NEWI4, probgal,
+          NEWI1, NEWI2, NEWI3, NEWI4, which_model, probgal,
           apmag, err_apmag, apsky, diff_fit_ap */
      }
      if (strncmp(flags[0], "SERSIC", 5) == 0){
-          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
+          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f %2d %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
           I+1, ITYPE, XC, YC, FMAG, 
           APPARR[3], STPARR[0], AMAJOR, AMINOR, TILT,
-          STPARR[7], PROBG,
+          STPARR[7], which_model, PROBG,
           APMAG, APERUNC, APPARR[1], APPARR[2], t1, t2, t3, t4, EMERR[I]);
           /* Order is:  No., obtype, xpos, ypos, fitmag, 
           err_fitmag, fitsky, FWHM_major, FWHM_minor, Tilt, 
-          sersic index, probgal,
+          sersic index, which_model, probgal,
           apmag, err_apmag, apsky, diff_fit_ap */
      }
      if (strncmp(flags[0], "EXTPGAUSS", 5) == 0){
-          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f %6.2f  %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
+          sprintf(OUTSTRING," %4d %2d %8.2f %8.2f %8.3f %6.3f %9.2f %9.3f %9.3f %7.2f %6.2f %6.2f %2d  %10.2E %8.3f %6.3f %9.2f %7.3f %9.2f %8.3f %8.2f %8.2f %6.3f   \n", 
           I+1, ITYPE, XC, YC, FMAG, 
           APPARR[3], STPARR[0], AMAJOR, AMINOR, TILT,
-          STPARR[7], STPARR[8], PROBG,
+          STPARR[7], STPARR[8], which_model, PROBG,
           APMAG, APERUNC, APPARR[1], APPARR[2], t1, t2, t3, t4, EMERR[I]);
           /* Order is:  No., obtype, xpos, ypos, fitmag, 
           err_fitmag, fitsky, FWHM_major, FWHM_minor, Tilt, 
-          b4, probgal,
+          b4, which_model, probgal,
           apmag, err_apmag, apsky, diff_fit_ap */
      }
 
