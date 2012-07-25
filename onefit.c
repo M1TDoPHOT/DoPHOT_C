@@ -22,10 +22,9 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
-     int i;
+     int i, jj;
      float ALIM1, ACC1;
      float ALIM7, ACC7, ALIM8, ACC8;
-     float fa7_log, fa8_log;
      double chisq_return;
 
      int model = 0;  // default gauss, pseudogauss, or not a 
@@ -93,12 +92,12 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
           // set limits
           ACC7  = ACC[7];
           ALIM7 = ALIM[7];
-          ACC[7]  = -0.01f;
-          ALIM[7] = 0.0f; //test off
+          ACC[7]  = -0.1f;
+          ALIM[7] = 10.0f;
           ACC8  = ACC[8];
           ALIM8 = ALIM[8];
-          ACC[8]  = -0.01f;
-          ALIM[8] = 0.0f; //test off
+          ACC[8]  = -0.1f;
+          ALIM[8] = 10.0f;
      }
           
      // C_ptr is updated by chisq_ not used by it, 
@@ -137,18 +136,36 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
           // set value
           A[7]  = expf(A[7]); // now A  = Beta4
           A[8]  = expf(A[8]); // now A  = Beta6
+          // if problem in fit, throw back to pgauss values
+          if ((isnan(A[7])) || (isinf(A[7]))){
+               A[7] = 1.0f;
+          }
+          if ((isnan(A[8])) || (isinf(A[8]))){
+               A[8] = 1.0f;
+          }
+          // ok because chisq already returned bad value
 
           // set Derivative
-          fa7_log = FA[7];
-          FA[7] = FA[7]/A[7]; // now FA = val
-          if (isnan(FA[7])){
-               FA[7] = A[7]/fabsf(A[7]) * fa7_log * 1000000.0;
+          // if problem in fit, flag derivative as very high
+          if ((isnan(FA[7])) || (isinf(FA[7]))){
+               FA[7] = 10.0f;
+          }
+          if ((isnan(FA[8])) || (isinf(FA[8]))){
+               FA[8] = 10.0f;
+          }
+
+          if (A[7] < 0.0001f){
+               FA[7] = FA[7] * 1000000.0;
           } //if prevents NANs in the case of small A[7]
-          fa8_log = FA[8];
-          FA[8] = FA[8]/A[8]; // now FA = val
-          if (isnan(FA[8])){
-               FA[8] = A[8]/fabsf(A[8]) * fa8_log * 1000000.0;
+          else{
+               FA[7] = FA[7]/A[7]; // now FA = val
+          }
+          if (A[8] < 0.0001f){
+               FA[8] = FA[8] * 1000000.0;
           } //if prevents NANs in the case of small A[8]
+          else{
+               FA[8] = FA[8]/A[8]; // now FA = val
+          }
 
           // reset limits
           ACC[7]  = ACC7;
@@ -156,6 +173,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
           ACC[8]  = ACC8;
           ALIM[8] = ALIM8;
      }
+
 
      // set Jacobian
      for(i = 0; i < M; i++){
@@ -170,9 +188,23 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      // set covariance
      recast_float_1dto2darr(M, M, D_ptr, D);
      rightleft_diag_mmult(D, J, C, M);
-     C[1][0] = C[1][0] / A[1]; // I have no idea why these are necessary
-     C[0][1] = C[0][1] / A[1]; // but they are
-     C[1][1] = C[1][1] / A[1]; // in order to get correct covariance matrix
+     // there seems to be another step necessary in the covariance 
+     // conversion beyond just the simple right left multiplicaiton 
+     // byt he jacobian.  I dont know why.
+     // for the row and column of the non-unity jacobian element above
+     // and left the diagonal, divide by the jacobian element.
+     for (i = 0; i < M; i++){
+          if (J[i] != 1.0f){
+               for (jj = 0; jj < i; jj++){
+                    C[i][jj] = C[i][jj] / J[i];
+                    C[jj][i] = C[jj][i] / J[i];
+               }
+               C[i][i] = C[i][i] / J[i];
+          }
+     }
+//     C[1][0] = C[1][0] / A[1]; // I have no idea why these are necessary
+//     C[0][1] = C[0][1] / A[1]; // but they are
+//     C[1][1] = C[1][1] / A[1]; // in order to get correct covariance matrix
      recast_float_2dto1darr(M, M, C_ptr, C);
      
      /* end move intensity back to linear space */
@@ -184,3 +216,27 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      return chisq_return;
 }
+
+
+
+//     if (model == 1){
+//          printf("J[7], J[8] = %7.4E %7.4E \n",
+//                   J[7], J[8]);
+//          printf("FA[7], FA[8] = %7.4E %7.4E \n",
+//                   FA[7], FA[8]);
+//          printf("top = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[0][0], C[0][1], C[0][2], C[0][6], C[0][7], C[0][8]);
+//          printf("one = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[1][0], C[1][1], C[1][2], C[1][6], C[1][7], C[1][8]);
+//          printf("dai = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[0][0], C[1][1], C[2][2], C[6][6], C[7][7], C[8][8]);
+//          printf("sev = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[7][0], C[7][1], C[7][2], C[7][6], C[7][7], C[7][8]);
+//          printf("bot = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[8][0], C[8][1], C[8][2], C[8][6], C[8][7], C[8][8]);
+////          printf("lef = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+////                   C[0][0], C[1][0], C[2][0], C[6][0], C[7][0], C[8][0]);
+//          printf("rig = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
+//                   C[0][8], C[1][8], C[2][8], C[6][8], C[7][8], C[8][8]);
+//          printf("\n");
+//     }

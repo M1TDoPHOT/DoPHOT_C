@@ -33,10 +33,8 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double tx, ty, z, z2, a1;
      double denom, dddt, pexp;
      double pseud2d;
-     double beta4; 
-     double beta6;
-     double fa7_old = fa[7];
-     double fa8_old = fa[8];
+     double beta4 = a[7]; 
+     double beta6 = a[8];
 
      double half   = 0.5;
      double third  = 0.3333333;
@@ -47,12 +45,8 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      y = (double)(ix[1]) - a[3];
      
      if (fitcall == 1){
-          beta4 = exp(a[7]);
-          beta6 = exp(a[8]);
-     }
-     else{
-          beta4 = a[7];
-          beta6 = a[8];
+          beta4 = exp(beta4);
+          beta6 = exp(beta6);
      }
 
      sigx = 1.0/a[4];
@@ -100,12 +94,12 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
 //          fa[8] = -a1*(half*third*z*z*z)/(denom*denom) ; //linear space derivative
           fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
           fa[8] = -a1*(beta6*half*third*z*z*z)/(denom*denom) ; //log space derivative
-          if (isnan(fa[7])){
-               fa[7] = 1.2*fa7_old;
-          }
-          if (isnan(fa[8])){
-               fa[8] = 1.2*fa8_old;
-          }
+//          if (isnan(fa[7]) || !(isfinite(fa[7]))){
+//               fa[7] = 10.0;
+//          }
+//          if (isnan(fa[8]) || !(isfinite(fa[8]))){
+//               fa[8] = 10.0;
+//          }
 
      }
      return pseud2d;
@@ -138,7 +132,7 @@ double extpgauss4d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double half   = 0.5;
      double third  = 0.3333333;
 
-     //changed to back from log space of fit
+     //changed back from log space of fit
      beta4  = exp(beta4);
      beta6  = exp(beta6);
 
