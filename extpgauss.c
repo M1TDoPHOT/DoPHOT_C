@@ -35,6 +35,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
      double pseud2d;
      double beta4 = a[7]; 
      double beta6 = a[8];
+     int gauss_flag = 0;
 
      double half   = 0.5;
      double third  = 0.3333333;
@@ -66,6 +67,7 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
           pexp  = exp(-z);
           denom = 1.0;
           dddt  = 1.0;
+          gauss_flag = 1;
      }
      
      /* changed indices */
@@ -89,18 +91,17 @@ double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall
           fa[6] = half*ty*ty*fa[5]   ;
           fa[5] = -x*y*fa[5]         ;
           fa[0] = 1.0                ;
-
-//          fa[7] = -a1*(half*z*z)/(denom*denom) ; //linear space derivative
-//          fa[8] = -a1*(half*third*z*z*z)/(denom*denom) ; //linear space derivative
-          fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
-          fa[8] = -a1*(beta6*half*third*z*z*z)/(denom*denom) ; //log space derivative
-//          if (isnan(fa[7]) || !(isfinite(fa[7]))){
-//               fa[7] = 10.0;
-//          }
-//          if (isnan(fa[8]) || !(isfinite(fa[8]))){
-//               fa[8] = 10.0;
-//          }
-
+          if (gauss_flag){ //beta4 and 6 didn't contribute to model
+//               printf("gaussian_flagged \n");
+               fa[7] = 1.0;
+               fa[8] = 1.0;
+          }
+          else{ //actual extpgauss model used
+//               fa[7] = -a1*(half*z*z)/(denom*denom) ; //linear space derivative
+//               fa[8] = -a1*(half*third*z*z*z)/(denom*denom) ; //linear space derivative
+               fa[7] = -a1*(beta4*half*z*z)/(denom*denom) ; //log space derivative
+               fa[8] = -a1*(beta6*half*third*z*z*z)/(denom*denom) ; //log space derivative
+          }
      }
      return pseud2d;
 }

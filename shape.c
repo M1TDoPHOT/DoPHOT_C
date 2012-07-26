@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "logh.h"
 #include "tuneable.h"
 #include "starlist_struct.h"
@@ -75,12 +76,14 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      int lverb    = tune14_.lverb;
      float* ACC   = tune15_.acc;
      float* ALIM  = tune15_.alim;
+     float* AVA   = tune15_.ava;
      int EMPOK    = tune22_.empok;
      int EMENAB   = tune22_.emenab;
 
      /* substance of subroutine begins here */
      float** TWOFPAR = malloc_float_2darr(NSMAX, NPMAX);
      int VERYBIG, OFFP, VFAINT, CONVERGE, NOTNUFF, GOTFAINT;
+     int PGAUSS_CONVERGE, PGAUSS_CHI;
      int transmask_ret;
      static int IADD =  1;
      static int ISUB = -1;
@@ -96,6 +99,7 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      float dum, DX, DY;
      int ITFIT;
      int LAST;
+     int index;
 
      double (*ONESTAR)(short int*, float*, float*, int*, int*);
      int NFIT2;
@@ -244,39 +248,47 @@ C:   its value to imtype(i).  -PLS  */
                     }
                     ITFIT = NIT;
                     NIT = 2*ITFIT; 
-                    GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
+                    //on first pass, fit with standard pseudogaussian model
+                    //if it doesn't converge, set as object of type 9
+                    //if it does converge, and the model is something else
+                    //try the other model using the pseudogaussian parameters
+                    //for the base 7 and the average for the extras
+                    //if it succeeds, keep it.
+                    //if it fails, use the pseudogaussian
+                    //only do this for stars not already flagged for the pgauss model
+                    if ((WHICH_MODEL[K] == 0) &&
+                        (strncmp(tune16_.flags[0], "PGAUSS", 5) != 0) ){
+                         NFIT2 = 7;
+                         PGAUSS_CHI = (float)onefit_(&pgauss2d_, XX, Z, YE, 
                                     &crudestat_.npt, A, FA, C_ptr,
                                     &NFIT2, ACC, ALIM, &NIT);
-                    NIT = ITFIT;
-                    parupd_(A, SHADOW[K], &IX, &IY);
-                    errupd_(C_ptr, SHADERR[K], &NFIT2);
-
-                    VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
-                    if (JMTYPE == 3){
-                         VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
-                    }
-                    CONVERGE = (GALCHI < 1.0e10f);
-                    OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
-                    VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
-
-                    // test # 1 for convergence.  
-                    // if the model is > 7 parameters and it didn't converge, 
-                    // try pgauss fit before we claim non-convergence and type 9
-                    if ((!VERYBIG) || (fixpass_.fixxy)){
-                         if ((!CONVERGE) && (tune4_.nfit2 > 7) 
-                             && (WHICH_MODEL[K] == 0)){
-                              if (lverb > 20){
-                                   fprintf(logfile,"Obj# %d at %f %f\n",
-                                      I, STARPAR[K][2], STARPAR[K][3]);
-                                   fprintf(logfile,"FAILED TO CONVERGE on 7+ parameter model!\n");
-                                   fprintf(logfile,"     trying PGAUSS model \n");
+                         PGAUSS_CONVERGE = (PGAUSS_CHI < 1.0e10f);
+                         if (PGAUSS_CONVERGE){ 
+                              NFIT2 = tune4_.nfit2;
+                              for (index = 7; index < NFIT2; index++){
+                                   A[index]  = AVA[index];
+                                   FA[index] = 1.0f;
                               }
-                              ONESTAR = &pgauss2d_;
-                              NFIT2   = 7;
-                              SKY = guess2_(A, STARPAR[K], &IX, &IY);
                               GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
-                                       &crudestat_.npt, A, FA, C_ptr,
-                                       &NFIT2, ACC, ALIM, &NIT);
+                                    &crudestat_.npt, A, FA, C_ptr,
+                                    &NFIT2, ACC, ALIM, &NIT);
+                              CONVERGE = (GALCHI < 1.0e10f);
+                              if (!CONVERGE){ //go back to pgauss model
+                                   if (lverb > 20){
+                                        fprintf(logfile,"Obj# %d at %f %f\n",
+                                           I, STARPAR[K][2], STARPAR[K][3]);
+                                        fprintf(logfile,"converged with PGAUSS model, \n");
+                                        fprintf(logfile,"but FAILED TO CONVERGE with alternate model \n");
+                                        fprintf(logfile,"using PGAUSS \n");
+                                   }
+                                   WHICH_MODEL[K] = 1; //specifying pgauss model hence
+                                   NFIT2 = 7;
+                                   ONESTAR = &pgauss2d_;
+                                   SKY = guess2_(A, STARPAR[K], &IX, &IY);
+                                   GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
+                                              &crudestat_.npt, A, FA, C_ptr,
+                                              &NFIT2, ACC, ALIM, &NIT);
+                              }
                               NIT = ITFIT;
                               parupd_(A, SHADOW[K], &IX, &IY);
                               errupd_(C_ptr, SHADERR[K], &NFIT2);
@@ -288,28 +300,34 @@ C:   its value to imtype(i).  -PLS  */
                               CONVERGE = (GALCHI < 1.0e10f);
                               OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
                               VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
-                              if (CONVERGE){
-                                   WHICH_MODEL[K] = 1; //specifying pgauss model hence
-                                   if (lverb > 20){
-                                        fprintf(logfile,"Obj# %d at %f %f\n",
-                                                I, STARPAR[K][2], STARPAR[K][3]);
-                                        fprintf(logfile,"CONVERGED with PGAUSS model \n");
-                                   }
-                              }
-                              else{
-                                   WHICH_MODEL[K] = 0; //no change
-                                   ONESTAR = ONESTAR_7P;
-                                   NFIT2   = tune4_.nfit2;
-                                   if (lverb > 20){
-                                        fprintf(logfile,"Obj# %d at %f %f\n",
-                                                I, STARPAR[K][2], STARPAR[K][3]);
-                                        fprintf(logfile,"FAILED to CONVERGE with PGAUSS model \n");
-                                   }
-                                   if (JMTYPE != 3){
-                                        JMTYPE = 9;
-                                   }
-                              }
                          }
+                         else{ //if PGAUSS didn't converge
+                              if (lverb > 20){
+                                   fprintf(logfile,"Obj# %d at %f %f\n",
+                                           I, STARPAR[K][2], STARPAR[K][3]);
+                                   fprintf(logfile,"FAILED to CONVERGE with PGAUSS model \n");
+                              }
+                              WHICH_MODEL[K] = 1; //specifying pgauss model hence
+                                                  //certainly no more complexity is necessary
+                              NFIT2 = 7;
+                              ONESTAR = &pgauss2d_;
+                         }
+                    } //end if which model = 0 or if !PGAUSS default model
+                    else{ //if which model = 1 or PGAUSS is the default model
+                         GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
+                               &crudestat_.npt, A, FA, C_ptr,
+                               &NFIT2, ACC, ALIM, &NIT);
+                         NIT = ITFIT;
+                         parupd_(A, SHADOW[K], &IX, &IY);
+                         errupd_(C_ptr, SHADERR[K], &NFIT2);
+
+                         VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
+                         if (JMTYPE == 3){
+                              VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
+                         }
+                         CONVERGE = (GALCHI < 1.0e10f);
+                         OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
+                         VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
                     }
 
                     /* 91-Oct-27 If the object position is fixed then 
@@ -326,7 +344,6 @@ C:   its value to imtype(i).  -PLS  */
                               }
                               SHADOW[K][0] = 0.0f;
                               if (lverb > 20){
-                                   /* Changed indices. */
                                    fprintf(logfile,"Obj# %d at %f %f\n",
                                       I, STARPAR[K][2], STARPAR[K][3]);
                                    fprintf(logfile,"FAILED TO CONVERGE!\n");
