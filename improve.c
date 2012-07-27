@@ -42,7 +42,7 @@
 
 int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr)
 {
-
+//printf("begin improve \n");
      /* dereference pointers */
      int NFAST = *NFAST_ptr;
      int NSLOW = *NSLOW_ptr;
@@ -248,6 +248,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                                     &crudestat_.npt, A, FA, C_ptr, 
                                     &NFIT, ACC, ALIM, &IIT);
                     STARCHI = (float)onefit_return;
+//  printf("%d %10.4e \n", K+1, onefit_return);
                }
                else{
                     if (lverb > 20){
@@ -419,5 +420,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      free_char_arr(NSTOT, mf_names);
      free_char_arr(NSTOT, cf_names);
 
+//printf("end improve \n");
+//printf("\n");
+//printf("\n");
      return 1;
 }

@@ -92,11 +92,11 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
           // set limits
           ACC7  = ACC[7];
           ALIM7 = ALIM[7];
-          ACC[7]  = -0.1f;
+          ACC[7]  = 0.02f;
           ALIM[7] = 10.0f;
           ACC8  = ACC[8];
           ALIM8 = ALIM[8];
-          ACC[8]  = -0.1f;
+          ACC[8]  = 0.02f;
           ALIM[8] = 10.0f;
      }
           

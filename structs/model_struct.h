@@ -7,7 +7,9 @@
 
 struct{
      int* which_model;
+     int* tested;
 }model_;
 //which_model[NSMAX]
+//tested[NSMAX]
 
 #endif

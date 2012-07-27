@@ -101,6 +101,8 @@ int main()
 
      int* which_model  = malloc_int_1darr(NSMAX);
      model_.which_model= which_model;
+     int* tested       = malloc_int_1darr(NSMAX);
+     model_.tested     = tested;
 
      float*  a         = malloc_float_1darr(NPMAX);
      fitarrays_.a      = a;

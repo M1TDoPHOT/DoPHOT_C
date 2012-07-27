@@ -66,6 +66,7 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
 //     float* FB = fitarrays_.fb;
      float* CHI = byvirtue_.chi;
      int* WHICH_MODEL = model_.which_model;
+     int* TESTED      = model_.tested;
 
      short int* IRECT = tune2_.irect;
      int NIT      = tune4_.nit;
@@ -256,14 +257,23 @@ C:   its value to imtype(i).  -PLS  */
                     //if it succeeds, keep it.
                     //if it fails, use the pseudogaussian
                     //only do this for stars not already flagged for the pgauss model
-                    if ((WHICH_MODEL[K] == 0) &&
+                    if ((WHICH_MODEL[K] == 0) && (TESTED[K] == 0) &&
                         (strncmp(tune16_.flags[0], "PGAUSS", 5) != 0) ){
+                         if (lverb > 20){
+                              fprintf(logfile, "     fitting PGAUSS model \n");
+                         }
+                         TESTED[K] += 1; //specifying that the star has now been fit once
                          NFIT2 = 7;
                          PGAUSS_CHI = (float)onefit_(&pgauss2d_, XX, Z, YE, 
                                     &crudestat_.npt, A, FA, C_ptr,
                                     &NFIT2, ACC, ALIM, &NIT);
                          PGAUSS_CONVERGE = (PGAUSS_CHI < 1.0e10f);
                          if (PGAUSS_CONVERGE){ 
+                              if (lverb > 20){
+                                   fprintf(logfile, "     PGAUSS model CONVERGED \n");
+                                   fprintf(logfile, "     trying alternate model \n");
+                              }
+                              NIT = 3*ITFIT; 
                               NFIT2 = tune4_.nfit2;
                               for (index = 7; index < NFIT2; index++){
                                    A[index]  = AVA[index];
@@ -273,14 +283,15 @@ C:   its value to imtype(i).  -PLS  */
                                     &crudestat_.npt, A, FA, C_ptr,
                                     &NFIT2, ACC, ALIM, &NIT);
                               CONVERGE = (GALCHI < 1.0e10f);
-                              if (!CONVERGE){ //go back to pgauss model
+                              if (!CONVERGE){ //go back to pgauss model and keep it
                                    if (lverb > 20){
                                         fprintf(logfile,"Obj# %d at %f %f\n",
                                            I, STARPAR[K][2], STARPAR[K][3]);
-                                        fprintf(logfile,"converged with PGAUSS model, \n");
-                                        fprintf(logfile,"but FAILED TO CONVERGE with alternate model \n");
-                                        fprintf(logfile,"using PGAUSS \n");
+                                        fprintf(logfile,"     converged with PGAUSS model, \n");
+                                        fprintf(logfile,"     but FAILED TO CONVERGE with alt model \n");
+                                        fprintf(logfile,"     using PGAUSS \n");
                                    }
+                                   NIT = 2*ITFIT; 
                                    WHICH_MODEL[K] = 1; //specifying pgauss model hence
                                    NFIT2 = 7;
                                    ONESTAR = &pgauss2d_;
@@ -288,18 +299,17 @@ C:   its value to imtype(i).  -PLS  */
                                    GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                               &crudestat_.npt, A, FA, C_ptr,
                                               &NFIT2, ACC, ALIM, &NIT);
+                                   CONVERGE = (GALCHI < 1.0e10f);
                               }
-                              NIT = ITFIT;
-                              parupd_(A, SHADOW[K], &IX, &IY);
-                              errupd_(C_ptr, SHADERR[K], &NFIT2);
-
-                              VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
-                              if (JMTYPE == 3){
-                                   VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
+                              else{ //if the 7+ parameter model did converge keep it
+                                   if (lverb > 20){
+                                        fprintf(logfile,"Obj# %d at %f %f\n",
+                                           I, STARPAR[K][2], STARPAR[K][3]);
+                                        fprintf(logfile,"     CONVERGED with PGAUSS model, \n");
+                                        fprintf(logfile,"     AND with ALTERNATE model \n");
+                                        fprintf(logfile,"     using ALTERNATE \n");
+                                   }
                               }
-                              CONVERGE = (GALCHI < 1.0e10f);
-                              OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
-                              VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
                          }
                          else{ //if PGAUSS didn't converge
                               if (lverb > 20){
@@ -313,23 +323,34 @@ C:   its value to imtype(i).  -PLS  */
                               ONESTAR = &pgauss2d_;
                          }
                     } //end if which model = 0 or if !PGAUSS default model
-                    else{ //if which model = 1 or PGAUSS is the default model
+                    else{ //if which model = 1 or 2 or PGAUSS is the default model
                          GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                &crudestat_.npt, A, FA, C_ptr,
                                &NFIT2, ACC, ALIM, &NIT);
-                         NIT = ITFIT;
-                         parupd_(A, SHADOW[K], &IX, &IY);
-                         errupd_(C_ptr, SHADERR[K], &NFIT2);
-
-                         VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
-                         if (JMTYPE == 3){
-                              VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
-                         }
                          CONVERGE = (GALCHI < 1.0e10f);
-                         OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
-                         VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
+                         if (!(CONVERGE)){
+                              if (lverb > 20){
+                                   fprintf(logfile,"Obj# %d at %f %f\n",
+                                      I, STARPAR[K][2], STARPAR[K][3]);
+                                   fprintf(logfile,"FAILED TO CONVERGE!\n");
+                              }
+                         }
                     }
 
+                    // regardless if you tested for the PGAUSS model,
+                    // the PGAUSS model converged or didn't or the alt model did
+                    // subsequently, update the params and eval VERYBIG and offpic.
+                    NIT = ITFIT;
+                    parupd_(A, SHADOW[K], &IX, &IY);
+                    errupd_(C_ptr, SHADERR[K], &NFIT2);
+
+                    VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
+                    if (JMTYPE == 3){
+                         VERYBIG = ((VERYBIG) && (CHI[3] > XTRA));
+                    }
+                    OFFP = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
+                    VERYBIG = ((VERYBIG) && (!OFFP) && (CONVERGE));
+                  
                     /* 91-Oct-27 If the object position is fixed then 
                        we don't test for duplicity.  If it failed to 
                        converge, it is so flagged, and its original 
@@ -343,11 +364,6 @@ C:   its value to imtype(i).  -PLS  */
                                    JMTYPE = 9;
                               }
                               SHADOW[K][0] = 0.0f;
-                              if (lverb > 20){
-                                   fprintf(logfile,"Obj# %d at %f %f\n",
-                                      I, STARPAR[K][2], STARPAR[K][3]);
-                                   fprintf(logfile,"FAILED TO CONVERGE!\n");
-                              }
                          }
                          else{
                               if (OFFP){
@@ -382,7 +398,7 @@ C:   its value to imtype(i).  -PLS  */
                                        0, " ", 0, " ");
                          }
                     }
-                    else{ //to if !VERYBIG || FIXXY
+                    else{ //to if !VERYBIG || FIXXY, check for double star or galaxy
                          if (lverb > 20){
                               /* Changed indices. */
                               fprintf(logfile,"Obj# %d at %f %f\n",
@@ -404,7 +420,8 @@ C:   its value to imtype(i).  -PLS  */
                               }
                               ONESTAR = ONESTAR_7P; //make sure no longer pgauss
                               NFIT2   = tune4_.nfit2; //make sure no longer pgauss
-                              WHICH_MODEL[K] = 0; //make sure no longer pgauss
+                              WHICH_MODEL[K] = 0; //make sure no longer pgauss, but retest
+                                            //for which model on subsequent passes
                               JMTYPE   = 3;
                               EMSUB[K] = 0;
                               parupd_(B, SHADOW[K],  &IX, &IY); 
