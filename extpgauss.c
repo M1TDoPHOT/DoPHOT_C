@@ -5,10 +5,10 @@
 #include "drfake_struct.h"
 #include "mini_mathlib.h"
 #include "cast_arr.h"
-#include "pgauss.h"
+#include "extpgauss.h"
 
-/* dophot function with 'entry' converted to 2 c double functions
-   02-17-2012 */
+/* new function, extended pseudogaussian, created to allow beta4 and 6 to vary
+   07-31-2012 */
 
 double extpgauss2d_(short int* ix, float* a, float* fa, int* m_ptr, int* fitcall_ptr)
 {

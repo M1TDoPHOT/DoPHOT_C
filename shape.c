@@ -82,7 +82,6 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      int EMENAB   = tune22_.emenab;
 
      /* substance of subroutine begins here */
-     float** TWOFPAR = malloc_float_2darr(NSMAX, NPMAX);
      int VERYBIG, OFFP, VFAINT, CONVERGE, NOTNUFF, GOTFAINT;
      int PGAUSS_CONVERGE, PGAUSS_CHI;
      int transmask_ret;
@@ -90,13 +89,11 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      static int ISUB = -1;
      static int JADD =  2;
      static int JSUB = -2;
-     static int IZERO = 0;
 
      int NSPREV, I, K; //K is the array subscript index == I-1
      float SKY, GALCHI, STARCHI;
      int JMTYPE;
      int IX, IY;
-     int MIX, MIY; //negative IX and IY to pass to fxns as ptrs
      float dum, DX, DY;
      int ITFIT;
      int LAST;
@@ -115,6 +112,8 @@ C:   its value to imtype(i).  -PLS  */
      NSPREV = search_.nstot;
      for (I = 1; I <= NSPREV; I++){
           K = I-1;
+          //specify fitting model for the specific star
+          //default is 0, 
           if (WHICH_MODEL[K] == 0){ //normal specified model
                ONESTAR = ONESTAR_7P;
                NFIT2   = NFIT2_7P;
@@ -124,12 +123,11 @@ C:   its value to imtype(i).  -PLS  */
                NFIT2   = 7;
           }
 
-          funnypass_.funny = 0; //false
-          GOTFAINT         = 0; //false
           if (lverb > 20){
                fprintf(logfile,"Determining SHAPE for object No. %d\n", I);
           }
 
+          // determine if fixed postion fits 
           fixpass_.fixxy = ( (IMTYPE[K] - (IMTYPE[K] % 10)) == 10);
           if (fixpass_.fixxy){
                JMTYPE = IMTYPE[K] - 10;
@@ -137,8 +135,12 @@ C:   its value to imtype(i).  -PLS  */
           else{
                JMTYPE = IMTYPE[K];
           }
-          VFAINT = (JMTYPE == 7);
-     
+
+          funnypass_.funny = 0; //false
+          GOTFAINT         = 0; //false
+          VFAINT = (JMTYPE == 7); //if already flagged vfaint...
+
+          // get guesses for fit parameters 0-3 A from STARPAR and IX, IY     
           if (SHADOW[K][0] == 0.0f){
                SKY = guess2_(A, STARPAR[K], &IX, &IY);
           }
@@ -154,20 +156,19 @@ C:   its value to imtype(i).  -PLS  */
                                       STARPAR[K][2], STARPAR[K][3]);
                }
           }
-          else{
-               if ((JMTYPE == 4) || (JMTYPE == 9)){
-                    if (lverb > 20){
-                         /* Changed loop indices. */
-                         fprintf(logfile,"SKIPPING NONCONVERGER.. ");
-                         fprintf(logfile,"Obj# %d AT %f %f\n",
-                                    I, STARPAR[K][2], STARPAR[K][3]);
-                    }
+          else if ((JMTYPE == 4) || (JMTYPE == 9)){
+               if (lverb > 20){
+                    /* Changed loop indices. */
+                    fprintf(logfile,"SKIPPING NONCONVERGER.. ");
+                    fprintf(logfile,"Obj# %d AT %f %f\n",
+                               I, STARPAR[K][2], STARPAR[K][3]);
                }
           }
 
           if ( (!VFAINT)     &&
                (JMTYPE != 4) && (JMTYPE != 6) &&
                (JMTYPE != 8) && (JMTYPE != 9)   ){
+               //add empirical or analytic object back to image
                if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
                     addstar_(&oneemp_, BIG, NOISE,
                              &NFAST, &NSLOW, 
@@ -185,8 +186,11 @@ C:   its value to imtype(i).  -PLS  */
                     galpass_.bigfoot = 0; //false
                }
 
+               //populate crudestat struct with information on star center and
+               //number of good pixels with fillerup
                fillerup_(BIG, NOISE, &IX, &IY,
                              &NFAST, &NSLOW);
+
                NOTNUFF = (crudestat_.npt < (int)(ENUFF7*IRECT[0]*IRECT[1]));
                if (NOTNUFF){  //not enough pts for 7 parameter fit, enough for 4
                     if (lverb > 20){
@@ -196,16 +200,12 @@ C:   its value to imtype(i).  -PLS  */
                          fprintf(logfile,
                  ".... SKIPPING STAR: not enough pixels for 7-param fit\n"); 
                     }
-                    fprintf(logfile,
-                    "Obj#, NPTS, IX & IY = %d %d %d %d \n",
-                            I, crudestat_.npt, IX, IY); 
-                    fprintf(logfile,
-                 ".... SKIPPING STAR: not enough pixels for 7-param fit\n"); 
                     if (JMTYPE != 2){
                          JMTYPE = 5;
                     }
                }
 
+               // is the obj bright enough over the sky given the star mask
                if (fixpass_.fixxy){
                     transmask_ret = transmask_(BIG, NOISE,
                                           &NFAST, &NSLOW,
@@ -216,6 +216,8 @@ C:   its value to imtype(i).  -PLS  */
                     }
                }
 
+               //if too faint or too many bax bixels for a shape fit, 
+               //subtract object back from image using star model and ignore
                if ((NOTNUFF) || (GOTFAINT)){
                     if (lverb > 20){
                          fprintf(logfile,
@@ -240,15 +242,15 @@ C:   its value to imtype(i).  -PLS  */
                                   0, " ", 0, " ");
                          galpass_.bigfoot = 0; //false
                     }
-               } //faint and missing pixel objects are now resubtracted from image
-               else{
+               } 
+               else{ //if object bright and enough pixels for shape fit, do one
                     if (lverb > 20){
                          fprintf(logfile,
                          "Obj#, #-PTS FIT, X, Y = %d %d %d %d \n",
                                  I, crudestat_.npt, IX, IY); 
                     }
-                    ITFIT = NIT;
-                    NIT = 2*ITFIT; 
+                    ITFIT = NIT; //hold number of iterations default
+                    NIT = 2*ITFIT; //for shape pass, want more than default
                     //on first pass, fit with standard pseudogaussian model
                     //if it doesn't converge, set as object of type 9
                     //if it does converge, and the model is something else
@@ -263,18 +265,19 @@ C:   its value to imtype(i).  -PLS  */
                               fprintf(logfile, "     fitting PGAUSS model \n");
                          }
                          TESTED[K] += 1; //specifying that the star has now been fit once
-                         NFIT2 = 7;
+                         NFIT2 = 7; //number of shape parameters in pgauss model
+                         NIT = 2*ITFIT; //for first shape pass, need more iterations
                          PGAUSS_CHI = (float)onefit_(&pgauss2d_, XX, Z, YE, 
                                     &crudestat_.npt, A, FA, C_ptr,
                                     &NFIT2, ACC, ALIM, &NIT);
                          PGAUSS_CONVERGE = (PGAUSS_CHI < 1.0e10f);
-                         if (PGAUSS_CONVERGE){ 
+                         if (PGAUSS_CONVERGE){ //try 7+ param model using pgauss params
                               if (lverb > 20){
                                    fprintf(logfile, "     PGAUSS model CONVERGED \n");
                                    fprintf(logfile, "     trying alternate model \n");
                               }
-                              NIT = 3*ITFIT; 
-                              NFIT2 = tune4_.nfit2;
+                              NIT = 3*ITFIT; //need more iterations for more parameters
+                              NFIT2 = tune4_.nfit2; // number of shape params in 7+ param model
                               for (index = 7; index < NFIT2; index++){
                                    A[index]  = AVA[index];
                                    FA[index] = 1.0f;
@@ -295,6 +298,7 @@ C:   its value to imtype(i).  -PLS  */
                                    WHICH_MODEL[K] = 1; //specifying pgauss model hence
                                    NFIT2 = 7;
                                    ONESTAR = &pgauss2d_;
+                                   //make new guess because old params corrupted by bad fit
                                    SKY = guess2_(A, STARPAR[K], &IX, &IY);
                                    GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                               &crudestat_.npt, A, FA, C_ptr,
@@ -323,7 +327,8 @@ C:   its value to imtype(i).  -PLS  */
                               ONESTAR = &pgauss2d_;
                          }
                     } //end if which model = 0 or if !PGAUSS default model
-                    else{ //if which model = 1 or 2 or PGAUSS is the default model
+                    else{ //if which model = 1 or not first pass, or PGAUSS is the default model
+                         NIT = 2*ITFIT; //if it is the first shape pass, need more iterations
                          GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                &crudestat_.npt, A, FA, C_ptr,
                                &NFIT2, ACC, ALIM, &NIT);
@@ -340,9 +345,9 @@ C:   its value to imtype(i).  -PLS  */
                     // regardless if you tested for the PGAUSS model,
                     // the PGAUSS model converged or didn't or the alt model did
                     // subsequently, update the params and eval VERYBIG and offpic.
-                    NIT = ITFIT;
-                    parupd_(A, SHADOW[K], &IX, &IY);
-                    errupd_(C_ptr, SHADERR[K], &NFIT2);
+                    NIT = ITFIT; //resetting to default, no longer first pass
+                    parupd_(A, SHADOW[K], &IX, &IY); //update SHADOW from A
+                    errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
 
                     VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
                     if (JMTYPE == 3){
@@ -356,28 +361,31 @@ C:   its value to imtype(i).  -PLS  */
                        converge, it is so flagged, and its original 
                        status as type 3 is preserved. */
                     if ((!VERYBIG) || (fixpass_.fixxy)){
+                         //not large, but not a double, then single star
                          if (JMTYPE != 3){
                               JMTYPE = 1;
                          }
+                         //with the excption that if there was no convergence, flag with type 9
                          if (!CONVERGE){
                               if (JMTYPE != 3){
                                    JMTYPE = 9;
                               }
-                              SHADOW[K][0] = 0.0f;
+                              //trigger to use STARPAR values hence, not the SHADOW values
+                              //which were updated with the bad fit values
+                              SHADOW[K][0] = 0.0f; 
                          }
-                         else{
-                              if (OFFP){
-                                   JMTYPE = 9;
-                                   SHADOW[K][0] = 0.0f;
-                                   if (lverb > 20){
-                                        /* Changed indices. */
-                                        fprintf(logfile,"ABSURD SHAPE VALUES for ");
-                                        fprintf(logfile,"Obj# %d at %f %f\n",
-                                           I, STARPAR[K][2], STARPAR[K][3]);
-                                        fprintf(logfile,
-                                           "Fit center outside fit subraster\n");
-                                        fprintf(logfile,".... DISCARD SOLUTION!\n");
-                                   }
+                         else if (OFFP){
+                              JMTYPE = 9;
+                              //trigger to use STARPAR values hence, not the SHADOW values
+                              //which were updated with the bad fit values
+                              SHADOW[K][0] = 0.0f;
+                              if (lverb > 20){
+                                   fprintf(logfile,"ABSURD SHAPE VALUES for ");
+                                   fprintf(logfile,"Obj# %d at %f %f\n",
+                                      I, STARPAR[K][2], STARPAR[K][3]);
+                                   fprintf(logfile,
+                                      "Fit center outside fit subraster\n");
+                                   fprintf(logfile,".... DISCARD SOLUTION!\n");
                               }
                          }
 
@@ -398,19 +406,17 @@ C:   its value to imtype(i).  -PLS  */
                                        0, " ", 0, " ");
                          }
                     }
-                    else{ //to if !VERYBIG || FIXXY, check for double star or galaxy
+                    else{ //if it is VERYBIG and fixxy is not flagged,
+                          //check if double star or galaxy
                          if (lverb > 20){
-                              /* Changed indices. */
                               fprintf(logfile,"Obj# %d at %f %f\n",
                                  I, STARPAR[K][2], STARPAR[K][3]);
                               fprintf(logfile,"  is VERY BIG....\n");
                               fprintf(logfile,"  ..Testing GALAXY vs. DBLE-STAR\n");
                          }
-                         MIX = -IX;
-                         MIY = -IY;
-                         twoupd_(TWOFPAR[K], B, &MIX, &MIY);
-                         IX = -MIX;
-                         IY = -MIY;
+                         //fit a double star model, populating the b fit arrays
+                         //starpar passed but NOT changed
+                         B[0] = 0.0f; //so B will update with fresh params in twofit
                          STARCHI = (float)twofit_(TWOSTAR, STARPAR[K]);
                          if (STARCHI/GALCHI < STOGRAT){
                               if (lverb > 20){
@@ -420,23 +426,33 @@ C:   its value to imtype(i).  -PLS  */
                               }
                               ONESTAR = ONESTAR_7P; //make sure no longer pgauss
                               NFIT2   = tune4_.nfit2; //make sure no longer pgauss
-                              WHICH_MODEL[K] = 0; //make sure no longer pgauss, but retest
-                                            //for which model on subsequent passes
+                
+                              //set star 1 information and resubtract
+                              WHICH_MODEL[K] = 0; //make sure no longer pgauss
+                              TESTED[K] = 0; //retest for other model convergence 
+                                               //on subsequent passes
                               JMTYPE   = 3;
                               EMSUB[K] = 0;
-                              parupd_(B, SHADOW[K],  &IX, &IY); 
+                              //update the starpar params from B but not SHADOW
+                              //full shape fit was not done for this object
+                              parupd_(B, SHADOW[K],  &IX, &IY);//COMMENTED from F77 LOGIC  
                               parupd_(B, STARPAR[K], &IX, &IY); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
                                        STARPAR[K],
                                        ADDAREA[K], &ISUB,
                                        0, " ", 0, " ");
+                              
+                              //set star 2 information and resubtract
                               search_.nstot += 1;
                               LAST = search_.nstot - 1;
+                              WHICH_MODEL[LAST] = 0; //make sure not pgauss
+                              TESTED[LAST] = 0; //retest for other model convergence 
+                                               //on subsequent passes
                               IMTYPE[LAST] = 3;
                               EMSUB[LAST] = 0;
-                              parupd_(TWOFPAR[LAST], 
-                                      TWOFPAR[K], &IZERO, &IZERO); 
+                              //update the starpar params from B but not SHADOW
+                              //full shape fit was not done for this object
                               parupd_((B+NFIT2), STARPAR[LAST], &IX, &IY); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
@@ -452,10 +468,12 @@ C:   its value to imtype(i).  -PLS  */
                               }
                               JMTYPE   = 2;
                               EMSUB[K] = 0;
+
+                              //update the starpar and shadow params from A
                               parupd_(A,  STARPAR[K], &IX, &IY); 
-                              twoupd_(B,  TWOFPAR[K], &IX, &IY);
+                              parupd_(A,  SHADOW[K],  &IX, &IY); 
                               // keep whatever model (ONSTAR_7P or pgauss) had converged earlier)
-                              galpass_.bigfoot = 1; //true
+                              galpass_.bigfoot = 1; //true galaxies have a big footprint
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
                                        STARPAR[K],
@@ -474,9 +492,6 @@ C:   its value to imtype(i).  -PLS  */
           fixpass_.fixxy = 0; //false
      } //end I loop
      trans7_.test7 = 0; //false
-
-     /* freeing locally allocated memory and recasting changed pointers */         
-     free_float_2darr(NSMAX, TWOFPAR);
 
 }
 

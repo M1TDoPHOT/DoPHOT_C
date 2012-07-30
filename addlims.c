@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 #include "tuneable.h"
 #include "mini_mathlib.h"
 
@@ -16,16 +17,23 @@ void addlims_(float* STARPAR, short int* JRECT)
 
      /* renaming tuneable variables */
      float NPHSUB = (float)tune6_.nphsub; 
-     float BETA6  = tune17_.beta6;
      float IHTAB  = (float)tune22_.ihtab; 
      
      /* substance of subroutine begins here */
      float TEMP, FUDGEX, FUDGEY;
+     float BETA6;
+     if (strncmp(tune16_.flags[0], "EXTPGAUSS", 5) == 0){
+          BETA6 = STARPAR[8];
+     }
+     else{
+          BETA6 = tune17_.beta6;
+     }
+
 
      if (STARPAR[1] > 0.0f){
           TEMP = powf( ((STARPAR[1]/NPHSUB)*(6.0f/BETA6)), 0.33333333f );
 
-          if (STARPAR[4] > 0){
+          if (STARPAR[4] > 0.0f){
                FUDGEX = sqrtf(TEMP*STARPAR[4]*2.0f);
           }
           else{
