@@ -344,7 +344,8 @@ C:   its value to imtype(i).  -PLS  */
 
                     // regardless if you tested for the PGAUSS model,
                     // the PGAUSS model converged or didn't or the alt model did
-                    // subsequently, update the params and eval VERYBIG and offpic.
+                    // subsequently, update the shadow fit params 
+                    // and eval VERYBIG and offpic.
                     NIT = ITFIT; //resetting to default, no longer first pass
                     parupd_(A, SHADOW[K], &IX, &IY); //update SHADOW from A
                     errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
@@ -433,9 +434,8 @@ C:   its value to imtype(i).  -PLS  */
                                                //on subsequent passes
                               JMTYPE   = 3;
                               EMSUB[K] = 0;
-                              //update the starpar params from B but not SHADOW
-                              //full shape fit was not done for this object
-                              parupd_(B, SHADOW[K],  &IX, &IY);//COMMENTED from F77 LOGIC  
+                              //update the starpar params from B and new shadow fit
+                              parupd_(B, SHADOW[K],  &IX, &IY);//from F77 LOGIC  
                               parupd_(B, STARPAR[K], &IX, &IY); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
@@ -452,7 +452,6 @@ C:   its value to imtype(i).  -PLS  */
                               IMTYPE[LAST] = 3;
                               EMSUB[LAST] = 0;
                               //update the starpar params from B but not SHADOW
-                              //full shape fit was not done for this object
                               parupd_((B+NFIT2), STARPAR[LAST], &IX, &IY); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 

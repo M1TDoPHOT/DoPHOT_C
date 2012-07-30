@@ -66,8 +66,8 @@ void fillerup_(int** BIG, int** NOISE, int* IXIN_ptr, int* IYIN_ptr, int* JFAST_
                          IYI = (int)(IY);
                          if ( max( abs(IXI), abs(IYI) ) <= 1 ){
                               MAXVAL = IBIG;
-                              XM     = (float)IX;
-                              YM     = (float)IY;
+                              XM     = (float)IX; //position of largest val
+                              YM     = (float)IY; //position of largest val
                          }
                     }
                     NPT += 1;
