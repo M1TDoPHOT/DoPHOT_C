@@ -37,6 +37,7 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      short int* IRECT = tune2_.irect;
      short int* KRECT = tune2_.krect;
      int NFIT1        = tune4_.nfit1;
+     int NFIT2        = tune4_.nfit2;
      int NIT2         = 2*tune4_.nit;
      int ITOP         = tune3_.itop; //saturated pixel value
      float ENUFF4     = tune10_.enuff4; //if there are enough pixels present
@@ -106,12 +107,14 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                     if ( J <= (NFAST - (int)(NTHPIX/2)) ){ 
                          JFLOAT = (float)(J + NTHPIX/2); 
                          IFLOAT = (float)(I); 
+                         //populate 'dummy' with position specific average star values
                          parinterp_return = parinterp_(&JFLOAT, &IFLOAT, dummy);
                          BESTSKY = (float)parinterp_return;
                     }
                     else{
                          JFLOAT = (float)(J); 
                          IFLOAT = (float)(I); 
+                         //populate 'dummy' with position specific average star values
                          parinterp_return = parinterp_(&JFLOAT, &IFLOAT, dummy);
                          BESTSKY = (float)parinterp_return;
                     }
@@ -124,6 +127,7 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                    && ((float)INOISE <= (THRESH2/PIXT2)) ){
                     JFLOAT = (float)(J); 
                     IFLOAT = (float)(I); 
+                    //populate 'dummy' with position specific average star values
                     parinterp_return = parinterp_(&JFLOAT, &IFLOAT, dummy);
                     HIGHSKY    = (float)parinterp_return;
                     HIGHTHRESH = HIGHSKY + THRESH;
@@ -171,7 +175,10 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                              fprintf(logfile,
                                              "THIS IS STAR NO. %d\n", NSTOT);
                                         }
-                                        parupd_(A, STARPAR[NSTOT-1], &J, &I);
+                                        //update object with 7+ starpar values, 
+                                        //even though only 4 fitted.  
+                                        //rest obtained from averages in parinterp
+                                        parupd_(A, STARPAR[NSTOT-1], J, I, NFIT2);
                                         errupd_(C_ptr, ERR, &NFIT1);
                                         COSMIC    = cosmic_(ONESTAR, 
                                                        BIG, NOISE,

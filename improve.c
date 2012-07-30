@@ -42,7 +42,7 @@
 
 int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr)
 {
-//printf("begin improve \n");
+
      /* dereference pointers */
      int NFAST = *NFAST_ptr;
      int NSLOW = *NSLOW_ptr;
@@ -71,6 +71,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      short int* KRECT = tune2_.krect;
      float* ARECT = tune2_.arect;
      int NFIT1    = tune4_.nfit1; //usually 4, sky, x, y, intensity
+     int NFIT2    = tune4_.nfit2; //usually 7, full star parameters
      int NIT      = tune4_.nit;
      float EPERDN = tune11_.eperdn;
      float RNOISE = tune11_.rnoise;
@@ -166,6 +167,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
           K = I-1; //for array indexes
 
           if (WHICH_MODEL[K] == 0){ //normal specified model
+               //possibly empirical
                ONESTAR = ONESTAR_7P;
           }
           if (WHICH_MODEL[K] == 1){ //pgaussogaussian
@@ -205,6 +207,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     galpass_.bigfoot = 0; //false
                }
 
+               // populate fit matrix A with average star parameters,
+               // don't alter STARPAR
                SKY = (float)guess3_(A, STARPAR[K], &IX, &IY);
                if (lverb > 20){
                     fprintf(logfile,"IMPROVING STAR # %d AT %d %d \n",
@@ -216,7 +220,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     JRECT[1] = IRECT[1];               
                     IRECT[0] = KRECT[0];               
                     IRECT[1] = KRECT[1]; 
-               }              
+               } 
+               // get crude statistics for object sky and position val             
                fillerup_(BIG, NOISE, &IX, &IY, 
                                         &NFAST, &NSLOW); 
                if (EMSUB[K] == -1){
@@ -248,7 +253,6 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                                     &crudestat_.npt, A, FA, C_ptr, 
                                     &NFIT, ACC, ALIM, &IIT);
                     STARCHI = (float)onefit_return;
-//  printf("%d %10.4e \n", K+1, onefit_return);
                }
                else{
                     if (lverb > 20){
@@ -264,7 +268,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     CONVERGE = (STARCHI < 9.0e9f);
                     if (CONVERGE){
                          if (JMTYPE != 2){
-                              parupd_(A, STARPAR[K], &IX, &IY);
+                              //update with most recent average star parameters
+                              parupd_(A, STARPAR[K], IX, IY, NFIT2);
                               errupd_(C_ptr, ERR, &NFIT);
                               if (JMTYPE != 3){
                                    logic_ret = toofaint_(
@@ -296,7 +301,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                               this_C = get_float_ij(C_ptr, NFIT1, 1, 1, 0);
                               APPLE[K][3] = 1.086f*(1.0f/A[1])*this_C;
                               if (fixpass_.fixxy){
-                                   this_C = get_float_ij(C_ptr, NFIT1-2, 1, 1, 0);
+                                   this_C = get_float_ij(C_ptr, NFIT0, 1, 1, 0);
                                    APPLE[K][3] = 1.086f*(1.0f/A[1])*this_C;
                               }
                               /* I'll risk using fa and c again; 
@@ -337,7 +342,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                                         this_C = get_float_ij(C_ptr, NFIT1, 1, 1, 0);
                                         EMERR[K] = 1.086f*(1.0f/B[1])*this_C;
                                         if (fixpass_.fixxy){
-                                             this_C = get_float_ij(C_ptr, NFIT1-2, 1, 1, 0);
+                                             this_C = get_float_ij(C_ptr, NFIT0, 1, 1, 0);
                                              EMERR[K] = 1.086f
                                                  *(1.0f/B[1])*this_C;
                                         }
@@ -420,8 +425,5 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      free_char_arr(NSTOT, mf_names);
      free_char_arr(NSTOT, cf_names);
 
-//printf("end improve \n");
-//printf("\n");
-//printf("\n");
      return 1;
 }

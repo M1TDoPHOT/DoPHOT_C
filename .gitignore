@@ -9,6 +9,7 @@ verif_data/param_out
 verif_data/log.txt
 verif_data/debug_warmstart.fits
 verif_data/debug_shape.fits
+verif_data/diff.txt
 ri_files/*
 working_data/*
 structs/ctype_rsfake_struct.h

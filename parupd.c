@@ -9,15 +9,10 @@ C:  FITTING FUNCTION IF A[0], A[1], A[2] or A[3] are changed.
 C:  ELSE IT's FINE.
 */
 
-void parupd_(float* A, float* STARPAR, int* IX_ptr, int* IY_ptr)
+void parupd_(float* A, float* STARPAR, int IX, int IY, int NPAR)
 {
 
-     /* dereference pointers */
-     int IX = *IX_ptr;
-     int IY = *IY_ptr;
-
      /* rename used common block vars */
-     int   NPAR    = tune4_.npar;
      float UFACTOR = unitize_.ufactor;
 
      /* substance of subroutine begins here */
@@ -33,6 +28,7 @@ void parupd_(float* A, float* STARPAR, int* IX_ptr, int* IY_ptr)
     
 } 
 
+//twoupd currently unused
 void twoupd_(float* A, float* STARPAR, int* IX_ptr, int* IY_ptr)
 {
 

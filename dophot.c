@@ -161,7 +161,6 @@ int main()
      fixpass_.fixxy   = 0; //false 
      trans7_.test7    = 0;
      unitize_.ufactor = 100.0f;
-     first            = 1;
      search_.nstot    = 0;    
 
      /* initialize all of the tuneable.h variables
@@ -256,9 +255,9 @@ int main()
      char* warmstartfile;
      if (WARM){
           warmstartfile = stringstrip_(files[2]);
-//     printf("here before warmstart\n");
+          //printf("here before warmstart\n");
           warmstart_(model2d, big, noise, &nfast, &nslow, warmstartfile);
-//     printf("here after warmstart\n");
+          //printf("here after warmstart\n");
           free(warmstartfile);
      }
 
@@ -288,7 +287,18 @@ int main()
      FILE* errfile; //only used if outfiletype = 0
      char* shadowfilename;
      FILE* shadowfile;
+    
+      
+     first = ( (tune21_.fixpos) || (WARM) );
      while ((search_.thresh / tune3_.tmin) >= 0.999f){
+
+          if (first){ 
+               //output the warmstart subtracted object image
+               if(flags[4][0] == 'Y'){ //output image
+                    newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
+               }
+          }
+
           tune22_.emenab = (search_.thresh <= tune22_.emthrsh);
           if (lverb > 10){
                fprintf(logfile," \n");        
@@ -296,7 +306,7 @@ int main()
                                 search_.thresh);
           }
  
-//     printf("here before sky\n");
+//        printf("here before sky\n");
           if (strncmp(flags[1], "MEDIA", 5) == 0){
                if ((PASSCNT == 0) || (PASSCNT == (NPPP-2))){
                     if (lverb >= 10){
@@ -321,65 +331,29 @@ int main()
           if (strncmp(flags[1], "HUBBL", 5) == 0){
                variparhub_(&search_.nstot, &nfast, &nslow);
           }
-//     printf("here after sky\n");
+//        printf("here after sky\n");
                
           /* need varipar because improve calls guess3 which calls skyfun
              need makemask because improve calls snok which needs mask
              empirical PSF won't be fitted on this pass because emenab
              is false */
 
-//     printf("here before makemask\n");
+//        printf("here before makemask\n");
           makemask_(model2d);
-//     printf("here before makemask\n");
+//        printf("here before makemask\n");
 
-          if( (tune21_.fixpos) && (first) ){
-               //printf("here before shape\n");
-               shape_(model2d, model4d, big, noise, &nfast, &nslow);
-               //printf("here after shape\n");
-               if (tune22_.emenab){
-                    //printf("here before bestab\n");
-                    bestab_(model2d, big, noise, &nfast, &nslow);
-                    //printf("here after bestab\n");
-               }
-               //printf("here before improve fixpos\n");
-               improve_(model2d, big, noise, &nfast, &nslow);
-               //printf("here after improve fixpos\n");
+          if (!first){
+//             printf("here before isearch\n");
+               NSTAR = isearch_(model2d, big, noise, &nfast, &nslow);
+//             printf("here after isearch\n");
           }
 
-          if ((WARM) && (first) && !(tune21_.fixpos)){
-               //output the warmstart subtracted object image
-               if(flags[4][0] == 'Y'){ //output image
-                    newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
-               }
-
-               //printf("here before shape\n");
-               shape_(model2d, model4d, big, noise, &nfast, &nslow);
-               //printf("here after shape\n");
-               if (tune22_.emenab){
-                    //printf("here before bestab\n");
-                    bestab_(model2d, big, noise, &nfast, &nslow);
-                    //printf("here after bestab\n");
-               }
-               //printf("here before improve fixpos\n");
-               improve_(model2d, big, noise, &nfast, &nslow);
-               //printf("here after improve fixpos\n");
-
-               //output the shape corrected image
-               if(flags[4][0] == 'Y'){ //output image
-                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
-               }
-          }
-          first = 0;
-
-//     printf("here before isearch\n");
-          NSTAR = isearch_(model2d, big, noise, &nfast, &nslow);
-//     printf("here after isearch\n");
-//     printf("here before shape\n");
+//        printf("here before shape\n");
           shape_(model2d, model4d, big, noise, &nfast, &nslow);
-//     printf("here after shape\n");
-//     printf("here before paravg\n");
+//        printf("here after shape\n");
+//        printf("here before paravg\n");
           paravg_();
-//     printf("here after paravg\n");
+//        printf("here after paravg\n");
 
           if (search_.nstot >= 1){
                if (strncmp(flags[1], "MEDIA", 5) == 0){
@@ -395,13 +369,21 @@ int main()
 
           // improving for empiricals         
           if (tune22_.emenab){
-//     printf("here before bestab\n");
+//        printf("here before bestab\n");
                 bestab_(model2d, big, noise, &nfast, &nslow);
-//     printf("here after bestab\n");
+//        printf("here after bestab\n");
           }
-//     printf("here before improve\n");
+//        printf("here before improve\n");
           improve_(model2d, big, noise, &nfast, &nslow);
-//     printf("here after improve\n");
+//        printf("here after improve\n");
+
+          if (first){
+               //output the shape corrected image
+               if(flags[4][0] == 'Y'){ //output image
+                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
+               }
+               first = 0;
+          }
 
           if (lverb > 10){
                fprintf(logfile,"Ending loop at threshold level %f \n",

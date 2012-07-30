@@ -21,7 +21,7 @@
 #include "transmask.h"
 #include "empiricals.h" //contains oneemp and oldemp
 #include "galaxy.h"
-#include "parupd.h" //contains twoupd as well
+#include "parupd.h"
 #include "errupd.h"
 #include "fillerup.h"
 #include "addstar.h"
@@ -70,6 +70,7 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
 
      short int* IRECT = tune2_.irect;
      int NIT      = tune4_.nit;
+     int NFIT1    = tune4_.nfit1; //4 fitted params of type 1
      int NFIT2_7P = tune4_.nfit2;
      float STOGRAT = tune8_.stograt;
      float XTRA   = tune9_.xtra;
@@ -264,7 +265,6 @@ C:   its value to imtype(i).  -PLS  */
                          if (lverb > 20){
                               fprintf(logfile, "     fitting PGAUSS model \n");
                          }
-                         TESTED[K] += 1; //specifying that the star has now been fit once
                          NFIT2 = 7; //number of shape parameters in pgauss model
                          NIT = 2*ITFIT; //for first shape pass, need more iterations
                          PGAUSS_CHI = (float)onefit_(&pgauss2d_, XX, Z, YE, 
@@ -347,7 +347,8 @@ C:   its value to imtype(i).  -PLS  */
                     // subsequently, update the shadow fit params 
                     // and eval VERYBIG and offpic.
                     NIT = ITFIT; //resetting to default, no longer first pass
-                    parupd_(A, SHADOW[K], &IX, &IY); //update SHADOW from A
+                    //update all shape fit params to shadow files
+                    parupd_(A, SHADOW[K], IX, IY, NFIT2); 
                     errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
 
                     VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
@@ -363,10 +364,8 @@ C:   its value to imtype(i).  -PLS  */
                        status as type 3 is preserved. */
                     if ((!VERYBIG) || (fixpass_.fixxy)){
                          //not large, but not a double, then single star
-                         if (JMTYPE != 3){
-                              JMTYPE = 1;
-                         }
-                         //with the excption that if there was no convergence, flag with type 9
+                         //with the excption that if there was no convergence, 
+                         // or star found off pic, flag with type 9
                          if (!CONVERGE){
                               if (JMTYPE != 3){
                                    JMTYPE = 9;
@@ -389,6 +388,16 @@ C:   its value to imtype(i).  -PLS  */
                                    fprintf(logfile,".... DISCARD SOLUTION!\n");
                               }
                          }
+                         else if (JMTYPE != 3){
+                              JMTYPE = 1;
+                              //update the first 4 starpar params from A if first pass
+                              //analytic fit gives better guess of intensity and sky than crudestat
+                              if (TESTED[K] == 0){
+                                   parupd_(A,  STARPAR[K], IX, IY, NFIT1); 
+                              }
+                         }
+                         TESTED[K] += 1; //specifying that the star has been fit
+                              
 
                          /* if it was type 2 and is now otherwise, 
                             subtract the analytic PSF */
@@ -435,8 +444,10 @@ C:   its value to imtype(i).  -PLS  */
                               JMTYPE   = 3;
                               EMSUB[K] = 0;
                               //update the starpar params from B and new shadow fit
-                              parupd_(B, SHADOW[K],  &IX, &IY);//from F77 LOGIC  
-                              parupd_(B, STARPAR[K], &IX, &IY); 
+                              // note only the first 4 params were actually fit, 
+                              // rest fixed
+                              parupd_(B, SHADOW[K],  IX, IY, NFIT2);//from F77
+                              parupd_(B, STARPAR[K], IX, IY, NFIT2); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
                                        STARPAR[K],
@@ -451,8 +462,9 @@ C:   its value to imtype(i).  -PLS  */
                                                //on subsequent passes
                               IMTYPE[LAST] = 3;
                               EMSUB[LAST] = 0;
-                              //update the starpar params from B but not SHADOW
-                              parupd_((B+NFIT2), STARPAR[LAST], &IX, &IY); 
+                              //update the starpar and shadow params from B
+                              parupd_((B+NFIT2), SHADOW[LAST],  IX, IY, NFIT2);
+                              parupd_((B+NFIT2), STARPAR[LAST], IX, IY, NFIT2); 
                               addstar_(ONESTAR, BIG, NOISE,
                                        &NFAST, &NSLOW, 
                                        STARPAR[LAST],
@@ -460,6 +472,7 @@ C:   its value to imtype(i).  -PLS  */
                                        0, " ", 0, " ");
                          }
                          else{
+                              TESTED[K] += 1; //specifying that the galaxy has been fit
                               if (lverb > 20){
                                    fprintf(logfile," Result -> A GALAXY: \n");
                                    fprintf(logfile," GAL-CHI: %f  STAR-CHI: %f\n",
@@ -468,9 +481,8 @@ C:   its value to imtype(i).  -PLS  */
                               JMTYPE   = 2;
                               EMSUB[K] = 0;
 
-                              //update the starpar and shadow params from A
-                              parupd_(A,  STARPAR[K], &IX, &IY); 
-                              parupd_(A,  SHADOW[K],  &IX, &IY); 
+                              //update the starpar and params from A
+                              parupd_(A,  STARPAR[K], IX, IY, NFIT2); 
                               // keep whatever model (ONSTAR_7P or pgauss) had converged earlier)
                               galpass_.bigfoot = 1; //true galaxies have a big footprint
                               addstar_(ONESTAR, BIG, NOISE,

@@ -15,6 +15,7 @@ THRESHMAX = 10000.0          Value of maximum threshold.
 THRESHEMP = 30000          fit emperical psfs below this value
 THRESHDEC = 1.0          Threshold decrement in powers-of-2.
 MAX_SOUGHT = 32768          Quit after this number of improved stars.
+MAX_PERF = 2000          Only average up to this number of stars to get shape parameters.
 RANGE_MAG = 30.          Sets threshhold some magnitudes fainter than brightest fit.
 EPERDN = 35.0          Electrons per data number (2*WFI), for avg = eperdn*n 
 RDNOISE = 22.1          Readout noise in electrons (guess), for avg = rdnoise*sqrn(n)
