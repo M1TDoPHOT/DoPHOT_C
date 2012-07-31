@@ -53,6 +53,7 @@ DoPhotCOBJECTS = $(odir)mini_mathlib.o $(odir)cast_arr.o \
         $(odir)oblit.o $(odir)cosmic.o \
 	$(odir)probgal.o $(odir)chisq.o \
         $(odir)addstar.o stampout.o \
+        $(odir)add_analytic_or_empirical_obj.o \
         $(odir)shape.o \
 	$(odir)isearch.o \
         $(odir)bestab.o \

@@ -20,8 +20,7 @@
 #include "guess.h"
 #include "newfits.h"
 #include "tagi4.h"
-#include "empiricals.h" //contains oneemp and oldemp
-#include "addstar.h"
+#include "add_analytic_or_empirical_obj.h"
 #include "pgauss.h"
 #include "bestab.h"
  
@@ -50,7 +49,7 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
         which AREN'T used/changed frequently in subroutines */
      int*      IMTYPE = starlist_.IMTYPE;
      float**  STARPAR = starlist_.starpar; 
-     float**    EMPAR = estuff_.empar;
+//     float**    EMPAR = estuff_.empar;
      short int* EMSUB = estuff_.emsub;
      short int** ADDAREA = addobj_.addarea;
      float CINT  = eoff_.cint;
@@ -92,8 +91,8 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
 
      static int IADD =  1;
      static int ISUB = -1;
-     static int JADD =  2;
-     static int JSUB = -2;
+//     static int JADD =  2;
+//     static int JSUB = -2;
      static int INIT = 1; //true
      int one_dum = 1; //to pass as ptr to fxn tagi4
 
@@ -207,22 +206,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     }
                }
                else{
-                    if (EMSUB[IBEST-1] >= 1){
-                         changed_.useold = 1; //true
-                         addstar_(&oneemp_, BIG, NOISE,
-                                           NFAST, NSLOW,
-                                           EMPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], JADD,
-                                           0, " ", 0, " ");
-                         changed_.useold = 0; //false
-                    }
-                    else{
-                         addstar_(ONESTAR, BIG, NOISE,
-                                           NFAST, NSLOW,
-                                           STARPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], IADD,
-                                           0, " ", 0, " ");
-                    }
+                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 1; //true
+                    add_analytic_or_empirical_obj(ONESTAR, 
+                          BIG, NOISE, NFAST, NSLOW,
+                          STARPAR, ADDAREA, IADD,
+                          0, " ", 0, " ", IBEST-1, 0);
+                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //flase
 
                     for (J = -IHTAB; J <= IHTAB; J++){
                          JJ = J + IY - 1;
@@ -257,22 +246,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          }// end I loop
                     }// end J loop
 
-                    if (EMSUB[IBEST-1] >= 1){
-                         changed_.useold = 1; //true
-                         addstar_(&oneemp_, BIG, NOISE,
-                                           NFAST, NSLOW,
-                                           EMPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], JSUB,
-                                           0, " ", 0, " ");
-                         changed_.useold = 0; //false
-                    }
-                    else{
-                         addstar_(ONESTAR, BIG, NOISE,
-                                           NFAST, NSLOW,
-                                           STARPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], ISUB,
-                                           0, " ", 0, " ");
-                    }
+                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 1; //true
+                    add_analytic_or_empirical_obj(ONESTAR, 
+                          BIG, NOISE, NFAST, NSLOW,
+                          STARPAR, ADDAREA, ISUB,
+                          0, " ", 0, " ", IBEST-1, 0);
+                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //flase
 
                     if (!EMPOK){ 
                          if (EMSUB[IBEST-1] == -1){

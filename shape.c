@@ -25,6 +25,7 @@
 #include "errupd.h"
 #include "fillerup.h"
 #include "addstar.h"
+#include "add_analytic_or_empirical_obj.h"
 #include "guess.h"
 #include "pgauss.h" //even if ONESTAR is unique from PGAUSS, will need in !converge case
 #include "onefit.h"
@@ -46,7 +47,6 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      float**  STARPAR = starlist_.starpar;
      float**  SHADOW  = starlist_.shadow;
      float**  SHADERR = starlist_.shaderr;
-     float**    EMPAR = estuff_.empar;
      short int* EMSUB = estuff_.emsub;
      short int** ADDAREA = addobj_.addarea;
 //   not renamed because changed frequently and by subroutines
@@ -63,7 +63,6 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      float* FA = fitarrays_.fa;
      float* C_ptr = fitarrays_.c; //not recasting as only passed
      float*  B = fitarrays_.b;
-//     float* FB = fitarrays_.fb;
      float* CHI = byvirtue_.chi;
      int* WHICH_MODEL = model_.which_model;
      int* TESTED      = model_.tested;
@@ -79,8 +78,6 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      float* ACC   = tune15_.acc;
      float* ALIM  = tune15_.alim;
      float* AVA   = tune15_.ava;
-     int EMPOK    = tune22_.empok;
-     int EMENAB   = tune22_.emenab;
 
      /* substance of subroutine begins here */
      int VERYBIG, OFFP, VFAINT, CONVERGE, NOTNUFF, GOTFAINT;
@@ -88,8 +85,6 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      int transmask_ret;
      static int IADD =  1;
      static int ISUB = -1;
-     static int JADD =  2;
-     static int JSUB = -2;
 
      int NSPREV, I, K; //K is the array subscript index == I-1
      float SKY, GALCHI, STARCHI;
@@ -170,22 +165,9 @@ C:   its value to imtype(i).  -PLS  */
                (JMTYPE != 4) && (JMTYPE != 6) &&
                (JMTYPE != 8) && (JMTYPE != 9)   ){
                //add empirical or analytic object back to image
-               if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
-                    addstar_(&oneemp_, BIG, NOISE,
-                             NFAST, NSLOW, 
-                             EMPAR[K],
-                             ADDAREA[K], JADD,
-                             0, " ", 0, " ");
-               }
-               else{
-                    galpass_.bigfoot = (JMTYPE == 2);
-                    addstar_(ONESTAR, BIG, NOISE,
-                             NFAST, NSLOW, 
-                             STARPAR[K],
-                             ADDAREA[K], IADD,
-                             0, " ", 0, " ");
-                    galpass_.bigfoot = 0; //false
-               }
+               add_analytic_or_empirical_obj(ONESTAR, BIG, NOISE, 
+                     NFAST, NSLOW, STARPAR, ADDAREA, IADD, 
+                     0, " ", 0, " ", K, (JMTYPE==2) );
 
                //populate crudestat struct with information on star center and
                //number of good pixels with fillerup
@@ -227,22 +209,9 @@ C:   its value to imtype(i).  -PLS  */
                          fprintf(logfile,
                          ".... SKIPPING STAR: ought to be type 7\n");
                     }
-                    if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
-                         addstar_(&oneemp_, BIG, NOISE,
-                                  NFAST, NSLOW, 
-                                  EMPAR[K],
-                                  ADDAREA[K], JSUB,
-                                  0, " ", 0, " ");
-                    }
-                    else{
-                         galpass_.bigfoot = (JMTYPE == 2);
-                         addstar_(ONESTAR, BIG, NOISE,
-                                  NFAST, NSLOW, 
-                                  STARPAR[K],
-                                  ADDAREA[K], ISUB,
-                                  0, " ", 0, " ");
-                         galpass_.bigfoot = 0; //false
-                    }
+                    add_analytic_or_empirical_obj(ONESTAR, BIG, NOISE, 
+                          NFAST, NSLOW, STARPAR, ADDAREA, ISUB, 
+                          0, " ", 0, " ", K, (JMTYPE==2) );
                } 
                else{ //if object bright and enough pixels for shape fit, do one
                     if (lverb > 20){
@@ -398,23 +367,11 @@ C:   its value to imtype(i).  -PLS  */
                          }
                          TESTED[K] += 1; //specifying that the star has been fit
                               
-
                          /* if it was type 2 and is now otherwise, 
-                            subtract the analytic PSF */
-                         if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
-                              addstar_(&oneemp_, BIG, NOISE,
-                                       NFAST, NSLOW, 
-                                       EMPAR[K],
-                                       ADDAREA[K], JSUB,
-                                       0, " ", 0, " ");
-                         }
-                         else{
-                              addstar_(ONESTAR, BIG, NOISE,
-                                       NFAST, NSLOW, 
-                                       STARPAR[K], 
-                                       ADDAREA[K], ISUB,
-                                       0, " ", 0, " ");
-                         }
+                            subtract the analytic PSF else subtract emp/star psf*/
+                         add_analytic_or_empirical_obj(ONESTAR, BIG, NOISE, 
+                               NFAST, NSLOW, STARPAR, ADDAREA, ISUB, 
+                               0, " ", 0, " ", K, (JMTYPE==2) );
                     }
                     else{ //if it is VERYBIG and fixxy is not flagged,
                           //check if double star or galaxy
