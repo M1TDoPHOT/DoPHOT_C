@@ -19,7 +19,7 @@
 #include "offpic.h"
 #include "toofaint.h"
 #include "transmask.h"
-#include "empiricals.h" //contains oneemp and oldemp
+#include "empiricals.h" //contains oneemp
 #include "galaxy.h"
 #include "parupd.h"
 #include "errupd.h"
@@ -172,17 +172,17 @@ C:   its value to imtype(i).  -PLS  */
                //add empirical or analytic object back to image
                if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
                     addstar_(&oneemp_, BIG, NOISE,
-                             &NFAST, &NSLOW, 
+                             NFAST, NSLOW, 
                              EMPAR[K],
-                             ADDAREA[K], &JADD,
+                             ADDAREA[K], JADD,
                              0, " ", 0, " ");
                }
                else{
                     galpass_.bigfoot = (JMTYPE == 2);
                     addstar_(ONESTAR, BIG, NOISE,
-                             &NFAST, &NSLOW, 
+                             NFAST, NSLOW, 
                              STARPAR[K],
-                             ADDAREA[K], &IADD,
+                             ADDAREA[K], IADD,
                              0, " ", 0, " ");
                     galpass_.bigfoot = 0; //false
                }
@@ -229,17 +229,17 @@ C:   its value to imtype(i).  -PLS  */
                     }
                     if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
                          addstar_(&oneemp_, BIG, NOISE,
-                                  &NFAST, &NSLOW, 
+                                  NFAST, NSLOW, 
                                   EMPAR[K],
-                                  ADDAREA[K], &JSUB,
+                                  ADDAREA[K], JSUB,
                                   0, " ", 0, " ");
                     }
                     else{
                          galpass_.bigfoot = (JMTYPE == 2);
                          addstar_(ONESTAR, BIG, NOISE,
-                                  &NFAST, &NSLOW, 
+                                  NFAST, NSLOW, 
                                   STARPAR[K],
-                                  ADDAREA[K], &ISUB,
+                                  ADDAREA[K], ISUB,
                                   0, " ", 0, " ");
                          galpass_.bigfoot = 0; //false
                     }
@@ -403,16 +403,16 @@ C:   its value to imtype(i).  -PLS  */
                             subtract the analytic PSF */
                          if ((EMSUB[K] >= 1) && (EMPOK) && (EMENAB)){
                               addstar_(&oneemp_, BIG, NOISE,
-                                       &NFAST, &NSLOW, 
+                                       NFAST, NSLOW, 
                                        EMPAR[K],
-                                       ADDAREA[K], &JSUB,
+                                       ADDAREA[K], JSUB,
                                        0, " ", 0, " ");
                          }
                          else{
                               addstar_(ONESTAR, BIG, NOISE,
-                                       &NFAST, &NSLOW, 
+                                       NFAST, NSLOW, 
                                        STARPAR[K], 
-                                       ADDAREA[K], &ISUB,
+                                       ADDAREA[K], ISUB,
                                        0, " ", 0, " ");
                          }
                     }
@@ -449,9 +449,9 @@ C:   its value to imtype(i).  -PLS  */
                               parupd_(B, SHADOW[K],  IX, IY, NFIT2);//from F77
                               parupd_(B, STARPAR[K], IX, IY, NFIT2); 
                               addstar_(ONESTAR, BIG, NOISE,
-                                       &NFAST, &NSLOW, 
+                                       NFAST, NSLOW, 
                                        STARPAR[K],
-                                       ADDAREA[K], &ISUB,
+                                       ADDAREA[K], ISUB,
                                        0, " ", 0, " ");
                               
                               //set star 2 information and resubtract
@@ -466,9 +466,9 @@ C:   its value to imtype(i).  -PLS  */
                               parupd_((B+NFIT2), SHADOW[LAST],  IX, IY, NFIT2);
                               parupd_((B+NFIT2), STARPAR[LAST], IX, IY, NFIT2); 
                               addstar_(ONESTAR, BIG, NOISE,
-                                       &NFAST, &NSLOW, 
+                                       NFAST, NSLOW, 
                                        STARPAR[LAST],
-                                       ADDAREA[LAST], &ISUB,
+                                       ADDAREA[LAST], ISUB,
                                        0, " ", 0, " ");
                          }
                          else{
@@ -486,9 +486,9 @@ C:   its value to imtype(i).  -PLS  */
                               // keep whatever model (ONSTAR_7P or pgauss) had converged earlier)
                               galpass_.bigfoot = 1; //true galaxies have a big footprint
                               addstar_(ONESTAR, BIG, NOISE,
-                                       &NFAST, &NSLOW, 
+                                       NFAST, NSLOW, 
                                        STARPAR[K],
-                                       ADDAREA[K], &ISUB,
+                                       ADDAREA[K], ISUB,
                                        0, " ", 0, " ");
                               galpass_.bigfoot = 0; //false
                          } //end galaxy v double star if/else

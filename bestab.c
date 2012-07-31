@@ -210,17 +210,17 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     if (EMSUB[IBEST-1] >= 1){
                          changed_.useold = 1; //true
                          addstar_(&oneemp_, BIG, NOISE,
-                                           &NFAST, &NSLOW,
+                                           NFAST, NSLOW,
                                            EMPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], &JADD,
+                                           ADDAREA[IBEST-1], JADD,
                                            0, " ", 0, " ");
                          changed_.useold = 0; //false
                     }
                     else{
                          addstar_(ONESTAR, BIG, NOISE,
-                                           &NFAST, &NSLOW,
+                                           NFAST, NSLOW,
                                            STARPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], &IADD,
+                                           ADDAREA[IBEST-1], IADD,
                                            0, " ", 0, " ");
                     }
 
@@ -260,17 +260,17 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     if (EMSUB[IBEST-1] >= 1){
                          changed_.useold = 1; //true
                          addstar_(&oneemp_, BIG, NOISE,
-                                           &NFAST, &NSLOW,
+                                           NFAST, NSLOW,
                                            EMPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], &JSUB,
+                                           ADDAREA[IBEST-1], JSUB,
                                            0, " ", 0, " ");
                          changed_.useold = 0; //false
                     }
                     else{
                          addstar_(ONESTAR, BIG, NOISE,
-                                           &NFAST, &NSLOW,
+                                           NFAST, NSLOW,
                                            STARPAR[IBEST-1],
-                                           ADDAREA[IBEST-1], &ISUB,
+                                           ADDAREA[IBEST-1], ISUB,
                                            0, " ", 0, " ");
                     }
 

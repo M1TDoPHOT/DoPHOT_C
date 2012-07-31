@@ -222,10 +222,10 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                              else{
                                                   addstar_(ONESTAR, 
                                                        BIG, NOISE,
-                                                       &NFAST, &NSLOW, 
+                                                       NFAST, NSLOW, 
                                                        STARPAR[NSTOT-1],
                                                        ADDAREA[NSTOT-1],
-                                                       &ISUB, 
+                                                       ISUB, 
                                                        0, " ", 0, " ");
                                              }
                                         } //end of WIPE if/else

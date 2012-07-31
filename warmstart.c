@@ -159,8 +159,8 @@ void warmstart_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int*
                     if (IMTYPE[I] == 2) {
                          galpass_.bigfoot = 1;
                     }
-                    addstar_(ONESTAR, BIG, NOISE, &NFAST, &NSLOW,
-                                      STARPAR[I], ADDAREA[I], &ISUB, 
+                    addstar_(ONESTAR, BIG, NOISE, NFAST, NSLOW,
+                                      STARPAR[I], ADDAREA[I], ISUB, 
                                       0, " ", 0, " ");
                     if (IMTYPE[I] == 2) {
                          galpass_.bigfoot = 0;

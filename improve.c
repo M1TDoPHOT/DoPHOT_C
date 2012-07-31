@@ -188,9 +188,9 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                if ( (EMSUB[K] >= 1) || (EMSUB[K] == -2) ){
                     changed_.useold = 1; //true
                     addstar_(&oneemp_, BIG, NOISE, 
-                             &NFAST, &NSLOW, 
+                             NFAST, NSLOW, 
                              EMPAR[K],
-                             ADDAREA[K], &JADD,
+                             ADDAREA[K], JADD,
                              0, " ", 0, " ");
                     changed_.useold = 0; //false
                     if (EMSUB[K] == -2){
@@ -200,9 +200,9 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                else{
                     galpass_.bigfoot = (JMTYPE == 2);
                     addstar_(ONESTAR, BIG, NOISE, 
-                             &NFAST, &NSLOW, 
+                             NFAST, NSLOW, 
                              STARPAR[K],
-                             ADDAREA[K], &IADD,
+                             ADDAREA[K], IADD,
                              0, " ", 0, " ");
                     galpass_.bigfoot = 0; //false
                }
@@ -381,8 +381,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                          }
                          galpass_.bigfoot = (JMTYPE == 2);
                          addstar_(ONESTAR, BIG, NOISE,
-                                  &NFAST, &NSLOW, STARPAR[K], 
-                                  ADDAREA[K], &ISUB,
+                                  NFAST, NSLOW, STARPAR[K], 
+                                  ADDAREA[K], ISUB,
                                   w_models, mf_names[K], 
                                   w_cleans, cf_names[K]);
                          galpass_.bigfoot = 0; //false
@@ -391,8 +391,8 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                          EMSUB[K] = 1;
                          fprintf(logfile,"Subtracting empirical psf:\n");
                          addstar_(&oneemp_, BIG, NOISE,
-                                  &NFAST, &NSLOW, EMPAR[K], 
-                                  ADDAREA[K], &JSUB,
+                                  NFAST, NSLOW, EMPAR[K], 
+                                  ADDAREA[K], JSUB,
                                   w_models, mf_names[K],
                                   w_cleans, cf_names[K]);
                     }

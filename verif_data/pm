@@ -17,7 +17,6 @@ OBJTYPE_IN = 'INTERNAL'
 OBJECTS_OUT = 'obj_out_J0159.8.chip_01'         Output object list file name.
 OBJTYPE_OUT = 'INTERNAL'
 ERRORS_OUT = 'errors_out_J0159.8.chip_01'       Errors on fit to be output if output type is internal
-
 SHADOWFILE_OUT = 'shad_out_J0159.8.chip_01'           Output shadow file name.
 EMP_SUBRAS_OUT = 'psf_out_J0159.8.chip_01.fits'       Empirical PSF subraster.
 LOGFILE = 'log.txt'                         Log file name.  TERM for screen.
