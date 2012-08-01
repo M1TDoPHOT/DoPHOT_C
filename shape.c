@@ -238,7 +238,7 @@ C:   its value to imtype(i).  -PLS  */
                          NIT = 2*ITFIT; //for first shape pass, need more iterations
                          PGAUSS_CHI = (float)onefit_(&pgauss2d_, XX, Z, YE, 
                                     &crudestat_.npt, A, FA, C_ptr,
-                                    &NFIT2, ACC, ALIM, &NIT);
+                                    &NFIT2, ACC, ALIM, &NIT, 1);
                          PGAUSS_CONVERGE = (PGAUSS_CHI < 1.0e10f);
                          if (PGAUSS_CONVERGE){ //try 7+ param model using pgauss params
                               if (lverb > 20){
@@ -253,7 +253,7 @@ C:   its value to imtype(i).  -PLS  */
                               }
                               GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                     &crudestat_.npt, A, FA, C_ptr,
-                                    &NFIT2, ACC, ALIM, &NIT);
+                                    &NFIT2, ACC, ALIM, &NIT, 0);
                               CONVERGE = (GALCHI < 1.0e10f);
                               if (!CONVERGE){ //go back to pgauss model and keep it
                                    if (lverb > 20){
@@ -271,7 +271,7 @@ C:   its value to imtype(i).  -PLS  */
                                    SKY = guess2_(A, STARPAR[K], &IX, &IY);
                                    GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                               &crudestat_.npt, A, FA, C_ptr,
-                                              &NFIT2, ACC, ALIM, &NIT);
+                                              &NFIT2, ACC, ALIM, &NIT, 1);
                                    CONVERGE = (GALCHI < 1.0e10f);
                               }
                               else{ //if the 7+ parameter model did converge keep it
@@ -300,7 +300,7 @@ C:   its value to imtype(i).  -PLS  */
                          NIT = 2*ITFIT; //if it is the first shape pass, need more iterations
                          GALCHI = (float)onefit_(ONESTAR, XX, Z, YE, 
                                &crudestat_.npt, A, FA, C_ptr,
-                               &NFIT2, ACC, ALIM, &NIT);
+                               &NFIT2, ACC, ALIM, &NIT, WHICH_MODEL[K]);
                          CONVERGE = (GALCHI < 1.0e10f);
                          if (!(CONVERGE)){
                               if (lverb > 20){

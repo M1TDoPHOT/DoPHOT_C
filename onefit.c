@@ -13,7 +13,7 @@
  and from log space if desired for fitting purposes */
 // currently, update for each model switch, latter make toggle with flag[0]
 
-double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr)
+double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr, int which_model)
 {
      int M = *M_ptr; //number of fit parameters
      float** C    = malloc_float_2darr(M,M);
@@ -30,7 +30,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      int model = 0;  // default gauss, pseudogauss, or not a 
                      // shape fit is 0
      if ((strncmp(tune16_.flags[0], "EXTPGAUSS", 5) == 0) &&
-         (M > 7) ){
+         (which_model == 0)){ //not reverted to pgauss
           model = 1;
      }
 
@@ -65,7 +65,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
         linear space variable beta6.  log space variable R6.
         currently, A[7]  = beta4 = exp(R4)
         currently, FA[7] = val.  in log space should be beta4*val */ 
-        
+
      if (model == 1){
           //set value
           if( A[7] > 0.00f ){
@@ -180,7 +180,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
           J[i] = 1.0f;
      }
      J[1] = A[1]; 
-     if (model == 1){
+     if ((model == 1) && (M == tune4_.nfit2)){
           J[7] = A[7]; 
           J[8] = A[8]; 
      }
@@ -202,9 +202,6 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
                C[i][i] = C[i][i] / J[i];
           }
      }
-//     C[1][0] = C[1][0] / A[1]; // I have no idea why these are necessary
-//     C[0][1] = C[0][1] / A[1]; // but they are
-//     C[1][1] = C[1][1] / A[1]; // in order to get correct covariance matrix
      recast_float_2dto1darr(M, M, C_ptr, C);
      
      /* end move intensity back to linear space */

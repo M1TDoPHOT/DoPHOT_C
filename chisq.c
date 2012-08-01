@@ -253,5 +253,6 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      free(Vsol);
      free(INDX);
 
+     fprintf(logfile, "chisq returns: %10.6g \n", CHISQ);
      return CHISQ;
 }

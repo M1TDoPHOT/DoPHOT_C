@@ -37,11 +37,11 @@ double parinterp_(float* X_ptr, float* Y_ptr, float* STARPAR)
      IXY[0] = (short int)(X + 0.5f);
      IXY[1] = (short int)(Y + 0.5f);
      K[0] = 0;
-     for(I = 4; I < tune4_.npar; I++){
+     for(I = 4; I < tune4_.nfit2; I++){
           K[I-3] = I;
      }
 
-     for (I = 1; I < (tune4_.npar - 3); I++){
+     for (I = 1; I < (tune4_.nfit2 - 3); I++){
           STARPAR[K[I]] = AVA[K[I]];
      }
 

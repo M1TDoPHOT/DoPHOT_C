@@ -166,7 +166,7 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                    guess1_return = guess1_(A, dummy, &J, &I);
                                    CHI = onefit_(ONESTAR, XX, Z, YE, &NPT,
                                                 A, FA, C_ptr, &NFIT1, 
-                                                ACC, ALIM, &NIT2); 
+                                                ACC, ALIM, &NIT2, 0); 
                                    SKIP = offpic_(A, &J, &I, &NFAST, &NSLOW, 
                                                      &DX, &DY);
                                    if (!SKIP){

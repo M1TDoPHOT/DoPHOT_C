@@ -71,7 +71,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      short int* KRECT = tune2_.krect;
      float* ARECT = tune2_.arect;
      int NFIT1    = tune4_.nfit1; //usually 4, sky, x, y, intensity
-     int NFIT2    = tune4_.nfit2; //usually 7, full star parameters
+     int NFIT2    = tune4_.nfit2; //usually 7+, full star parameters
      int NIT      = tune4_.nit;
      float EPERDN = tune11_.eperdn;
      float RNOISE = tune11_.rnoise;
@@ -213,6 +213,11 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                if (lverb > 20){
                     fprintf(logfile,"IMPROVING STAR # %d AT %d %d \n",
                                      I, IX, IY);
+                    fprintf(logfile,"start params are: ");
+                    for (indx_i = 0; indx_i < tune4_.nfit2; indx_i++){
+                         fprintf(logfile," %10.5f", A[indx_i]);
+                    }
+                    fprintf(logfile,"\n ");
                }
      
                if (EMSUB[K] == -1){
@@ -221,7 +226,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     IRECT[0] = KRECT[0];               
                     IRECT[1] = KRECT[1]; 
                } 
-               // get crude statistics for object sky and position val             
+               // get crude statistics for inten, sky, and x,y val             
                fillerup_(BIG, NOISE, &IX, &IY, 
                                         &NFAST, &NSLOW); 
                if (EMSUB[K] == -1){
@@ -251,7 +256,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                if (SNOK){
                     onefit_return = onefit_(ONESTAR, XX, Z, YE,
                                     &crudestat_.npt, A, FA, C_ptr, 
-                                    &NFIT, ACC, ALIM, &IIT);
+                                    &NFIT, ACC, ALIM, &IIT, WHICH_MODEL[K]);
                     STARCHI = (float)onefit_return;
                }
                else{
