@@ -31,7 +31,7 @@
 #include "onefit.h"
 #include "elarea.h"
 #include "probgal.h"
-#include "addstar.h"
+#include "add_analytic_or_empirical_obj.h"
 #include "parupd.h"
 #include "errupd.h"
 #include "impaper.h"
@@ -143,8 +143,6 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      short int* JRECT = malloc_si_1darr(2);
      static int IADD = 1;
      static int ISUB = -1;
-     static int JADD = 2;
-     static int JSUB = -2;
      static int NFIT0 = 2;
      int SKIP, CONVERGE, SNOK, TRYEM;
      int JMTYPE, NFIT, IIT;
@@ -191,29 +189,14 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
           }
           if ( (JMTYPE != 0) && (JMTYPE != 6) && (JMTYPE != 8) ){
                // add back old model
-               if ( (EMSUB[K] >= 1) || (EMSUB[K] == -2) ){
-                    changed_.useold = 1; //true
-                    addstar_(&oneemp_, BIG, NOISE, 
-                             NFAST, NSLOW, 
-                             EMPAR[K],
-                             ADDAREA[K], JADD,
-                             0, " ", 0, " ");
-                    changed_.useold = 0; //false
-                    if (EMSUB[K] == -2){
-                         EMSUB[K] = -1;
-                    }
-               }
-               else{
-                    galpass_.bigfoot = (JMTYPE == 2);
-                    addstar_(ONESTAR, BIG, NOISE, 
-                             NFAST, NSLOW, 
-                             STARPAR[K],
-                             ADDAREA[K], IADD,
-                             0, " ", 0, " ");
-                    galpass_.bigfoot = 0; //false
-               }
+               if (EMSUB[K] == 1) changed_.useold = 1; //true
+               add_analytic_or_empirical_obj(ONESTAR,
+                     BIG, NOISE, NFAST, NSLOW,
+                     STARPAR, ADDAREA, IADD,
+                     0, " ", 0, " ", K, (JMTYPE == 2));
+               if (EMSUB[K] == 1) changed_.useold = 0; //false
 
-               //temporary override for improve fit and subtraction
+               //temporary override for improve fit and star subtraction
                WHICH_MODEL[K] = 0;
                ONESTAR = ONESTAR_7P;
 
@@ -379,8 +362,20 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                          }
                     } // end CONVERGE if/else
                                    
-                    /* should be .eq. but one thing at a time; 
-                       could get rid of -2 above */
+                    if ( (!TRYEM) || (EMCHI > 9.0e9f) 
+                         || (EMSUB[K] == -1) ){
+                         EMSUB[K] = min(0, EMSUB[K]);
+                         if (EMSUB[K] >= 0){
+                              EMPAR[K][0] = 0.0f;
+                              EMPAR[K][1] = 0.0f;
+                              EMPAR[K][2] = 0.0f;
+                              EMPAR[K][3] = 0.0f;
+                         }
+                    }
+                    else{
+                         EMSUB[K] = 1;
+                    }
+
                     // given new parameters, subtract new model
                     /* for galaxies, need old model type, but 
                        if type 1 or 3, subtract 7+ parameter model
@@ -400,32 +395,12 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                          }
                     }
 
-                    if ( (!TRYEM) || (EMCHI > 9.0e9f) 
-                         || (EMSUB[K] <= -1) ){
-                         EMSUB[K] = min(0, EMSUB[K]);
-                         if (EMSUB[K] >= 0){
-                              EMPAR[K][0] = 0.0f;
-                              EMPAR[K][1] = 0.0f;
-                              EMPAR[K][2] = 0.0f;
-                              EMPAR[K][3] = 0.0f;
-                         }
-                         galpass_.bigfoot = (JMTYPE == 2);
-                         addstar_(ONESTAR, BIG, NOISE,
-                                  NFAST, NSLOW, STARPAR[K], 
-                                  ADDAREA[K], ISUB,
+                    add_analytic_or_empirical_obj(ONESTAR, BIG, NOISE,
+                                  NFAST, NSLOW, STARPAR, ADDAREA, ISUB,
                                   w_models, mf_names[K], 
-                                  w_cleans, cf_names[K]);
-                         galpass_.bigfoot = 0; //false
-                    }
-                    else{
-                         EMSUB[K] = 1;
-                         fprintf(logfile,"Subtracting empirical psf:\n");
-                         addstar_(&oneemp_, BIG, NOISE,
-                                  NFAST, NSLOW, EMPAR[K], 
-                                  ADDAREA[K], JSUB,
-                                  w_models, mf_names[K],
-                                  w_cleans, cf_names[K]);
-                    }
+                                  w_cleans, cf_names[K],
+                                  K, (JMTYPE == 2));
+
                }
                else{
                     JMTYPE = 6;

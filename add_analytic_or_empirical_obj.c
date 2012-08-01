@@ -29,7 +29,7 @@ void add_analytic_or_empirical_obj(double (*analytic_model)(short int*, float*, 
           else if (add_or_subtract < 0) iadd = -2;
 
      }
-     else{
+     else{ //analytic or empirical template
 
           if (add_or_subtract > 0) iadd = 1;
           else if (add_or_subtract < 0) iadd = -1;

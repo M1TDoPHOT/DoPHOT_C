@@ -206,12 +206,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     }
                }
                else{
-                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 1; //true
+                    if (EMSUB[IBEST-1] == 1) changed_.useold = 1; //true
                     add_analytic_or_empirical_obj(ONESTAR, 
                           BIG, NOISE, NFAST, NSLOW,
                           STARPAR, ADDAREA, IADD,
                           0, " ", 0, " ", IBEST-1, 0);
-                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //flase
+                    if (EMSUB[IBEST-1] == 1) changed_.useold = 0; //false
 
                     for (J = -IHTAB; J <= IHTAB; J++){
                          JJ = J + IY - 1;
@@ -251,7 +251,7 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                           BIG, NOISE, NFAST, NSLOW,
                           STARPAR, ADDAREA, ISUB,
                           0, " ", 0, " ", IBEST-1, 0);
-                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //flase
+                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //false
 
                     if (!EMPOK){ 
                          if (EMSUB[IBEST-1] == -1){
@@ -326,14 +326,30 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
 
                          empmom_.e2 = STARPAR[IBEST-1][1];
                          EMSUB[IBEST-1] = -1;
+                         /* if old template was a later star, add the analytic psf 
+                            previously subtracted back to the image, and subtract 
+                            the old empirical template (itself) in prep for improve.
+                            deactivate as empirical psf star */
                          if ((clobber_.iold != 0) && (clobber_.iold != IBEST)){
-                              EMSUB[IBEST-1] = -2;
-                              fprintf(logfile,"add old template to new one\n");
+                              fprintf(logfile,"brightness order swapped\n");
+                              fprintf(logfile,"deactivating old empirical psf \n");
+                              fprintf(logfile,"old template was %d\n", 
+                                               clobber_.iold);
                               if (EMSUB[clobber_.iold-1] == -1){
-                                   EMSUB[clobber_.iold-1] = 0;
-                                   fprintf(logfile,"brightness order swapped\n");
-                                   fprintf(logfile,"old template was %d\n", 
-                                                    clobber_.iold);
+                                   changed_.useold = 1; //true
+                                   // add back analytic
+                                   add_analytic_or_empirical_obj(ONESTAR, 
+                                        BIG, NOISE, NFAST, NSLOW,
+                                        STARPAR, ADDAREA, 1,
+                                        0, " ", 0, " ", clobber_.iold-1, 0);
+                                   EMSUB[clobber_.iold-1] = 1;
+                                   // subtract out old empirical
+                                   // should be perfect
+                                   add_analytic_or_empirical_obj(ONESTAR, 
+                                        BIG, NOISE, NFAST, NSLOW,
+                                        STARPAR, ADDAREA, -1,
+                                        0, " ", 0, " ", clobber_.iold-1, 0);
+                                   changed_.useold = 0; //false
                               } 
                          } 
                          clobber_.iold = IBEST;

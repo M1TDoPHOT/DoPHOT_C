@@ -10,7 +10,7 @@
 #include "newfits.h"
 #include "stampout.h"
 
-/* hack of addstar for outputting postage stamps of the model size subtracted of each object */
+/* for outputting postage stamps of the model size subtracted of each object */
 
 // int output_img is a toggle of whether or not to output an image of the model
 // subtracted or added to a file specified by img_file
