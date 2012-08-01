@@ -382,21 +382,24 @@ int main()
                if(flags[4][0] == 'Y'){ //output image
                     newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
                }
-               first = 0;
           }
 
-          if (lverb > 10){
-               fprintf(logfile,"Ending loop at threshold level %f \n",
-                                search_.thresh);
-               fprintf(logfile,
-               "Number of new objects found on this threshold = %d \n",
+          if (!first){
+               if (lverb > 10){
+                    fprintf(logfile,"Ending loop at threshold level %f \n",
+                                     search_.thresh);
+                    fprintf(logfile,
+                    "Number of new objects found on this threshold = %d \n",
                                 NSTAR);        
-               fprintf(logfile,
-               "Total number of objects found so far = %d \n", 
-                                search_.nstot);
+                    fprintf(logfile,
+                    "Total number of objects found so far = %d \n", 
+                                     search_.nstot);
+               }
           }
 
-          search_.thresh = search_.thresh/powf(2, tune3_.tfac);
+          if (!first){
+               search_.thresh = search_.thresh/powf(2, tune3_.tfac);
+          }
 
           /* outputing results to files */
           outfilename = stringstrip_(files[3]);
@@ -479,6 +482,10 @@ int main()
           /* write output image if flagged */
           if(flags[4][0] == 'Y'){ //output image
                newfits_(nx, ny, big, files[1], 1, files[0]);
+          }
+   
+          if (first){
+               first = 0;
           }
 
      }// end of while loop

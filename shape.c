@@ -164,10 +164,24 @@ C:   its value to imtype(i).  -PLS  */
           if ( (!VFAINT)     &&
                (JMTYPE != 4) && (JMTYPE != 6) &&
                (JMTYPE != 8) && (JMTYPE != 9)   ){
+
+               /* if star and fitted before, override which model
+                  with full 7+ parameter model for subtraction 
+                  and then reset back for fitting */
+               if ( ((JMTYPE == 1) || (JMTYPE == 3)) &&
+                    (WHICH_MODEL[K] == 1) ){
+                    ONESTAR = ONESTAR_7P;
+               }
+                
                //add empirical or analytic object back to image
                add_analytic_or_empirical_obj(ONESTAR, BIG, NOISE, 
                      NFAST, NSLOW, STARPAR, ADDAREA, IADD, 
                      0, " ", 0, " ", K, (JMTYPE==2) );
+
+               if ( ((JMTYPE == 1) || (JMTYPE == 3)) &&
+                    (WHICH_MODEL[K] == 1) ){
+                    ONESTAR = &pgauss2d_;
+               }
 
                //populate crudestat struct with information on star center and
                //number of good pixels with fillerup

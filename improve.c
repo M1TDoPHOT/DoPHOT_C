@@ -158,6 +158,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      int K;
      float this_C;
      int zero_dum = 0;
+     int which_shape_model;
 
      double (*ONESTAR)(short int*, float*, float*, int*, int*);
 
@@ -166,11 +167,16 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
      for(I = 1; I <= NSTOT; I++){
           K = I-1; //for array indexes
 
+          /* choose which model to add back to the image for
+             improve fitting.  Last subtracted by shape or bestab*/
+         
           if (WHICH_MODEL[K] == 0){ //normal specified model
                //possibly empirical
+               which_shape_model = 0;
                ONESTAR = ONESTAR_7P;
           }
           if (WHICH_MODEL[K] == 1){ //pgaussogaussian
+               which_shape_model = 1;
                ONESTAR = &pgauss2d_;
           }
 
@@ -207,8 +213,13 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     galpass_.bigfoot = 0; //false
                }
 
-               // populate fit matrix A with average star parameters,
-               // don't alter STARPAR
+               //temporary override for improve fit and subtraction
+               WHICH_MODEL[K] = 0;
+               ONESTAR = ONESTAR_7P;
+
+               /* populate fit matrix A with average star parameters,
+                  even for galaxies,
+                  don't alter STARPAR */
                SKY = (float)guess3_(A, STARPAR[K], &IX, &IY);
                if (lverb > 20){
                     fprintf(logfile,"IMPROVING STAR # %d AT %d %d \n",
@@ -227,8 +238,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     IRECT[1] = KRECT[1]; 
                } 
                // get crude statistics for inten, sky, and x,y val             
-               fillerup_(BIG, NOISE, &IX, &IY, 
-                                        &NFAST, &NSLOW); 
+               fillerup_(BIG, NOISE, &IX, &IY, &NFAST, &NSLOW); 
                if (EMSUB[K] == -1){
                     IRECT[0] = JRECT[0];               
                     IRECT[1] = JRECT[1]; 
@@ -265,9 +275,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                          fprintf(logfile,"%d %d %d %d \n",I,crudestat_.npt,IX,IY);
                     }
                }
-               logic_ret = offpic_(A, &IX, &IY,
-                                        &NFAST, &NSLOW, 
-                                        &DX, &DY);
+               logic_ret = offpic_(A, &IX, &IY, &NFAST, &NSLOW, &DX, &DY);
                SKIP = ( (!SNOK) || (logic_ret) );
                if (!SKIP){
                     CONVERGE = (STARCHI < 9.0e9f);
@@ -277,8 +285,7 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                               parupd_(A, STARPAR[K], IX, IY, NFIT2);
                               errupd_(C_ptr, ERR, &NFIT);
                               if (JMTYPE != 3){
-                                   logic_ret = toofaint_(
-                                           STARPAR[K], ERR); 
+                                   logic_ret = toofaint_(STARPAR[K], ERR); 
                                    if (logic_ret){
                                         JMTYPE = 7;
                                    }
@@ -375,6 +382,24 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                     /* should be .eq. but one thing at a time; 
                        could get rid of -2 above */
                     // given new parameters, subtract new model
+                    /* for galaxies, need old model type, but 
+                       if type 1 or 3, subtract 7+ parameter model
+                       regardless of which_model. */
+                    if (which_shape_model == 0){ //normal specified model
+                         //possibly empirical
+                         WHICH_MODEL[K] = 0;
+                         ONESTAR = ONESTAR_7P;
+                    }
+                    if (which_shape_model == 1){ //pgaussogaussian
+                         WHICH_MODEL[K] = 1;
+                         if ((JMTYPE == 1) || (JMTYPE == 3)){
+                              ONESTAR = ONESTAR_7P;
+                         }
+                         else{
+                              ONESTAR = &pgauss2d_;
+                         }
+                    }
+
                     if ( (!TRYEM) || (EMCHI > 9.0e9f) 
                          || (EMSUB[K] <= -1) ){
                          EMSUB[K] = min(0, EMSUB[K]);
