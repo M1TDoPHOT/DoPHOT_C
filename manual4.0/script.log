@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  24 JUL 2012 08:21
-=======
-This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  24 JUL 2012 13:53
->>>>>>> Stashed changes
+This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  1 AUG 2012 10:27
 entering extended mode
 \write18 enabled.
  %&-line parsing enabled.
@@ -142,8 +138,8 @@ est ob-jects iden-ti-fied by DoPHOT.
 .\tenrm r
 .etc.
 
-[22]) [23] (./lesson_2.tex [24] [25]
-Overfull \hbox (3.56242pt too wide) in paragraph at lines 149--165
+[22]) [23] (./lesson_2.tex [24] [25] [26]
+Overfull \hbox (3.56242pt too wide) in paragraph at lines 162--178
 \tenrm DoPHOT com-putes a star-to-star scat-ter in the stel-lar pa-ram-e-ters t
 hat weights the bright 
 
@@ -155,8 +151,8 @@ hat weights the bright
 .\tenrm O
 .etc.
 
-[26] [27]
-Overfull \hbox (3.50069pt too wide) in paragraph at lines 219--227
+[27]
+Overfull \hbox (3.50069pt too wide) in paragraph at lines 232--240
 []\tenit Limited \tenrm tests in-di-cate that while this quan-tity does help to
  sep-a-rate stars from galax- 
 
@@ -260,9 +256,9 @@ Overfull \hbox (4.06242pt too wide) in paragraph at lines 119--123
 .etc.
 
 [34]
-Overfull \hbox (42.48213pt too wide) in paragraph at lines 168--174
-\tenrm (i.e. EXT[]PGAUSS, not PGAUSS[]EXTENDED). The rel-e-vant line in the \te
-nbf params[]default[]c 
+Overfull \hbox (35.28212pt too wide) in paragraph at lines 168--174
+\tenrm (i.e. EXTP-GAUSS, not PGAUS-SEX-TENDED). The rel-e-vant line in the \ten
+bf params[]default[]c 
 
 \hbox(7.5+2.5)x371.46176
 .\tenrm (
@@ -328,7 +324,7 @@ les, namely
 .etc.
 
 [36] [37]
-Overfull \hbox (2.81071pt too wide) in paragraph at lines 271--275
+Overfull \hbox (2.81071pt too wide) in paragraph at lines 289--293
 \tenrm to en-sure that it is greater than or equal to the num-ber of pa-ram-e-t
 ers in your new model. 
 
@@ -340,8 +336,8 @@ ers in your new model.
 .\tenrm n
 .etc.
 
-[38] [39] [40]
-Overfull \hbox (9.53474pt too wide) in paragraph at lines 430--436
+[38] [39] [40] [41]
+Overfull \hbox (9.53474pt too wide) in paragraph at lines 448--454
 \tenrm as op-posed to an em-pir-i-cal, point spread func-tion are as-so-ci-ated
  with the object-subtracted 
 
@@ -353,8 +349,8 @@ Overfull \hbox (9.53474pt too wide) in paragraph at lines 430--436
 .\tenrm p
 .etc.
 
-) [41] (./monitoring.tex [42]) [43] (./known_bugs.tex [44]) [45]
-(./enhancements.tex [46]
+) [42] (./monitoring.tex [43]) [44] (./known_bugs.tex [45]) [46]
+(./enhancements.tex [47]
 Overfull \hbox (1.92288pt too wide) in paragraph at lines 74--94
 []\tenrm When the user re-quests a \tentt DoPHOT \tenrm run with fixed po-si-ti
 ons, the pro-gram goes through 
@@ -367,7 +363,7 @@ ons, the pro-gram goes through
 .\tenrm n
 .etc.
 
-[47]
+[48]
 Overfull \hbox (8.1487pt too wide) in paragraph at lines 115--132
 []\tenrm Two disk-fits files are sup-plied in the \tenbf verif[]data \tenrm di-
 rec-tory called \tenbf im-age[]in[]template 
@@ -419,7 +415,7 @@ T \tenrm 4.0 us-ing \tenbf param[]program1
 .\glue(\spaceskip) 3.33298
 .etc.
 
-[48] [49] [50] [51] [52]) [53] (./turnback.tex) [54] (./parameters.tex
+[49] [50] [51] [52] [53]) [54] (./turnback.tex) [55] (./parameters.tex
 Overfull \hbox (18.10576pt too wide) in paragraph at lines 37--46
 \tenrm The de-fault pa-ram-e-ters file sup-pled with ver-sion 4.0 of DoPHOT is 
 called \tenbf param[]default[]c\tenrm . 
@@ -432,7 +428,7 @@ called \tenbf param[]default[]c\tenrm .
 .\tenrm d
 .etc.
 
-[55]
+[56]
 Overfull \hbox (17.00635pt too wide) in paragraph at lines 66--72
 \tenrm so that you can prop-erly and re-li-ably trans-mit your the pa-ram-e-ter
  val-ues you wish DoPHOT 
@@ -445,7 +441,7 @@ Overfull \hbox (17.00635pt too wide) in paragraph at lines 66--72
 .\tenrm h
 .etc.
 
-[56] [57]
+[57] [58]
 Overfull \hbox (1.83928pt too wide) in paragraph at lines 158--167
 \tenrm sizes will be too small to cope and the cor-re-spond-ing pa-ram-e-ter \t
 entt NS-MAX \tenrm should be changed 
@@ -471,8 +467,8 @@ iles used by DoPHOT.
 .\tenrm s
 .etc.
 
-[58] [59] [60]
-Overfull \hbox (3.31142pt too wide) in paragraph at lines 309--320
+[59] [60] [61]
+Overfull \hbox (3.31142pt too wide) in paragraph at lines 311--322
 \tenrm the rel-e-vant fit-box size is set equal the near-est odd in-te-ger larg
 er than \tentt AMASKBOXMIN\tenrm .  
 
@@ -484,8 +480,8 @@ er than \tentt AMASKBOXMIN\tenrm .
 .\tenrm r
 .etc.
 
-[61]
-Overfull \hbox (19.70284pt too wide) in paragraph at lines 375--387
+[62]
+Overfull \hbox (19.70284pt too wide) in paragraph at lines 377--389
 \tentt PARAMS[]DEFAULT \tenrm -- This key-word spec-i-fies the name of the de-f
 ault pa-ram-e-ter file. If DoPHOT 
 
@@ -498,7 +494,7 @@ ault pa-ram-e-ter file. If DoPHOT
 .etc.
 
 
-Overfull \hbox (9.36777pt too wide) in paragraph at lines 375--387
+Overfull \hbox (9.36777pt too wide) in paragraph at lines 377--389
 \tenrm `mod-i-fi-ca-tion' pa-ram-e-ter file that only needs to con-tain the pa-
 ram-e-ters you wish to change. 
 
@@ -510,8 +506,8 @@ ram-e-ters you wish to change.
 .\tenrm d
 .etc.
 
-[62] [63] [64] [65]
-Overfull \hbox (18.95229pt too wide) in paragraph at lines 631--644
+[63] [64] [65] [66] [67]
+Overfull \hbox (18.95229pt too wide) in paragraph at lines 633--646
 \tenrm PLETE. The `COM-PLETE' in-put/output for-mat type pro-vides all the in-f
 or-ma-tion DoPHOT 
 
@@ -523,8 +519,8 @@ or-ma-tion DoPHOT
 .\tenrm E
 .etc.
 
-[66]
-Overfull \hbox (55.22404pt too wide) in paragraph at lines 656--675
+
+Overfull \hbox (55.22404pt too wide) in paragraph at lines 658--677
 \tenrm word for PSNAME[]ROOT such that the de-sired PS file names are `PS-DIR/d
 #[]PSNAME[]ROOT.fits' 
 
@@ -536,8 +532,8 @@ Overfull \hbox (55.22404pt too wide) in paragraph at lines 656--675
 .\tenrm d
 .etc.
 
-[67] [68] [69]
-Overfull \hbox (0.38885pt too wide) in paragraph at lines 810--821
+[68] [69] [70]
+Overfull \hbox (0.38885pt too wide) in paragraph at lines 812--823
 \tenrm sigma in the $\teni x$\tenrm -direction, (6) the pseudo-gaussian cross t
 erm, and (7) the pseudo-gaussian 
 
@@ -549,7 +545,7 @@ erm, and (7) the pseudo-gaussian
 .\tenrm a
 .etc.
 
-[70] [71] [72] [73] [74] [75]) (./out_format.tex [76] [77] [78]) [79]
+[71] [72] [73] [74] [75] [76] [77]) (./out_format.tex [78] [79] [80]) [81]
 (./types.tex
 Overfull \hbox (0.56104pt too wide) in paragraph at lines 8--11
 []\tenrm Type 2: Ob-ject is not as peaked as a star, and has been in-ter-preted
@@ -563,7 +559,7 @@ Overfull \hbox (0.56104pt too wide) in paragraph at lines 8--11
 .\tenrm p
 .etc.
 
-) [80] )
+) [82] )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 68 ({)
@@ -576,9 +572,9 @@ dist/fonts/type1/bluesky/cm/cmr7.pfb></usr/local/texlive/2008/texmf-dist/fonts/
 type1/bluesky/cm/cmsy10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/blu
 esky/cm/cmsy7.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cm
 ti10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmtt10.pfb>
-Output written on script.pdf (80 pages, 249313 bytes).
+Output written on script.pdf (82 pages, 253541 bytes).
 PDF statistics:
- 300 PDF objects out of 1000 (max. 8388607)
+ 306 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

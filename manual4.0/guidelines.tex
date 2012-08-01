@@ -168,8 +168,8 @@ please submit your proposed updated to github!
 \item{1.)} Change {\bf params\_default\_c} to reflect the newly available 
 	model type. Keep the default as 'PGAUSS'. Note: DoPHOT only 
 	checks for model type by reading the first five characters of a model name, 
-	so make these characters unique to your model, (i.e. EXT\_PGAUSS, not 
-	PGAUSS\_EXTENDED). The relevant line in the {\bf params\_default\_c} 
+	so make these characters unique to your model, (i.e. EXTPGAUSS, not 
+	PGAUSSEXTENDED). The relevant line in the {\bf params\_default\_c} 
 	file should now read something like:
 
 	PSFTYPE = `PGAUSS'        PSF type: (PGAUSS, GAUSS, NEWMODEL)
@@ -259,14 +259,32 @@ please submit your proposed updated to github!
 	are still valid your model.  If you have chosen to fit your 
 	model in a different space than that in which you add and subtract it from the image, 
 	you will have to change your variables to the fitting space and update your covariance 
-	matrix back from that fitting space after the fit in these two functions.
+	matrix back from that fitting space after the fit in these two functions.  The EXTPGAUSS 
+	model, which is a pseudogaussian function where $\beta4$ and $\beta6$ are free to
+	vary, but are fit in log space, can be used as a rough guide for altering {\bf onefit.c} and 
+	{\bf twofit.c} if the new parameters of your function vary in an alternate space from that in
+	which they are subtracted.
+	
+\item{9.)}  Check {\bf shape.c} to make sure that the starting parameters given to the fit of your 
+	function are reasonable.  On each first pass for a newly found object, {\bf shape.c} will 
+	attempt to fit a PGAUSS model to each object.  This PGAUSS fit will inform the sky, 
+	intensity, x, y, and three sigma values of the starting parameters for the NEWMODEL fit, 
+	with no alterations.  Only if the PGAUSS fit succeeds will {\bf shape.c} try a NEWMODEL 
+	fit.  If the NEWMODEL fit succeeds, the NEWMODEL is kept for that object.  However, if the 
+	NEWMODEL fit fails, the object is flagged to use a PGAUSS model from then 
+	forward so as to improve the object subtraction and lessen the chances that DoPHOT 
+	detects spurious objects in the residual image on subsequent passes.  Therefore, if 
+	your point spread function is sufficiently different from gaussian, or if your parameters are 
+	significantly different from a gaussian's, you may want to enter an exemption to this 
+	preliminary PGAUSS fitting for your new model, or adjust the parameter estimate between 
+	the PGAUSS output and the NEWMODEL input.
 
-\item{9.)}  Add your new model, {\bf newmodel.c} to the {\bf Makefile}.  Compile the code.
+\item{10.)}  Add your new model, {\bf newmodel.c} to the {\bf Makefile}.  Compile the code.
 
-\item{10.)}  Test that the PGAUSS model still works on the {\bf verif\_data} images.  
+\item{11.)}  Test that the PGAUSS model still works on the {\bf verif\_data} images.  
 	You should still get exact results.
 
-\item{11.)} Test your model.  
+\item{12.)} Test your model.  
 
 Troubleshooting.  If you run into a segfault, check NPMAX in {\bf structs/tuneable.h} to 
 ensure that it is greater than or equal to the number of parameters in your new model.

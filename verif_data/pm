@@ -1,5 +1,5 @@
 =
-PSFTYPE = 'PGAUSS'        PSF type: (PGAUSS, GAUSS)
+PSFTYPE = 'PGAUSS'        PSF type: (PGAUSS, GAUSS, EXTPGAUSS)
 =
 FWHM = 3.23e+00       Approx FWHM of objects (pixels) along major axis.
 SKY = 790             Approximate mean sky value in data numbers.

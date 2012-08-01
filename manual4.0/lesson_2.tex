@@ -62,6 +62,19 @@ parameters $\sigma_x$, $\sigma_y$, and $\sigma_{xy}$; the
 image center, $(x_0,y_0)$; the central intensity, $I_0$; and
 the background intensity, $I_s$.
 
+There is an additional point spread function supplied with
+DoPHOT in v. 4.0 to complement the above pseudogaussian 
+or `PGAUSS' model.  This newer extended pseudogaussian
+model `EXTPGAUSS' has 9 parameters, the extra two
+being $\beta_4$  and $\beta_6$.  While this extra freedom 
+does result in an improved $\chi^2$ fit on the images tested,
+the $\beta_4$  and $\beta_6$ parameters are highly
+degenerate with the existing $\sigma$ parameters.  Therefore
+the fit does not always converge.  In the case of 
+non-convergence on a given object with this new-model, 
+DoPHOT reverts to the ordinary PGAUSS model and flags 
+the object as such in the output file.
+
 The choice of an analytic, as opposed to a tabulated
 empirical point spread function was driven by several
 considerations.  First was expedience.  The authors had

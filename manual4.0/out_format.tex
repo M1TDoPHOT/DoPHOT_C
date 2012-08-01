@@ -29,6 +29,7 @@ the remainder from analytic fitting or aperture measures):
 \item{7)} $\sigma_x^2$ (see section 7.2 for the form of fitted function)
 \item{8)} $\sigma_{xy}$ (as above)
 \item{9)} $\sigma_y^2$ (as above)
+\item{9.5)}*optional extra parameters from alternate models
 \item{10)} Aperture flux (in DN)
 \item{11)} Aperture sky value
 \item{12)} Aperture magnitude minus fit magnitude
@@ -39,6 +40,7 @@ the remainder from analytic fitting or aperture measures):
 \item{17} $x$ position from empirical PSF fitting
 \item{18} $y$ position from empirical PSF fitting
 \item{19} Estimated error in fit magnitude from empirical PSF  
+
 The format of the output is:
 
 \noindent {\tt  \%4d \%2d \%10.4E \%10.2f \%10.2f \%10.3E \%10.3E \%10.3E 
@@ -53,6 +55,8 @@ in pixels.  For elliptical obliterations, the tilt of the ellipse in degrees in 
  obliterating an ellipse, do not set the value of the tilt to identically $-1.0$ or $0.0$, 
  though $-1.01$ or $0.01$ will do just fine.  For similar reasons discussed below,
  avoid exactly $90.0$ degrees as well.  All other values are fine.
+
+For the extended pseudogaussian model, where $\beta4$ and $\beta6$ are free parameters of the fit, the $\beta4$ and $\beta6$ values as well as an integer flag for each object are placed between items 9 and 10.  The flag is 0 if the extended pseudogaussian model is indeed fit to the object in question and subtracted from the image.  The flag is 1 if the extended pseudogaussian model did not converge on the object and so a standard pseudogaussian model ($\beta4$ and $\beta6$ fixed to the values specified in the parameter files) was fit and subtracted from the image.
 
 \vskip1em
 
@@ -76,6 +80,7 @@ or aperture measures):
 \item{9)} FWHM of minor axis
 \item{10)} Tilt (degrees: 0 implies major axis along positive $x$-axis;
 90 is along positive $y$-axis)
+\item{10.5)}*optional extra parameters from alternate models
 \item{11)} Extendedness parameter
 \item{12)} Aperture magnitude  
 \item{13)} estimated error in aperture magnitude
@@ -86,6 +91,7 @@ or aperture measures):
 \item{18} $x$ position from empirical PSF fitting
 \item{19} $y$ position from empirical PSF fitting
 \item{20} Estimated error in fit magnitude from empirical PSF  
+
 The format of the output line is:
 
 \noindent {\tt  \%4d \%2d \%8.2f \%8.2f \%8.3f \%6.3f \%9.2f \%9.3f \%9.3f \%7.2f 
