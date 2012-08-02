@@ -1,3 +1,6 @@
+All files inside of this distribution are subject to the following copyright with the exception of lu_comp.c, which is protected under the Common Public License, Version 1.0.  The copyright information for the routines in lu_comp.c is copied at the top of that file.
+
+
 Copyright (c) 2012 Mario Mateo, Abhijit Saha, Paul Schechter, and Rebecca Levinson
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

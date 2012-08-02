@@ -1,4 +1,16 @@
-/*
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/*
+
  * This code was (mostly) written by Ken Turkowski, who said:
  *
  * Oh, that. I wrote it in college the first time. It's open source - I think I
