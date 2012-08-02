@@ -26,13 +26,13 @@ A complete dophot set should include:
 
 step 3: Make
 
-Type in "make dophot" at the top directory.  This should take a minute and populate your source directory with .o files for each of the .c files.  If your CFITSIO library wasn't installed properly or isn't properly declared in your Makefile, now's when you'll hear about it.  If any other errors or warnings pop-up, address them for your machine and/or contact rsobel@mit.edu.
+Type in "make test" at the top directory.  This should take a minute and populate your source directory with .o files for each of the .c files.  If your CFITSIO library wasn't installed properly or isn't properly declared in your Makefile, now's when you'll hear about it.  If any other errors or warnings pop-up, address them for your machine and/or contact rsobel@mit.edu.
 
-In absence of warnings, 'make dophot' will have created an executable in test_files called dophot. 
+In absence of warnings, 'make test' will have created an executable in verif_data called dophot. 
 
 step 4: Test
 
-Open the test_files directory and type './dophot' at the command line.  You should be prompted for a parameter modification file.  Type in 'pm' and hit return.  Dophot should execute in a number of seconds and report 6 output files matching the ones in the compare_out subdirectory. Feel free to examine all of them, but in particular diff 
+Open the verif_data directory and type './dophot' at the command line.  You should be prompted for a parameter modification file.  Type in 'pm' and hit return.  Dophot should execute in a number of seconds and report 6 output files matching the ones in the compare_out subdirectory. Feel free to examine all of them, but in particular diff 
      obj_out_J0159.8.chip_01
      shad_out_J0159.8.chip_01
      image_out_J0159.8.chip_01.fits
@@ -41,4 +41,4 @@ with the compare_out files.  If there are any discrepancies, in obj_out_, someth
 
 step 5: Go
 
-Make a directory for your data, copy the executable (dophot), param_default_c, and parameter modification (pm) files there and start altering the pm file according to the manual instructions until you get photometry you are happy with.  Dophot's working, it's on you.
+Make a directory for your data named working_data, copy the executable (dophot), param_default_c, and parameter modification (pm) files there and start altering the pm file according to the manual instructions until you get photometry you are happy with.  Typing `make dophot' at the command line will populate 'working_data' with a copy of the dophot executable as well.  Dophot's working, it's on you.  
