@@ -292,13 +292,6 @@ int main()
      first = ( (tune21_.fixpos) || (WARM) );
      while ((search_.thresh / tune3_.tmin) >= 0.999f){
 
-          if (first){ 
-               //output the warmstart subtracted object image
-               if(flags[4][0] == 'Y'){ //output image
-                    newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
-               }
-          }
-
           tune22_.emenab = (search_.thresh <= tune22_.emthrsh);
           if (lverb > 10){
                fprintf(logfile," \n");        
@@ -376,13 +369,6 @@ int main()
 //        printf("here before improve\n");
           improve_(model2d, big, noise, &nfast, &nslow);
 //        printf("here after improve\n");
-
-          if (first){
-               //output the shape corrected image
-               if(flags[4][0] == 'Y'){ //output image
-                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
-               }
-          }
 
           if (!first){
                if (lverb > 10){
@@ -568,3 +554,20 @@ int main()
      return 1;
 
 }
+
+
+
+//          if (first){ 
+//               //output the warmstart subtracted object image
+//               if(flags[4][0] == 'Y'){ //output image
+//                    newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
+//               }
+//          }
+
+//          if (first){
+//               //output the shape corrected image
+//               if(flags[4][0] == 'Y'){ //output image
+//                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
+//               }
+//          }
+
