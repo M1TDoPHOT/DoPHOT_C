@@ -8,6 +8,7 @@ verif_data/psf_out_J0159.8.chip_01.fits
 verif_data/param_out
 verif_data/log.txt
 verif_data/diff.txt
+working_data/dophot*
 working_data1/*
 working_data2/*
 structs/ctype_rsfake_struct.h

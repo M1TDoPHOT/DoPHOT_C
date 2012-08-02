@@ -75,3 +75,5 @@ test: $(DoPhotCOBJECTS)
 	     $(CC) $(DoPhotCOBJECTS) \
 	     -o ./verif_data/dophot $(CFLAGS) $(LIBS) -lm
 
+clean: 
+	rm -f *.o ./working_data/dophot ./verif_data/dophot

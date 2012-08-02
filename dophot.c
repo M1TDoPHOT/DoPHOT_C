@@ -57,7 +57,7 @@ int main()
 {
      clock_t starttime, endtime;
      starttime = clock();
-     printf("Welcome to dophot\n");
+     printf("Welcome to DoPHOT v 4.0\n");
 
      /* allocating memory for the non-tuneable common blocks */
      float** STARPAR   = malloc_float_2darr(NSMAX, NPMAX);
