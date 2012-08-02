@@ -20,8 +20,9 @@ DOPHflags =  -I${odir}structs -I${odir}headers
 
 CC= gcc
 CFLAGS= -g -fno-inline -Wall ${DOPHflags} ${CFIOflags} 
+#CFLAGS= -O2 ${DOPHflags} ${CFIOflags} 
 LIBS= ${CFIOlibs} 
-# optimize with flag: -O2
+# optimize with flag: -O2 if things compile and run nicely
 # debug flag: -Wall
 # Valgrind flag: -g -fno-inline
 # run: valgrind --dsymutil=yes --leak-check=full ./dophot

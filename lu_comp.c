@@ -9,9 +9,9 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
-**********************************************************/*
+**********************************************************/
 
- * This code was (mostly) written by Ken Turkowski, who said:
+/* This code was (mostly) written by Ken Turkowski, who said:
  *
  * Oh, that. I wrote it in college the first time. It's open source - I think I
  * posted it after seeing so many people solve equations by inverting matrices
