@@ -7,9 +7,7 @@ verif_data/image_out_J0159.8.chip_01.fits
 verif_data/psf_out_J0159.8.chip_01.fits
 verif_data/param_out
 verif_data/log.txt
-verif_data/debug_warmstart.fits
-verif_data/debug_shape.fits
 verif_data/diff.txt
-ri_files/*
-working_data/*
+working_data1/*
+working_data2/*
 structs/ctype_rsfake_struct.h
