@@ -53,7 +53,10 @@
 #include "newfits.h"
 #include "stampout.h"
 
-int main()
+// input is optionally the parameter modifications file
+// if it is not given, it will be prompted for 
+// in paramfile.c via tuneup.c
+int main( int argc, char* argv[])
 {
      clock_t starttime, endtime;
      starttime = clock();
@@ -166,7 +169,20 @@ int main()
      /* initialize all of the tuneable.h variables
         by reading in from modified parameter file and from 
         there the default parameter file */
-     tuneup_(); 
+
+     int command_line_pm;
+     char* pm_file_name;
+     if (argc != 2){ /* parameter modification file to be 
+                        entered manually */
+          command_line_pm = 0;
+          pm_file_name = " ";
+     }
+     else{
+          command_line_pm = 1;
+          pm_file_name = argv[1];
+     }
+     tuneup_(command_line_pm, pm_file_name); 
+
      /*   useful recasts: */
      int lverb = tune14_.lverb;
      char** files = tune16_.files;

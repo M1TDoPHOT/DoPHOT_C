@@ -11,7 +11,7 @@
 
 /* dophot subroutine converted to  c void function 04-01-2012 */
 
-void tuneup_()
+void tuneup_(int command_line_pm, char* pm_file_name)
 {
      int I; //iterator here forward
 
@@ -23,7 +23,7 @@ void tuneup_()
      int nlines, nlines_init;
 
 //printf("here1\n");
-     paramfile_(keywords, items, comments, &nlines);
+     paramfile_(command_line_pm, pm_file_name, keywords, items, comments, &nlines);
      nlines_init = nlines; // used for keeping track of how many keywords
                            // and comments ultimately added
 

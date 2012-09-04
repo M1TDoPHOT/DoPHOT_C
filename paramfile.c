@@ -16,7 +16,7 @@
 /* keyword, item, and comment lists contents are malloced here,
    byt the list of pointers must be malloced elsewhere */
 
-void paramfile_(char** defkeyword, char** defitem, char** defcomment, int* nldef)
+void paramfile_(int command_line_pm, char* pm_file_name, char** defkeyword, char** defitem, char** defcomment, int* nldef)
 {
      //nphead defined to 400 in tuneup.c for consistency
 
@@ -42,8 +42,20 @@ void paramfile_(char** defkeyword, char** defitem, char** defcomment, int* nldef
      int I, J;
 
      /* ask for an open the mod_paramsfile by calling opens */
-     prompt = "Enter modification parameters file name";
-     mod_paramfile = opensc_(prompt, rwa);
+     if (command_line_pm == 1){ /* parameter modifications file given 
+                                   at command linea */
+          mod_paramfile = openac_(&readerr, pm_file_name, rwa);
+          if (readerr != 0){
+               printf("Parameter Modification file input on command line ");
+               printf("not found!\n");
+          }
+     }
+     if ((command_line_pm == 0) || (readerr == 1)){
+          readerr = 0;
+          prompt = "Enter modification parameters file name";
+          mod_paramfile = opensc_(prompt, rwa);
+     }
+          
 
      /* collect lines from mod_param_file */ 
      I = 0;
