@@ -218,6 +218,26 @@ void put_float_ij(float* arr_ptr, int nx, int y_elem, int x_elem, int offset, fl
      *(arr_ptr + nx*y_elem + x_elem + offset) = val;
 }
 
+// allocates memory for a 3d c array
+float*** malloc_float_3darr(int size_z, int size_y, int size_x)
+{
+     int i;
+     float*** arr ;
+     arr = malloc(size_z * sizeof(float **)) ;
+     if(arr == NULL){
+          fprintf(stderr, "out of memory\n") ;
+          return arr;
+          }
+     for (i = 0; i < size_z; i++){
+          arr[i] = malloc_float_2darr(size_y, size_x) ;
+          if(arr[i] == NULL){
+               fprintf(stderr, "out of memory\n") ;
+               return arr;
+          }
+     }
+     return arr;
+}
+
      
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
 // char routines

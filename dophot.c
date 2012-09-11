@@ -69,6 +69,8 @@ int main( int argc, char* argv[])
      starlist_.shadow  = SHADOW;
      float** SHADERR   = malloc_float_2darr(NSMAX, NPMAX);
      starlist_.shaderr = SHADERR;
+     float*** SHADCOVAR  = malloc_float_3darr(NSMAX, NPMAX, NPMAX);
+     starlist_.shadcovar = SHADCOVAR;
      int* IMTYPE       = malloc_int_1darr(NSMAX);
      starlist_.IMTYPE  = IMTYPE;
 
@@ -293,7 +295,7 @@ int main( int argc, char* argv[])
      int ncmax_dum = 0; //0
      int napple_dum = NAPPLE;
      int NSTAR;
-     int I, K;
+     int I, K, J;
      char* outputline;
      char* rwa = "w";
      int ierr;
@@ -303,6 +305,8 @@ int main( int argc, char* argv[])
      FILE* errfile; //only used if outfiletype = 0
      char* shadowfilename;
      FILE* shadowfile;
+     char* covarfilename;
+     FILE* covarfile;
     
       
      first = ( (tune21_.fixpos) || (WARM) );
@@ -481,6 +485,23 @@ int main( int argc, char* argv[])
                free(errfilename);
           }
 
+          /* write covariance matrix file if flagged */
+          if (flags[14][0] == 'Y'){
+               covarfilename = stringstrip_(files[14]);
+               covarfile = openac_(&ierr, covarfilename, rwa);
+               for (I = 0; I < search_.nstot; I++){
+                    K = I+1;
+                    sprintf(outputline,"%4d %2d\n", K, IMTYPE[I]);
+                    fputs(outputline, covarfile);
+                    if (SHADOW[I][0] != 0){
+                         for(J = 0; J < tune4_.nfit2; J++){
+                              outputline = covarout_(SHADCOVAR[I][J]); 
+                              fputs(outputline, covarfile);
+                         }
+                    }
+               }
+          }
+
           /* write output image if flagged */
           if(flags[4][0] == 'Y'){ //output image
                newfits_(nx, ny, big, files[1], 1, files[0]);
@@ -572,18 +593,4 @@ int main( int argc, char* argv[])
 }
 
 
-
-//          if (first){ 
-//               //output the warmstart subtracted object image
-//               if(flags[4][0] == 'Y'){ //output image
-//                    newfits_(nx, ny, big, "debug_warmstart.fits", 1, files[0]);
-//               }
-//          }
-
-//          if (first){
-//               //output the shape corrected image
-//               if(flags[4][0] == 'Y'){ //output image
-//                    newfits_(nx, ny, big, "debug_shape.fits", 1, files[0]);
-//               }
-//          }
 

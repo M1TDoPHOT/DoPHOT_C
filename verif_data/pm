@@ -21,6 +21,7 @@ SHADOWFILE_OUT = 'shad_out_J0159.8.chip_01'           Output shadow file name.
 EMP_SUBRAS_OUT = 'psf_out_J0159.8.chip_01.fits'       Empirical PSF subraster.
 LOGFILE = 'log.txt'                         Log file name.  TERM for screen.
 LOGVERBOSITY = 100                          Verbosity of log file; (0-4).
+COVARS_OUT = 'covar_out_J0159.8.chip_01'    File to contain covariance matrices
 =
 PSDIR = 'models/'
 PSNAME_ROOT   'adata' model file names will be 'MNAME_ROOT####.fits'

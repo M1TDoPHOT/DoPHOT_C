@@ -11,4 +11,6 @@ char* sumout_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float* 
 
 char* shdout_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, int which_model);
 
+char* covarout_(float* SHADCOVAR);
+
 #endif

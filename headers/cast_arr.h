@@ -64,6 +64,8 @@ float get_float_ij(float* arr_ptr, int nx, int y_elem, int j_elem, int offset);
 // puts i,j element from a 1d flattened 2d array without an explicit recast
 void put_float_ij(float* arr_ptr, int nx, int y_elem, int x_elem, int offset, float val);
 
+// allocates memory for a 3d c array
+float*** malloc_float_3darr(int size_z, int size_y, int size_x);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // for chars (1d really)

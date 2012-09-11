@@ -29,14 +29,15 @@ LIBS= ${CFIOlibs}
 
 DoPhotCOBJECTS = $(odir)mini_mathlib.o $(odir)cast_arr.o \
 	$(odir)write_to_log.o $(odir)diag_mmult.o\
-	$(odir)parupd.o $(odir)errupd.o \
+	$(odir)parupd.o $(odir)errupd.o $(odir)covarupd.o \
         $(odir)lu_comp.o \
         $(odir)tagi4.o $(odir)medfil.o \
         $(odir)makenoise.o $(odir)paravg.o \
         $(odir)ellipse.o $(odir)ellipint.o \
         $(odir)stdinpt.o $(odir)suminpt.o \
 	$(odir)stdotpt.o $(odir)sumout.o \
-        $(odir)shdout.o $(odir)badotpt.o \
+        $(odir)shdout.o  $(odir)covarout.o \
+        $(odir)badotpt.o \
         $(odir)newfits.o $(odir)readfits.o \
         $(odir)elarea.o $(odir)impaper.o \
         $(odir)toofaint.o $(odir)toobright.o $(odir)offpic.o \

@@ -176,7 +176,7 @@ void tuneup_(int command_line_pm, char* pm_file_name)
 
                free(flags[0]);
                do{
-                    printf("Enter valid sky type (PGAUSS, GAUSS): "); 
+                    printf("Enter valid model type (PGAUSS, GAUSS): "); 
                     scanf("%s",tempstring);
                }while( (strncmp(tempstring, "PGAUSS", 5) != 0) &&
                        (strncmp(tempstring, "GAUSS", 5)  != 0) &&
@@ -672,7 +672,8 @@ void tuneup_(int command_line_pm, char* pm_file_name)
 
      /* END SCHECHTER'S MODIFICATIIONS */
 
-     /* BEGIN LEVINSON MODIFICATION FOR ERRORS_OUT file */
+     /* BEGIN LEVINSON MODIFICATION FOR ERRORS_OUT &
+        COVARIANCE MATRICES files */
      /* if shadow files requested, also output error file */
      if (strncmp(flags[3], "YES", 3) == 0){
           files[8] = get_string_item_(keywords, items, "ERRORS_OUT", nlines);
@@ -680,7 +681,17 @@ void tuneup_(int command_line_pm, char* pm_file_name)
           files[8] = malloc(1*sizeof(char));
           files[8][0] = '\0';
      }
-     /* END LEVINSON MODIFICATION FOR ERRORS_OUT file */
+
+     /* Covariance matrix file */
+     flags[14] = malloc(4*sizeof(char));
+     files[14] = get_string_item_(keywords, items, "COVARS_OUT", nlines);
+     if(files[14][0] == '\0'){ //no file
+          strcpy(flags[14], "NO ");
+     }
+     else{
+          strcpy(flags[14], "YES");
+     }
+     /* END LEVINSON MODIFICATION FOR ERRORS_OUT & COVARS_OUT files */
 
      /* BEGIN LEVINSON MODIFICATION FOR POSTAGE STAMP MODEL FILE OUTPUTS */ 
 
@@ -741,7 +752,7 @@ void tuneup_(int command_line_pm, char* pm_file_name)
         assign to correct tuneable varibales */
      
 //printf("here26\n");
-     for (I = 14; I < NFF; I++){
+     for (I = 15; I < NFF; I++){
           files[I] = malloc(1*sizeof(char));
           files[I][0] = '\0';
           flags[I] = malloc(1*sizeof(char));

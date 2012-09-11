@@ -3,6 +3,7 @@ verif_data/dophot*
 verif_data/obj_out_J0159.8.chip_01
 verif_data/shad_out_J0159.8.chip_01
 verif_data/errors_out_J0159.8.chip_01
+verif_data/covar_out_J0159.8.chip_01
 verif_data/image_out_J0159.8.chip_01.fits
 verif_data/psf_out_J0159.8.chip_01.fits
 verif_data/param_out

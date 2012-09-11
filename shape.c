@@ -23,6 +23,7 @@
 #include "galaxy.h"
 #include "parupd.h"
 #include "errupd.h"
+#include "covarupd.h"
 #include "fillerup.h"
 #include "addstar.h"
 #include "add_analytic_or_empirical_obj.h"
@@ -47,6 +48,7 @@ void shape_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), doubl
      float**  STARPAR = starlist_.starpar;
      float**  SHADOW  = starlist_.shadow;
      float**  SHADERR = starlist_.shaderr;
+     float*** SHADCOVAR = starlist_.shadcovar;
      short int* EMSUB = estuff_.emsub;
      short int** ADDAREA = addobj_.addarea;
 //   not renamed because changed frequently and by subroutines
@@ -333,6 +335,7 @@ C:   its value to imtype(i).  -PLS  */
                     //update all shape fit params to shadow files
                     parupd_(A, SHADOW[K], IX, IY, NFIT2); 
                     errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
+                    covarupd_(C_ptr, SHADCOVAR[K], NFIT2, 1); //update ERROR from C_ptr
 
                     VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
                     if (JMTYPE == 3){
