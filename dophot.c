@@ -500,6 +500,8 @@ int main( int argc, char* argv[])
                          }
                     }
                }
+               fclose(covarfile);
+               free(covarfilename);
           }
 
           /* write output image if flagged */
