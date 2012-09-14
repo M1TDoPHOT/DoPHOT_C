@@ -12,6 +12,8 @@
 /* a wrapper function for chisq that will convert parameters and limits to
  and from log space if desired for fitting purposes */
 // currently, update for each model switch, latter make toggle with flag[0]
+// NOTE: the covariance has the square root of the autovariance along the diagonal,
+//  not the autovariance itself
 
 double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr, int which_model)
 {
@@ -22,7 +24,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
-     int i, jj;
+     int i;
      float ALIM1, ACC1;
      float ALIM7, ACC7, ALIM8, ACC8;
      double chisq_return;
@@ -186,21 +188,15 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      }
 
      // set covariance
+     /* NOTE: the covariance has the square root of the autovariance 
+        along the diagonal, not the autovariance itself */
      recast_float_1dto2darr(M, M, D_ptr, D);
-     rightleft_diag_mmult(D, J, C, M);
-     // there seems to be another step necessary in the covariance 
-     // conversion beyond just the simple right left multiplicaiton 
-     // byt he jacobian.  I dont know why.
-     // for the row and column of the non-unity jacobian element above
-     // and left the diagonal, divide by the jacobian element.
      for (i = 0; i < M; i++){
-          if (J[i] != 1.0f){
-               for (jj = 0; jj < i; jj++){
-                    C[i][jj] = C[i][jj] / J[i];
-                    C[jj][i] = C[jj][i] / J[i];
-               }
-               C[i][i] = C[i][i] / J[i];
-          }
+          D[i][i] = D[i][i]*D[i][i];
+     }
+     rightleft_diag_mmult(D, J, C, M);
+     for (i = 0; i < M; i++){
+          C[i][i] = sqrtf(C[i][i]);
      }
      recast_float_2dto1darr(M, M, C_ptr, C);
      
@@ -215,25 +211,13 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 }
 
 
-
-//     if (model == 1){
-//          printf("J[7], J[8] = %7.4E %7.4E \n",
-//                   J[7], J[8]);
-//          printf("FA[7], FA[8] = %7.4E %7.4E \n",
-//                   FA[7], FA[8]);
-//          printf("top = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[0][0], C[0][1], C[0][2], C[0][6], C[0][7], C[0][8]);
-//          printf("one = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[1][0], C[1][1], C[1][2], C[1][6], C[1][7], C[1][8]);
-//          printf("dai = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[0][0], C[1][1], C[2][2], C[6][6], C[7][7], C[8][8]);
-//          printf("sev = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[7][0], C[7][1], C[7][2], C[7][6], C[7][7], C[7][8]);
-//          printf("bot = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[8][0], C[8][1], C[8][2], C[8][6], C[8][7], C[8][8]);
-////          printf("lef = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-////                   C[0][0], C[1][0], C[2][0], C[6][0], C[7][0], C[8][0]);
-//          printf("rig = %7.4E %7.4E %7.4E ... %7.4E %7.4E %7.4E \n",
-//                   C[0][8], C[1][8], C[2][8], C[6][8], C[7][8], C[8][8]);
-//          printf("\n");
+//     for (i = 0; i < M; i++){
+//          if (J[i] != 1.0f){
+//               for (jj = 0; jj < i; jj++){
+//                    C[i][jj] = C[i][jj] / J[i];
+//                    C[jj][i] = C[jj][i] / J[i];
+//               }
+//               C[i][i] = C[i][i] / J[i];
+//          }
 //     }
+
