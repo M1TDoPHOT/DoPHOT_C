@@ -335,7 +335,7 @@ C:   its value to imtype(i).  -PLS  */
                     //update all shape fit params to shadow files
                     parupd_(A, SHADOW[K], IX, IY, NFIT2); 
                     errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
-                    covarupd_(C_ptr, SHADCOVAR[K], NFIT2, 1); //update ERROR from C_ptr
+                    covarupd_(C_ptr, SHADCOVAR[K], NFIT2, 1); //update COVAR from C_ptr
 
                     VERYBIG = galaxy_(A, SHADERR[K], STARPAR[K]);
                     if (JMTYPE == 3){

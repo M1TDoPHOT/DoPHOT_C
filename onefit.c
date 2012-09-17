@@ -24,6 +24,8 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
+     float* sqrt_variance = malloc_float_1darr(M); 
+
      int i, jj;
      float ALIM1, ACC1;
      float ALIM7, ACC7, ALIM8, ACC8;
@@ -192,29 +194,36 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
         along the diagonal, and normalized correlations on off axis elements.
         See chisqr.c for details.  */
      recast_float_1dto2darr(M, M, D_ptr, D);
-     float sqrt_variance;
+     //set sqrt_variances
      for (i = 0; i < M; i++){
-          sqrt_variance = D[i][i];
+          sqrt_variance[i] = D[i][i];
+     }
+     //make covariance matrix true covariance matrix
+     for (i = 0; i < M; i++){
           D[i][i] = 1.0f;
           for (jj = 0; jj < M; jj++){
-               D[i][jj] = D[i][jj]*sqrt_variance;
-               D[jj][i] = D[jj][i]*sqrt_variance;
+               D[i][jj] = D[i][jj]*sqrt_variance[i]*sqrt_variance[jj];
           }
      }
      rightleft_diag_mmult(D, J, C, M);
+     //set sqrt_variances
      for (i = 0; i < M; i++){
-          sqrt_variance = sqrtf(C[i][i]);
-          for (jj = 0; jj < M; jj++){
-               C[i][jj] = C[i][jj]/sqrt_variance;
-               C[jj][i] = C[jj][i]/sqrt_variance;
-          }
-          C[i][i] = sqrt_variance;
+          sqrt_variance[i] = fabsf(sqrtf(C[i][i]));
      }
+     //make true covariance matrix working covariance matrix
+     for (i = 0; i < M; i++){
+          for (jj = 0; jj < M; jj++){
+               C[i][jj] = C[i][jj]/(sqrt_variance[i]*sqrt_variance[jj]);
+          }
+          C[i][i] = sqrt_variance[i];
+     }
+
      recast_float_2dto1darr(M, M, C_ptr, C);
      
      /* end move intensity back to linear space */
 
      free(J);
+     free(sqrt_variance);
      free(D_ptr);
      free_float_2darr(M, D);
      free_float_2darr(M, C);

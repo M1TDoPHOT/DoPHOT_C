@@ -44,7 +44,7 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      float CHI, CHIOLD;
      double functn_return;
      float F, F2, YE1, FACT, FAKK;
-     float PERDEG, TEMP, SVE;
+     float PERDEG, TEMP;
      float CHISQ;
 
      CONV  = 0; //false
@@ -248,27 +248,38 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
 
 
      // make a modified covariance matrix containing the sqrt of the variances 
-     // and the correlations.  This is the working 'covariance matrix' C_ptr 
-     // Though it will temporarily be stashed in the LU of the covariance matrix
-     // so if !conv or limit the results match the legacy results
+     // and the normalized correlations.  This is the working 'covariance matrix' C_ptr 
+     // use V for storing sqrt(variances)
      if ( CONV && (!LIMIT) ){
           TEMP = (float)(max((N-M), 1));
           PERDEG = sqrtf(CHI/TEMP);
+
+          //copy B to C
+          for(I = 0; I < M; I++){
+               for(J = 0; J < M; J++){
+                    C[I][J] = B[I][J]; 
+               }
+          }
+
+          //set V to sqrt variances
           for(I = 0; I < M; I++){
                if (B[I][I] > 0.0f){
-                    SVE = sqrtf(B[I][I]);
+                    V[I] = fabsf(sqrtf(B[I][I]));
                }
                else{
-                    SVE = 1.0E10f;
+                    V[I] = 1.0E10f;
                     if (lverb > 20){
                          fprintf(logfile,"TROUBLE: NEGATIVE AUTOVARIANCE FOR I, B(I,I) = %d %f\n",I+1,B[I][I]);
                     }
                }
+          }
+
+          // modify the covariance matrix
+          for(I = 0; I < M; I++){
                for(J = 0; J < M; J++){
-                    LU[J][I] = B[J][I]/SVE; 
-                    LU[I][J] = B[I][J]/SVE;
+                    C[J][I] = C[J][I]/(V[I]*V[J]); 
                }
-               LU[I][I] = SVE*PERDEG;
+               C[I][I] = V[I]*PERDEG;
           } //end I loop
           CHISQ = CHIOLD;
      }
@@ -277,7 +288,7 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      }
 
      /* recasting changed pointers and freeing all locally allocated memory */
-     recast_float_2dto1darr(M, M, C_ptr, LU);
+     recast_float_2dto1darr(M, M, C_ptr, C);
      free_float_2darr(M,  C);
      free_float_2darr(M,  LU);
      free_float_2darr(MMAX, B);
