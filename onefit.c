@@ -24,7 +24,7 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
 
      float* J     = malloc_float_1darr(M); //Jacobian, assuming diagonal
                         // and only keeping diagonal elements
-     int i;
+     int i, jj;
      float ALIM1, ACC1;
      float ALIM7, ACC7, ALIM8, ACC8;
      double chisq_return;
@@ -188,15 +188,27 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      }
 
      // set covariance
-     /* NOTE: the covariance has the square root of the autovariance 
-        along the diagonal, not the autovariance itself */
+     /* NOTE: the working 'covariance' has the square root of the autovariance 
+        along the diagonal, and normalized correlations on off axis elements.
+        See chisqr.c for details.  */
      recast_float_1dto2darr(M, M, D_ptr, D);
+     float sqrt_variance;
      for (i = 0; i < M; i++){
-          D[i][i] = D[i][i]*D[i][i];
+          sqrt_variance = D[i][i];
+          D[i][i] = 1.0f;
+          for (jj = 0; jj < M; jj++){
+               D[i][jj] = D[i][jj]*sqrt_variance;
+               D[jj][i] = D[jj][i]*sqrt_variance;
+          }
      }
      rightleft_diag_mmult(D, J, C, M);
      for (i = 0; i < M; i++){
-          C[i][i] = sqrtf(C[i][i]);
+          sqrt_variance = sqrtf(C[i][i]);
+          for (jj = 0; jj < M; jj++){
+               C[i][jj] = C[i][jj]/sqrt_variance;
+               C[jj][i] = C[jj][i]/sqrt_variance;
+          }
+          C[i][i] = sqrt_variance;
      }
      recast_float_2dto1darr(M, M, C_ptr, C);
      
@@ -210,14 +222,4 @@ double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short 
      return chisq_return;
 }
 
-
-//     for (i = 0; i < M; i++){
-//          if (J[i] != 1.0f){
-//               for (jj = 0; jj < i; jj++){
-//                    C[i][jj] = C[i][jj] / J[i];
-//                    C[jj][i] = C[jj][i] / J[i];
-//               }
-//               C[i][i] = C[i][i] / J[i];
-//          }
-//     }
 

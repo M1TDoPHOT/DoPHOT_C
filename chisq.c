@@ -248,7 +248,9 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
 
 
      // make a modified covariance matrix containing the sqrt of the variances 
-     // and the correlations.  This is the working 'covariance matrix' C 
+     // and the correlations.  This is the working 'covariance matrix' C_ptr 
+     // Though it will temporarily be stashed in the LU of the covariance matrix
+     // so if !conv or limit the results match the legacy results
      if ( CONV && (!LIMIT) ){
           TEMP = (float)(max((N-M), 1));
           PERDEG = sqrtf(CHI/TEMP);
@@ -263,7 +265,7 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                     }
                }
                for(J = 0; J < M; J++){
-                    LU[J][I] = B[J][I]/SVE;
+                    LU[J][I] = B[J][I]/SVE; 
                     LU[I][J] = B[I][J]/SVE;
                }
                LU[I][I] = SVE*PERDEG;
