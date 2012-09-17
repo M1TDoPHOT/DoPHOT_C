@@ -8,6 +8,7 @@
 #include "chisq.h"
 
 /* dophot function converted to c double function 02-21-2012 */
+// From my analysis this is a Modified Levenberg-Marquardt. Levinson 9/12 
 
 double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr)
 /* dimensions
@@ -62,7 +63,6 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      if (lverb > 30){
           fprintf(logfile,"%3d %2d ", 0, 0);
           for(KK = 0; KK < M; KK++){
-//               fprintf(logfile,"%10.2e ", A[KK]);
                fprintf(logfile,"%10.6e ", A[KK]);
           }
           fprintf(logfile,"\n");
@@ -73,22 +73,33 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      skip_ahead = 0; //false
      while( (I < IT) && (!CONV) && (!LIMIT) && (!skip_ahead) ){
           CHI = 0.0f;
+
+          //zero B array except for B[?][M]
           for(J = 0; J < M; J++){
                B[M][J] = 0.0f;
                for(KK = 0; KK < M; KK++){
                     B[KK][J] = 0.0f;
-               }
+               } 
           }//end J loop
+
           for(J = 0; J < N; J++){
+               //straightforward SUM (model - data)^2/error
                functn_return = (*FUNCTN)(X[J], A, FA, &M, &FITCALL);
                F = (float)functn_return - Y[J];
                F2 = F*F;
                YE1 = 1.0f/YE[J];
                CHI += F2*YE1;
+
+               //Jacobian transpose * Jacobian /err^2 stored in upper half of 
+               //B[0-(M-1)][0-(M-1)],
+               //equivalently SUM derivative_a*derivative_b/error in space [a][b]
+               //B[M][0-(M-1)] stores Jacobian transpose* (function - val)/err, 
+               //equivalently SUM derivative*function/err
+               // where sums are over all data points (pixels)
                for(KK = 0; KK < M; KK++){
                     if (FA[KK] != 0.0f){
                          FAKK = FA[KK]/YE[J];
-                         B[M][KK] += FAKK*F;
+                         B[M][KK] += FAKK*F; 
                          for( L = 0; L <= KK; L++){
                               if (FA[L] != 0.0f){
                                    B[L][KK] += FAKK*FA[L];
@@ -96,18 +107,24 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                          } //end L loop
                     }
                }// end KK loop
+
           }//end J loop
+
           CHIOLD = CHI;
-          K = 0;  //look here
+          K = 0;
           MARQ = 0; //false
           while( (K < 10) && (!MARQ) && (!LIMIT) && (!skip_ahead) ){
-               CONV = (K == 0); //look here
+               CONV = (K == 0);
                if (CONV){
                     FACT = 0.0f;
                }
                else{
                     FACT = powf(2.0, IFACT);
                }
+
+               // set C to B, with scaling if needed
+               // make C full diagonal matrix rather than justt upper half of
+               // Jacobian transpose Jacobian
                for (J = 0; J < M; J++){
                     for(L = 0; L < J; L++){ //look here
                          C[L][J] = B[L][J];
@@ -116,13 +133,17 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                     C[J][J] = (1+FACT)*B[J][J];
                     V[J]    = B[M][J];
                } // end J loop
-               /* matrix LU decomposition and solving */
+
+               /* matrix LU decomposition and solving 
+                  for Cx = V, replace V with solution x when finished*/
                lu_decompose(C, M, INDX, LU);
                lu_solve(LU, M, INDX, V, Vsol);
                for (J = 0; J < M; J++){
                     V[J]    = Vsol[J];
                     Vsol[J] = 0.0f;
                }
+               /* V now contains best guess delta for parameters */
+
                for (J = 0; J < M; J++){
                     A[J] -= V[J];
                     /* CHECK IF CHANGE IN PARAMETERS EXCEEDS LIMITS.  
@@ -153,7 +174,6 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                if (lverb > 30){
                     fprintf(logfile,"%3d %2d ", I+1, K+1);
                     for(KK = 0; KK < M; KK++){
-//                         fprintf(logfile,"%10.2e ", A[KK]);
                          fprintf(logfile,"%10.6e ", A[KK]);
                     }
                     fprintf(logfile,"\n");
@@ -164,6 +184,7 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                }
                else{
                     if (!LIMIT){
+                         //compute straightforward chi again, but with new, trial A params
                          CHI = 0.0f;
                          for(J = 0; J < N; J++){
                               functn_return = (*FUNCTN)(X[J], A, FA, &ZERO_dum, &FITCALL);
@@ -172,24 +193,24 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                               YE1 = 1.0f/YE[J];
                               CHI += F2*YE1;
                          }
-                         if (K == 1){  //look here
+                         if (K == 1){ 
                               IFACT -= 1;
                          }
 
-                         if (CHI < (1.006f*CHIOLD)){ 
+                         if (CHI < (1.006f*CHIOLD)){ //keep new params
                               MARQ = 1; //true
                          }
                          else{
-                              if (K == 1){  //look here
+                              if (K == 1){ //less trust in derivatives
                                    IFACT += 1;
                               }
-                              if (K >= 1){  //look here
+                              if (K >= 1){ //even less
                                    IFACT += 1;
                               }
-                              if (IFACT > 10){ 
+                              if (IFACT > 10){ //no trust
                                    skip_ahead = 1; //true
                               }
-                              if (!skip_ahead){
+                              if (!skip_ahead){ //don't keep current update to A
                                    for(J = 0; J < M; J++){
                                         A[J] += V[J];
                                    }
@@ -198,18 +219,24 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                     } 
                } //end if CONV if/else
 
-               K += 1;
+               K += 1; //10 attempts to converge
           } // end (K < 10 while)
 
           I += 1;
      } // end (I < IT while)
 
+     // if the fit is not bad because a limit has been reached in the params
+     // compute the true covariance matrix B
      if (!LIMIT){
+          //set B to the identity matrix
           for (J = 0; J < M; J++){
                for (I = 0; I < M; I++){
                     B[J][I] = 0.0f;
                }
                B[J][J] = 1.0f;
+          }
+
+          for (J = 0; J < M; J++){
                /* matrix solving with LU solution */
                lu_solve(LU, M, INDX, B[J], Vsol);
                for(count = 0; count < M; count++){
@@ -218,7 +245,10 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
                }
           }
      }
-                         
+
+
+     // make a modified covariance matrix containing the sqrt of the variances 
+     // and the correlations.  This is the working 'covariance matrix' C 
      if ( CONV && (!LIMIT) ){
           TEMP = (float)(max((N-M), 1));
           PERDEG = sqrtf(CHI/TEMP);
