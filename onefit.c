@@ -12,8 +12,7 @@
 /* a wrapper function for chisq that will convert parameters and limits to
  and from log space if desired for fitting purposes */
 // currently, update for each model switch, latter make toggle with flag[0]
-// NOTE: the covariance has the square root of the autovariance along the diagonal,
-//  not the autovariance itself
+// NOTE: the working covariance has the square root of the autovariance along the diagonal, and the correlation on the off-diagonal
 
 double onefit_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr, int which_model)
 {
