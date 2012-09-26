@@ -454,10 +454,20 @@ is specified using this keyword.  If no name is given, then
 the program assumes you don't want an output shadow file.
 
 \noindent {\tt ERRORS\_OUT} -- {\it new feature} If you save a 
-shadow file, an identical file containing the errors on each of the 
+shadow file, an identical file containing the squared errors on each of the 
 shadow parameters is automatically generated.  The name of such 
 a file is specified using this keyword.  If no name is given, the default 
 file `error\_out' is created.
+
+\noindent {\tt COVARS\_OUT} -- {\it new feature} Optionally generate
+a file containing a `covariance' matrix for the fit of each object.  The name of such 
+a file is specified using this keyword.  This matrix is not a true covariance matrix
+but actually contains the square root of the autovariances along the diagonal
+and the normalized correlations along the off-diagonals.  The parameter order
+is Sky, $I_0$, x, y, $\sigma_x^2$, $\sigma_{xy}$, $\sigma_y^2$, + optional fit 
+parameters.  Covariance matrices are generated in {\it shape.c} and therefore
+reflect the covariances of the 7+ parameter fits for objects, including stars.
+Use with caution.
 
 \noindent {\tt LOGFILE, LOGVERBOSITY} -- The user can specify
 varying levels of detail in the messages that 

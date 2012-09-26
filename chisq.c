@@ -8,7 +8,8 @@
 #include "chisq.h"
 
 /* dophot function converted to c double function 02-21-2012 */
-// From my analysis this is a Modified Levenberg-Marquardt. Levinson 9/12 
+// imitation of Bevington's (1969) implementation of Marquardt's algorithm.
+// similar to a Levenberg-Marquardt algorithm
 
 double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short int** X, float* Y, float* YE, int* N_ptr, float* A, float* FA, float* C_ptr, int* M_ptr, float* ACC, float* ALIM, int* IT_ptr)
 /* dimensions

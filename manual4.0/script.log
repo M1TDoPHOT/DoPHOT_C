@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  1 AUG 2012 15:15
+This is pdfTeXk, Version 3.1415926-1.40.9 (Web2C 7.5.7) (format=pdftex 2008.12.28)  26 SEP 2012 10:20
 entering extended mode
 \write18 enabled.
  %&-line parsing enabled.
@@ -323,8 +323,8 @@ les, namely
 .\kern0.27779
 .etc.
 
-[36] [37]
-Overfull \hbox (2.81071pt too wide) in paragraph at lines 289--293
+[36] [37] [38]
+Overfull \hbox (2.81071pt too wide) in paragraph at lines 296--300
 \tenrm to en-sure that it is greater than or equal to the num-ber of pa-ram-e-t
 ers in your new model. 
 
@@ -336,8 +336,8 @@ ers in your new model.
 .\tenrm n
 .etc.
 
-[38] [39] [40] [41]
-Overfull \hbox (9.53474pt too wide) in paragraph at lines 448--454
+[39] [40] [41]
+Overfull \hbox (9.53474pt too wide) in paragraph at lines 455--461
 \tenrm as op-posed to an em-pir-i-cal, point spread func-tion are as-so-ci-ated
  with the object-subtracted 
 
@@ -506,8 +506,21 @@ ram-e-ters you wish to change.
 .\tenrm d
 .etc.
 
-[63] [64] [65] [66] [67]
-Overfull \hbox (18.95229pt too wide) in paragraph at lines 633--646
+[63]
+Overfull \hbox (6.71819pt too wide) in paragraph at lines 456--461
+\tentt ERRORS[]OUT \tenrm -- \tenit new fea-ture \tenrm If you save a shadow fi
+le, an iden-ti-cal file con-tain-ing the squared 
+
+\hbox(6.94444+1.94444)x391.46176
+.\tentt E
+.\tentt R
+.\tentt R
+.\tentt O
+.\tentt R
+.etc.
+
+[64] [65] [66] [67]
+Overfull \hbox (18.95229pt too wide) in paragraph at lines 643--656
 \tenrm PLETE. The `COM-PLETE' in-put/output for-mat type pro-vides all the in-f
 or-ma-tion DoPHOT 
 
@@ -520,7 +533,7 @@ or-ma-tion DoPHOT
 .etc.
 
 
-Overfull \hbox (55.22404pt too wide) in paragraph at lines 658--677
+Overfull \hbox (55.22404pt too wide) in paragraph at lines 668--687
 \tenrm word for PSNAME[]ROOT such that the de-sired PS file names are `PS-DIR/d
 #[]PSNAME[]ROOT.fits' 
 
@@ -532,8 +545,8 @@ Overfull \hbox (55.22404pt too wide) in paragraph at lines 658--677
 .\tenrm d
 .etc.
 
-[68] [69] [70]
-Overfull \hbox (0.38885pt too wide) in paragraph at lines 812--823
+[68] [69] [70] [71]
+Overfull \hbox (0.38885pt too wide) in paragraph at lines 822--833
 \tenrm sigma in the $\teni x$\tenrm -direction, (6) the pseudo-gaussian cross t
 erm, and (7) the pseudo-gaussian 
 
@@ -545,7 +558,7 @@ erm, and (7) the pseudo-gaussian
 .\tenrm a
 .etc.
 
-[71] [72] [73] [74] [75] [76] [77]) (./out_format.tex [78]
+[72] [73] [74] [75] [76] [77]) (./out_format.tex [78]
 Underfull \vbox (badness 4927) has occurred while \output is active
 \vbox(536.00175+1.94444)x391.46176, glue set 3.66696
 .\glue(\topskip) 3.05556
@@ -602,7 +615,7 @@ dist/fonts/type1/bluesky/cm/cmr7.pfb></usr/local/texlive/2008/texmf-dist/fonts/
 type1/bluesky/cm/cmsy10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/blu
 esky/cm/cmsy7.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cm
 ti10.pfb></usr/local/texlive/2008/texmf-dist/fonts/type1/bluesky/cm/cmtt10.pfb>
-Output written on script.pdf (82 pages, 254043 bytes).
+Output written on script.pdf (82 pages, 255318 bytes).
 PDF statistics:
  306 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)

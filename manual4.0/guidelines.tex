@@ -259,7 +259,14 @@ please submit your proposed updated to github!
 	are still valid your model.  If you have chosen to fit your 
 	model in a different space than that in which you add and subtract it from the image, 
 	you will have to change your variables to the fitting space and update your covariance 
-	matrix back from that fitting space after the fit in these two functions.  The EXTPGAUSS 
+	matrix back from that fitting space after the fit in these two functions.  
+	WARNING: The working covariance matrix in the code, while referred to as a covariance
+	matrix, is not a covariance matrix at all.  Along the diagonal of the matrix are the square 	
+	roots of the variances.  On the off diagonals are correlations.  This convention was 	
+	adopted to avoid extremely small numbers when in the matrix.  However, it does mean 	
+	that the matrix will have to be converted back to a traditional covariance matrix to switch 	
+	parameter spaces.
+	The EXTPGAUSS 
 	model, which is a pseudogaussian function where $\beta4$ and $\beta6$ are free to
 	vary, but are fit in log space, can be used as a rough guide for altering {\bf onefit.c} and 
 	{\bf twofit.c} if the new parameters of your function vary in an alternate space from that in
