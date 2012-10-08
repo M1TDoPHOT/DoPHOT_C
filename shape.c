@@ -19,7 +19,7 @@
 #include "offpic.h"
 #include "toofaint.h"
 #include "transmask.h"
-#include "empiricals.h" //contains oneemp
+//#include "empiricals.h" //contains oneemp
 #include "galaxy.h"
 #include "parupd.h"
 #include "errupd.h"

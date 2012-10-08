@@ -13,7 +13,7 @@
 #define NFF      20    // number of flags or files
 #define NEP      7     // number of emperical parameters
 #define IHSIDE   32    // side length of emperical box
-#define BUF      5     // memory buffer on either side of empirical box 
+#define BUF      0     // memory buffer on either side of empirical box 
                        // in case center is incorrect.  larger for larger FWHM
 #define NAPPLE   5     // number of APPLE parameters (apperature fit params)
 #define MAXFIL   2048  //needed by subraster struct to set size of arrays 

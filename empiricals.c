@@ -243,6 +243,12 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
      iy0 = iy1 - 1;
      iy2 = iy1 + 1;
      iy3 = iy1 + 2;
+     if( (ix0 < BUF) ||
+         (iy0 < BUF) ||
+         (ix3 > (2*IHSIDE + BUF)) ||
+         (iy3 > (2*IHSIDE + BUF)) ){ 
+          printf("max, min x,y are %d %d %d %d \n", ix0, iy0, ix3, iy3);
+     }
 
      fa[1] = e11*(float)(mp[iy1][ix1])
            + e12*(float)(mp[iy2][ix1])
