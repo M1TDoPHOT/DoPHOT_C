@@ -324,7 +324,6 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
                                    JX[1] = 0;
                                    oneemp_return = oneemp_(JX, B, FA,
                                                         &NFIT, &zero_dum); 
-                printf("K = %d \n", K);
                                    chisq_return = chisq_(&oneemp_,
                                                 XX, Z, YE, &crudestat_.npt,
                                                 B, FA, C_ptr, 

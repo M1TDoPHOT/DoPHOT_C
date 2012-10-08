@@ -45,6 +45,7 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
      int** mp;
      int funny;
 
+
      /* for oldemp */
      if (whichemp == 0){
           ip = opqfake_.ip;
@@ -140,7 +141,7 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
           condition = ( (a2_oldemp != a[2]) || (a3_oldemp != a[3]) || first );
      }
      if (whichemp == 1){
-          condition = ( (a2_oneemp != a[3]) || (a3_oneemp != a[3]) || first );
+          condition = ( (a2_oneemp != a[2]) || (a3_oneemp != a[3]) || first );
      }
 
      if (condition){ 
@@ -151,10 +152,26 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
           }
           first = 0; //false
           second = 1; //true
+       
+          if ( (*fitcall_ptr == 1) && 
+               ((fabsf(a[2]) >= 4.0f) || (fabsf(a[3]) >= 4.0f)) ){
+               fprintf(logfile,"improve proposes to move centroid significantly\n");
+               fprintf(logfile,"by (%f, %f), which would exceed memory ",a[2],a[3]);
+               fprintf(logfile,"allocations for empirical matrices\n");
+               fprintf(logfile,"artificially tempering fit to max move of 4.0");
+               if (fabsf(a[2]) > 4.0f){
+                    a[2] = 4.0f;
+               }
+               if (fabsf(a[3]) > 4.0f){
+                    a[3] = 4.0f;
+               }
+          }
+
           p  = modff(-a[2], &flt_ip); 
           ip = (int)flt_ip;
           q  = modff(-a[3], &flt_iq); 
           iq = (int)flt_iq;
+//          printf("condition is true: p, q = %d %d, a[2], a[3] = %f, %f \n", ip, iq, a[2], a[3]);
           if (funny){
                fprintf(logfile, "p, q, ip, & iq = %f %f %d %d \n", p, q, ip, iq);
           }
@@ -243,10 +260,12 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
      iy0 = iy1 - 1;
      iy2 = iy1 + 1;
      iy3 = iy1 + 2;
-     if( (ix0 < BUF) ||
-         (iy0 < BUF) ||
-         (ix3 > (2*IHSIDE + BUF)) ||
-         (iy3 > (2*IHSIDE + BUF)) ){ 
+     if( (ix0 <= BUF) ||
+         (iy0 <= BUF) ||
+         (ix3 >= (2*IHSIDE + BUF)) ||
+         (iy3 >= (2*IHSIDE + BUF)) ){ 
+          printf("x, y, from chisq = %d %d \n", xy[0], xy[1]);
+          printf("ip, iq,          = %d %d \n", ip   , iq);
           printf("max, min x,y are %d %d %d %d \n", ix0, iy0, ix3, iy3);
      }
 
