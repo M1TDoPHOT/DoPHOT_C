@@ -70,11 +70,11 @@ DoPhotCOBJECTS = $(odir)mini_mathlib.o $(odir)cast_arr.o \
 
 dophot: $(DoPhotCOBJECTS)
 	     $(CC) $(DoPhotCOBJECTS) \
-	     -o ./working_data/dophot $(CFLAGS) $(LIBS) -lm
+	     -o ./working_data5/dophot $(CFLAGS) $(LIBS) -lm
 
 test: $(DoPhotCOBJECTS)
 	     $(CC) $(DoPhotCOBJECTS) \
 	     -o ./verif_data/dophot $(CFLAGS) $(LIBS) -lm
 
 clean: 
-	rm -f *.o ./working_data/dophot ./verif_data/dophot
+	rm -f *.o ./working_data5/dophot ./verif_data/dophot

@@ -231,8 +231,12 @@ double empiricalinterp_(short int* xy, float* a, float* fa, int* m_ptr, int* fit
           d11 = (       r)*(       s);
      }    
 
-     ix1 = xy[0] + ip - 1 + (IHSIDE + 1);
-     iy1 = xy[1] + iq - 1 + (IHSIDE + 1);
+     ix1 = xy[0] + ip - 1 + (IHSIDE + 1) + BUF;
+     iy1 = xy[1] + iq - 1 + (IHSIDE + 1) + BUF;
+     // extra plus BUF in index because EMP and OMP arrays
+     // BUF wider on each side than strictly needed
+     // in case center is incorrect
+
      ix0 = ix1 - 1;
      ix2 = ix1 + 1;
      ix3 = ix1 + 2;

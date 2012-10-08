@@ -157,9 +157,11 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
           FIRST = 1; //true
           empmom_.e2old = empmom_.e2;
           for (J = -IHSIDE; J <= IHSIDE; J++){
-               JIND = J + IHSIDE;
+               JIND = J + IHSIDE + BUF;  //plus BUF because EMP and OMP arrays
+                         // BUF wider on each side than strictly needed
+                         // in case center is incorrect
                for (I = -IHSIDE; I <= IHSIDE; I++){
-                    IIND = I + IHSIDE;
+                    IIND = I + IHSIDE + BUF;
                     OMP[JIND][IIND] = EMP[JIND][IIND];
                     if ((I != IHSIDE) && (J != IHSIDE)){
                       DXOMP[JIND][IIND] = DXEMP[JIND][IIND];
@@ -241,8 +243,11 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                               else{
                                         temp = (float)BIG[JJ][II] - SKY;
                               }
-                              EMP[J+IHSIDE][I+IHSIDE] = (10000.0f*temp*
+                              EMP[J+IHSIDE+BUF][I+IHSIDE+BUF] = (10000.0f*temp*
                                                    (1.0f/STARPAR[IBEST-1][1]) + 0.5f);
+                              // plus BUF in index because EMP and OMP arrays
+                              // BUF wider on each side than strictly needed
+                              // in case center is incorrect
                          }// end I loop
                     }// end J loop
 
@@ -276,9 +281,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          SUMYY = 0.0f;
                          SUMXY = 0.0f;
                          for (J = -IYL; J <= IYL; J++){
-                              JIND = J + IHSIDE;
+                              JIND = J + IHSIDE + BUF;
                               for (I = -IXL; I <= IXL; I++){
-                                   IIND = I + IHSIDE;
+                                   IIND = I + IHSIDE + BUF;
+                              // plus BUF in index because EMP and OMP arrays
+                              // BUF wider on each side than strictly needed
+                              // in case center is incorrect
                                    SUM0  += (float)((EMP[JIND][IIND]));
                                    SUMX  += (float)((EMP[JIND][IIND])*I); 
                                    SUMY  += (float)((EMP[JIND][IIND])*J); 
@@ -299,9 +307,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          empmom_.e5 = 1.0f/empmom_.e5; 
                          empmom_.e7 = 1.0f/empmom_.e7; 
                          for (J = -IHSIDE; J < IHSIDE; J++){
-                              JIND = J + IHSIDE;
+                              JIND = J + IHSIDE + BUF;
                               for (I = -IHSIDE; I < IHSIDE; I++){
-                                   IIND = I + IHSIDE;
+                                   IIND = I + IHSIDE + BUF;
+                              // plus BUF in index because EMP and OMP arrays
+                              // BUF wider on each side than strictly needed
+                              // in case center is incorrect
                                    this_mp1 = EMP[JIND+1][IIND+1];
                                    this_mp2 = EMP[JIND+1][IIND  ];
                                    this_mp3 = EMP[JIND  ][IIND+1];

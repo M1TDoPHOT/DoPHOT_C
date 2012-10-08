@@ -123,18 +123,19 @@ int main( int argc, char* argv[])
      float* hubpar     = malloc_float_1darr(NPHUB);
      hubvar_.hubpar    = hubpar;
 
-     float** dxemp     = malloc_float_2darr((2*IHSIDE),(2*IHSIDE));
+     int IHBUFFER      = IHSIDE+BUF; //allowing for mistaken center
+     float** dxemp     = malloc_float_2darr((2*IHBUFFER),(2*IHBUFFER));
      imdev_.dxemp      = dxemp;
-     float** dyemp     = malloc_float_2darr((2*IHSIDE),(2*IHSIDE));
+     float** dyemp     = malloc_float_2darr((2*IHBUFFER),(2*IHBUFFER));
      imdev_.dyemp      = dyemp;
-     int** emp         = malloc_int_2darr(((2*IHSIDE)+1),((2*IHSIDE)+1));
+     int** emp         = malloc_int_2darr(((2*IHBUFFER)+1),((2*IHBUFFER)+1));
      imdev_.emp        = emp;
 
-     float** dxomp     = malloc_float_2darr((2*IHSIDE),(2*IHSIDE));
+     float** dxomp     = malloc_float_2darr((2*IHBUFFER),(2*IHBUFFER));
      oimdev_.dxomp     = dxomp;
-     float** dyomp     = malloc_float_2darr((2*IHSIDE),(2*IHSIDE));
+     float** dyomp     = malloc_float_2darr((2*IHBUFFER),(2*IHBUFFER));
      oimdev_.dyomp     = dyomp;
-     int** omp         = malloc_int_2darr(((2*IHSIDE)+1),((2*IHSIDE)+1));
+     int** omp         = malloc_int_2darr(((2*IHBUFFER)+1),((2*IHBUFFER)+1));
      oimdev_.omp       = omp;
 
      float* parms      = malloc_float_1darr(NPMAX);
