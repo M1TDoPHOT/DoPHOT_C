@@ -94,13 +94,14 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
 //     static int JADD =  2;
 //     static int JSUB = -2;
      static int INIT = 1; //true
+     static int CLOBBERIOLDNEXT;
      int one_dum = 1; //to pass as ptr to fxn tagi4
 
      int I, J, K; // K == I-1 for indexing purposes
      int IIND, JIND; // indexes when loop goes from 
                      // -IHSIDE to +IHSIDE for math reasons
      int II, JJ;
-     float temp;
+     float temp, holder;
      int this_mp1, this_mp2, this_mp3, this_mp4;
      int IBEST, IX, IY;
      int IXL, IYL;
@@ -122,20 +123,22 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
           empmom_.e2    = 0.0f;
           empmom_.e2old = 0.0f;
           clobber_.iold = 0;
+          CLOBBERIOLDNEXT  = 0;
           INIT          = 0; //false
      }
      else{
+          clobber_.iold = CLOBBERIOLDNEXT;
           fprintf(logfile,"old template was %d\n", clobber_.iold);
      }
 
      IOK = 0;
      EMPOK = 0; //false TUNEABLE CHANGED IN ROUTINE!!!!! FIX ME
-     for(I = 1; I <= NSTOT; I++){
+     for(I = 1; I <= NSTOT; I++){ //for every object
           K = I-1;
           if (IMTYPE[K] == 1){
-               IOK += 1;
-               IT1[IOK-1] = (int)(STARPAR[K][1] + 0.5f);
-               IT2[IOK-1] = (short int)(I);
+               IOK += 1; //IOK counts the stars
+               IT1[IOK-1] = (int)(STARPAR[K][1] + 0.5f); //brightness = chance of selection
+               IT2[IOK-1] = (short int)(I); //index held by IT2
                if (strncmp(flags[9], "YES", 3) == 0){
                     temp = fabsf(logf(TARGZ/STARPAR[K][1]));
                     CHOOME = (temp <= 1.0f);
@@ -145,23 +148,22 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     temp = (TARGY - STARPAR[K][3])*(TARGY - STARPAR[K][3]);
                     CHOOME = ((CHOOME) && (temp < 4.0f*A[6]));
                     if (CHOOME){
-                         IT1[IOK-1] = 2000000000;
+                         IT1[IOK-1] = 2000000000; //selected star has very good chance
                     }
                }
           }
      }// end I loop
 
-     if (IOK >= (1 + NEMPSKI)){
+     if (IOK >= (1 + NEMPSKI)){ //start with best star by IOK scale
           tagi4_(IT1, &one_dum, &IOK, IT2);
           IOK -= NEMPSKI;
           FIRST = 1; //true
+          // move old empirical data to old array holders
           empmom_.e2old = empmom_.e2;
           for (J = -IHSIDE; J <= IHSIDE; J++){
-               JIND = J + IHSIDE + BUF;  //plus BUF because EMP and OMP arrays
-                         // BUF wider on each side than strictly needed
-                         // in case center is incorrect
+               JIND = J + IHSIDE;
                for (I = -IHSIDE; I <= IHSIDE; I++){
-                    IIND = I + IHSIDE + BUF;
+                    IIND = I + IHSIDE;
                     OMP[JIND][IIND] = EMP[JIND][IIND];
                     if ((I != IHSIDE) && (J != IHSIDE)){
                       DXOMP[JIND][IIND] = DXEMP[JIND][IIND];
@@ -176,8 +178,9 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
           big_iok_flag = 1; //start with flag set to true so you enter loop
           while (big_iok_flag){
                big_iok_flag = 0; //unless otherwise toggled, do not loop again
+               // assume ok star unless told otherwise
                EMPOK = 1; //true TUNEABLE CHANGED IN ROUTINE!!!!! FIX ME
-               IBEST = IT2[IOK-1];
+               IBEST = IT2[IOK-1]; //choose brightest index
                if (WHICH_MODEL[IBEST-1] == 0){ //normal specified model
                     ONESTAR = ONESTAR_7P;
                }
@@ -190,10 +193,12 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                XFRAC = STARPAR[IBEST-1][2] - IX;
                YFRAC = STARPAR[IBEST-1][3] - IY;
                // TUNEABLE CHANGED IN ROUTINE!!!!! FIX ME
+               // star completely in field?
                EMPOK = ((EMPOK) && ( (IX - IHTAB) >= 1));
                EMPOK = ((EMPOK) && ( (IX + IHTAB) <= NFAST));
                EMPOK = ((EMPOK) && ( (IY - IHTAB) >= 1));
                EMPOK = ((EMPOK) && ( (IY + IHTAB) <= NSLOW));
+               // reject if not in field
                if (!EMPOK){
                     IOK -= 1;
                     if (lverb > 1){
@@ -203,17 +208,19 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     if (IOK >= 1){
                          big_iok_flag = 1; //true
                          // if IOK is big, reloop and do nothing else in this loop
+                         // goes to next best star by IOK standards
                          /* enforced by having !big_iok_flag conditions
                             on all following statements possible entries*/    
                     }
-               }
-               else{
+               } 
+               else{ // keep star if in field
+                    // if formerly an empirical star, add back old empirical model
                     if (EMSUB[IBEST-1] == 1) changed_.useold = 1; //true
                     add_analytic_or_empirical_obj(ONESTAR, 
                           BIG, NOISE, NFAST, NSLOW,
                           STARPAR, ADDAREA, IADD,
                           0, " ", 0, " ", IBEST-1, 0);
-                    if (EMSUB[IBEST-1] == 1) changed_.useold = 0; //false
+                    if (EMSUB[IBEST-1] == 1) changed_.useold = 0; //reset false
 
                     for (J = -IHTAB; J <= IHTAB; J++){
                          JJ = J + IY - 1;
@@ -243,32 +250,41 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                               else{
                                         temp = (float)BIG[JJ][II] - SKY;
                               }
-                              EMP[J+IHSIDE+BUF][I+IHSIDE+BUF] = (10000.0f*temp*
+                              EMP[J+IHSIDE][I+IHSIDE] = (10000.0f*temp*
                                                    (1.0f/STARPAR[IBEST-1][1]) + 0.5f);
-                              // plus BUF in index because EMP and OMP arrays
-                              // BUF wider on each side than strictly needed
-                              // in case center is incorrect
                          }// end I loop
                     }// end J loop
 
-                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 1; //true
-                    add_analytic_or_empirical_obj(ONESTAR, 
-                          BIG, NOISE, NFAST, NSLOW,
-                          STARPAR, ADDAREA, ISUB,
-                          0, " ", 0, " ", IBEST-1, 0);
-                    if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //false
+                    if (EMPOK) { // subtract off analytic model
+                         holder = EMSUB[IBEST-1];
+                         EMSUB[IBEST-1] = 0;
+                         add_analytic_or_empirical_obj(ONESTAR, 
+                               BIG, NOISE, NFAST, NSLOW,
+                               STARPAR, ADDAREA, ISUB,
+                               0, " ", 0, " ", IBEST-1, 0); 
+                         EMSUB[IBEST-1] = holder;
+                    }
+                    else{ 
+                         if (EMSUB[IBEST-1] >= 1) changed_.useold = 1; //true
+                         add_analytic_or_empirical_obj(ONESTAR, 
+                               BIG, NOISE, NFAST, NSLOW,
+                               STARPAR, ADDAREA, ISUB,
+                               0, " ", 0, " ", IBEST-1, 0); 
+                         if (EMSUB[IBEST-1] >= 1) changed_.useold = 0; //false
+                    } 
 
                     if (!EMPOK){ 
-                         if (EMSUB[IBEST-1] == -1){
-                              EMSUB[IBEST-1] = 0;
-                         }
+//                         if (EMSUB[IBEST-1] == -1){
+//                              EMSUB[IBEST-1] = 0;
+//                         }
                          IOK -= 1;
                          if (lverb > 1){
                               fprintf(logfile,
                               "star %d rejected as template\n", IBEST);
                          }
                          if (IOK >= 1){
-                              big_iok_flag = 1; //true, will reloop
+                              big_iok_flag = 1; //true, will reloop 
+                              // using next best star
                          }
                     }
                     else{
@@ -281,12 +297,9 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          SUMYY = 0.0f;
                          SUMXY = 0.0f;
                          for (J = -IYL; J <= IYL; J++){
-                              JIND = J + IHSIDE + BUF;
+                              JIND = J + IHSIDE;
                               for (I = -IXL; I <= IXL; I++){
-                                   IIND = I + IHSIDE + BUF;
-                              // plus BUF in index because EMP and OMP arrays
-                              // BUF wider on each side than strictly needed
-                              // in case center is incorrect
+                                   IIND = I + IHSIDE;
                                    SUM0  += (float)((EMP[JIND][IIND]));
                                    SUMX  += (float)((EMP[JIND][IIND])*I); 
                                    SUMY  += (float)((EMP[JIND][IIND])*J); 
@@ -307,12 +320,9 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          empmom_.e5 = 1.0f/empmom_.e5; 
                          empmom_.e7 = 1.0f/empmom_.e7; 
                          for (J = -IHSIDE; J < IHSIDE; J++){
-                              JIND = J + IHSIDE + BUF;
+                              JIND = J + IHSIDE;
                               for (I = -IHSIDE; I < IHSIDE; I++){
-                                   IIND = I + IHSIDE + BUF;
-                              // plus BUF in index because EMP and OMP arrays
-                              // BUF wider on each side than strictly needed
-                              // in case center is incorrect
+                                   IIND = I + IHSIDE;
                                    this_mp1 = EMP[JIND+1][IIND+1];
                                    this_mp2 = EMP[JIND+1][IIND  ];
                                    this_mp3 = EMP[JIND  ][IIND+1];
@@ -335,37 +345,61 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                                       empmom_.e5, empmom_.e6, empmom_.e7);
                          }
 
+                         EMSUB[IBEST-1] = -1; // empirical template even if never entered loop
                          empmom_.e2 = STARPAR[IBEST-1][1];
-                         EMSUB[IBEST-1] = -1;
-                         /* if old template was a later star, add the analytic psf 
+
+                         /* if old template was a different star, add the analytic psf 
                             previously subtracted back to the image, and subtract 
                             the old empirical template (itself) in prep for improve.
                             deactivate as empirical psf star */
+                         /* additionally, if EMPIRICAL template is new, flag with 0
+                            so old template is added back on next pass, not analytic */
                          if ((clobber_.iold != 0) && (clobber_.iold != IBEST)){
-                              fprintf(logfile,"brightness order swapped\n");
+//                              fprintf(logfile,"brightness order swapped\n");
                               fprintf(logfile,"deactivating old empirical psf \n");
                               fprintf(logfile,"old template was %d\n", 
                                                clobber_.iold);
-                              if (EMSUB[clobber_.iold-1] == -1){
-                                   changed_.useold = 1; //true
-                                   // add back analytic
-                                   add_analytic_or_empirical_obj(ONESTAR, 
-                                        BIG, NOISE, NFAST, NSLOW,
-                                        STARPAR, ADDAREA, 1,
-                                        0, " ", 0, " ", clobber_.iold-1, 0);
-                                   EMSUB[clobber_.iold-1] = 1;
-                                   // subtract out old empirical
-                                   // should be perfect
-                                   add_analytic_or_empirical_obj(ONESTAR, 
-                                        BIG, NOISE, NFAST, NSLOW,
-                                        STARPAR, ADDAREA, -1,
-                                        0, " ", 0, " ", clobber_.iold-1, 0);
-                                   changed_.useold = 0; //false
-                              } 
-                         } 
-                         clobber_.iold = IBEST;
+                   
+                              // add back old analytic
+                              add_analytic_or_empirical_obj(ONESTAR, 
+                                   BIG, NOISE, NFAST, NSLOW,
+                                   STARPAR, ADDAREA, 1,
+                                   0, " ", 0, " ", clobber_.iold-1, 0);
+                              EMSUB[clobber_.iold-1] = 1;
+                              // subtract out old empirical, should be perfect
+//                         printf("here before 1 \n");
+                              changed_.useold = 1; //true
+                              add_analytic_or_empirical_obj(ONESTAR, 
+                                   BIG, NOISE, NFAST, NSLOW,
+                                   STARPAR, ADDAREA, -1,
+                                   0, " ", 0, " ", clobber_.iold-1, 0);
+                              changed_.useold = 0; //false
+//                         printf("here after 1 \n");
 
-                         if (strncmp(flags[9], "YES", 3) == 0){
+                              //add back old empirical if one exists
+//                         printf("here before 2 \n");
+//                              if (EMSUB[IBEST-1] == 1){ 
+//                                   changed_.useold = 1;
+//                                   add_analytic_or_empirical_obj(ONESTAR, 
+//                                        BIG, NOISE, NFAST, NSLOW,
+//                                        STARPAR, ADDAREA, 1,
+//                                        0, " ", 0, " ", IBEST-1, 0);
+//                                   changed_.useold = 0;
+//                              }
+//                         printf("here after 2 \n");
+//                              EMSUB[IBEST-1] = -1; 
+//                              // subtract off analytic
+//                              add_analytic_or_empirical_obj(ONESTAR, 
+//                                   BIG, NOISE, NFAST, NSLOW,
+//                                   STARPAR, ADDAREA, 1,
+//                                   0, " ", 0, " ", IBEST-1, 0);
+                         } 
+
+
+                         CLOBBERIOLDNEXT = IBEST;
+// HUGE BUG                        clobber_.iold = IBEST;
+
+                         if (strncmp(flags[8], "YES", 3) == 0){
                               ISEE = (2*IHSIDE) + 1;
                               newfits_(ISEE, ISEE, EMP, files[7], 0, " ");
                          }

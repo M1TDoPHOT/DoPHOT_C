@@ -600,9 +600,9 @@ void tuneup_(int command_line_pm, char* pm_file_name)
 
      float* alim = malloc_float_1darr(NPMAX);
      alim[0]         = get_float_item_(keywords, items, "ABSLIM1", nlines);
-     alim[1]         = get_float_item_(keywords, items, "ABSLIM2", nlines);
-     alim[2]         = get_float_item_(keywords, items, "ABSLIM3", nlines);
-     alim[3]         = get_float_item_(keywords, items, "ABSLIM4", nlines);
+     alim[1]         = get_float_item_(keywords, items, "ABSLIM4", nlines);
+     alim[2]         = get_float_item_(keywords, items, "ABSLIM2", nlines);
+     alim[3]         = get_float_item_(keywords, items, "ABSLIM3", nlines);
      alim[4]         = get_float_item_(keywords, items, "ABSLIM5", nlines);
      alim[5]         = get_float_item_(keywords, items, "ABSLIM6", nlines);
      alim[6]         = get_float_item_(keywords, items, "ABSLIM7", nlines);
