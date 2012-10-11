@@ -595,7 +595,7 @@ void tuneup_(int command_line_pm, char* pm_file_name)
           sprintf(relacc_str, "RELACC%d", I+1);
           acc[I] = get_float_item_(keywords, items, relacc_str, nlines);
      } 
-     // NOTE INTENTIONAL WRONG ORDER OF RELACC FOR HISTORICAL REASONS
+     // NOTE INTENTIONAL WRONG ORDER OF RELACC & ALIM FOR HISTORICAL REASONS
      tune15_.acc = acc;
 
      float* alim = malloc_float_1darr(NPMAX);

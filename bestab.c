@@ -255,9 +255,11 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          }// end I loop
                     }// end J loop
 
-                    if (EMPOK) { // subtract off analytic model
+                    if (EMPOK) { // if new empirical template
+                                 // force analytic subtraction, even if was
+                                 // empirical previously
                          holder = EMSUB[IBEST-1];
-                         EMSUB[IBEST-1] = 0;
+                         EMSUB[IBEST-1] = 0; 
                          add_analytic_or_empirical_obj(ONESTAR, 
                                BIG, NOISE, NFAST, NSLOW,
                                STARPAR, ADDAREA, ISUB,
@@ -274,9 +276,6 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                     } 
 
                     if (!EMPOK){ 
-//                         if (EMSUB[IBEST-1] == -1){
-//                              EMSUB[IBEST-1] = 0;
-//                         }
                          IOK -= 1;
                          if (lverb > 1){
                               fprintf(logfile,
@@ -345,7 +344,7 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                                       empmom_.e5, empmom_.e6, empmom_.e7);
                          }
 
-                         EMSUB[IBEST-1] = -1; // empirical template even if never entered loop
+                         EMSUB[IBEST-1] = -1; // empirical template star now flagged
                          empmom_.e2 = STARPAR[IBEST-1][1];
 
                          /* if old template was a different star, add the analytic psf 
@@ -355,7 +354,6 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                          /* additionally, if EMPIRICAL template is new, flag with 0
                             so old template is added back on next pass, not analytic */
                          if ((clobber_.iold != 0) && (clobber_.iold != IBEST)){
-//                              fprintf(logfile,"brightness order swapped\n");
                               fprintf(logfile,"deactivating old empirical psf \n");
                               fprintf(logfile,"old template was %d\n", 
                                                clobber_.iold);
@@ -365,39 +363,20 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
                                    BIG, NOISE, NFAST, NSLOW,
                                    STARPAR, ADDAREA, 1,
                                    0, " ", 0, " ", clobber_.iold-1, 0);
-                              EMSUB[clobber_.iold-1] = 1;
+                              EMSUB[clobber_.iold-1] = 1; // empirical template unflagged
+
                               // subtract out old empirical, should be perfect
-//                         printf("here before 1 \n");
                               changed_.useold = 1; //true
                               add_analytic_or_empirical_obj(ONESTAR, 
                                    BIG, NOISE, NFAST, NSLOW,
                                    STARPAR, ADDAREA, -1,
                                    0, " ", 0, " ", clobber_.iold-1, 0);
                               changed_.useold = 0; //false
-//                         printf("here after 1 \n");
 
-                              //add back old empirical if one exists
-//                         printf("here before 2 \n");
-//                              if (EMSUB[IBEST-1] == 1){ 
-//                                   changed_.useold = 1;
-//                                   add_analytic_or_empirical_obj(ONESTAR, 
-//                                        BIG, NOISE, NFAST, NSLOW,
-//                                        STARPAR, ADDAREA, 1,
-//                                        0, " ", 0, " ", IBEST-1, 0);
-//                                   changed_.useold = 0;
-//                              }
-//                         printf("here after 2 \n");
-//                              EMSUB[IBEST-1] = -1; 
-//                              // subtract off analytic
-//                              add_analytic_or_empirical_obj(ONESTAR, 
-//                                   BIG, NOISE, NFAST, NSLOW,
-//                                   STARPAR, ADDAREA, 1,
-//                                   0, " ", 0, " ", IBEST-1, 0);
                          } 
 
-
                          CLOBBERIOLDNEXT = IBEST;
-// HUGE BUG                        clobber_.iold = IBEST;
+// HUGE BUG now corrected                       clobber_.iold = IBEST;
 
                          if (strncmp(flags[8], "YES", 3) == 0){
                               ISEE = (2*IHSIDE) + 1;
