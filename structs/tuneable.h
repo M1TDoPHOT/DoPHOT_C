@@ -14,7 +14,7 @@
 #define NEP      7     // number of emperical parameters
 #define IHSIDE   32    // side length of emperical box
 #define NAPPLE   5     // number of APPLE parameters (apperature fit params)
-#define MAXFIL   2048  //needed by subraster struct to set size of arrays 
+#define MAXFIL   1024  //needed by subraster struct to set size of arrays 
 
 #define nphead   400   // max number of header lines in parameter files
 
