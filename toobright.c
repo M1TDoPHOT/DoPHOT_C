@@ -68,15 +68,18 @@ int toobright_(int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr, float* ST
      }
      if (NSAT >= ICRIT){
           STARPAR[1] = CTPERSAT*NSAT;
-          oblims_(STARPAR, JRECT);
-          STARPAR[4] = JRECT[1] - JRECT[0];
-          STARPAR[5] = NSAT;
-          STARPAR[6] = JRECT[3] - JRECT[2];
           if (lverb > 10){
                fprintf(logfile,"SATURATED PIXELS in object at %d %d\n",
                        IX, IY);
           }
      }
+     else{
+          STARPAR[1] = CTPERSAT*0.25;
+     }
+     oblims_(STARPAR, JRECT);
+     STARPAR[4] = JRECT[1] - JRECT[0];
+     STARPAR[5] = 0.002f;  //0 exactly saved for cosmic rays
+     STARPAR[6] = JRECT[3] - JRECT[2];
 
      /* free allocated memory */
      free(A);
