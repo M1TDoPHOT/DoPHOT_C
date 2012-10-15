@@ -17,11 +17,18 @@ void oblims_(float* STARPAR, short int* JRECT)
         as a seperate step */
      /* renaming tuneable variables */
      float NPHOB = (float)tune6_.nphob; 
-     float BETA6  = tune17_.beta6;
      
      /* substance of subroutine begins here */
      float TEMP, FUDGEX, FUDGEY;
      int I;
+     float BETA6;
+
+     if (strncmp(tune16_.flags[0], "EXTPGAUSS", 5) == 0){
+          BETA6 = STARPAR[8];
+     }
+     else{
+          BETA6 = tune17_.beta6;
+     }
 
      if (STARPAR[1] > 0.0f){
           fprintf(logfile, "starpar[1] = %9.6f\n", STARPAR[1]);
