@@ -79,18 +79,22 @@ int stdinpt_(int* I1, int* I2, float* STPARR, int* NPAR, char* INSTR)
      STPARR[3] = YC + 0.5f ;
 
      if (*I2 == 8){
-          if ((TILT > 89.5f) && (TILT < 90.5f)){
-               STPARR[1] = 0.0f ;  
-               STPARR[4] = AMINOR ;   
-               STPARR[5] = 0.0f ;   
-               STPARR[6] = AMAJOR ;   
-          }
-          else{
-               STPARR[1] = 0.0f ;   
-               STPARR[4] = AMAJOR ;
-               STPARR[5] = 0.0f ;   
-               STPARR[6] = AMINOR ;
-          }
+          STPARR[1] = 0.0f ;   
+          STPARR[4] = AMAJOR ;
+          STPARR[5] = TILT ;   
+          STPARR[6] = AMINOR ;
+//          if ((TILT > 89.5f) && (TILT < 90.5f)){
+//               STPARR[1] = 0.0f ;  
+//               STPARR[4] = AMINOR ;   
+//               STPARR[5] = 0.0f ;   
+//               STPARR[6] = AMAJOR ;   
+//          }
+//          else{
+//               STPARR[1] = 0.0f ;   
+//               STPARR[4] = AMAJOR ;
+//               STPARR[5] = TILT ;   
+//               STPARR[6] = AMINOR ;
+//          }
      }
      else{
           /* fortran passes all values by pointers, so c versions do the same

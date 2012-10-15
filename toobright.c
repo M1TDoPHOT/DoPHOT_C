@@ -78,7 +78,7 @@ int toobright_(int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr, float* ST
      }
      oblims_(STARPAR, JRECT);
      STARPAR[4] = JRECT[1] - JRECT[0];
-     STARPAR[5] = 0.002f;  //0 exactly saved for cosmic rays
+     STARPAR[5] = 0.01f;  //0 exactly saved for cosmic rays
      STARPAR[6] = JRECT[3] - JRECT[2];
 
      /* free allocated memory */

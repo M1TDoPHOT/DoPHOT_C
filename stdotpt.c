@@ -56,16 +56,19 @@ char* stdotpt_(int* I_ptr, int* ITYPE_ptr, float* STPARR, int* NPARR_ptr, float*
           else{
                FMAG = -99.999f;
           }
-          if (STPARR[4] >= STPARR[6]){
-               AMAJOR = STPARR[4];
-               AMINOR = STPARR[6];
-               TILT   = 0.0f;
-          }
-          else{
-               AMAJOR = STPARR[6];
-               AMINOR = STPARR[4];
-               TILT   = 90.0f;
-          }
+          AMAJOR = STPARR[4];
+          AMINOR = STPARR[6];
+          TILT   = STPARR[5];
+//          if (STPARR[4] >= STPARR[6]){
+//               AMAJOR = STPARR[4];
+//               AMINOR = STPARR[6];
+//               TILT   = 0.0f;
+//          }
+//          else{
+//               AMAJOR = STPARR[6];
+//               AMINOR = STPARR[4];
+//               TILT   = 90.0f;
+//          }
      }
 
      /* Convert aperture flux to magnitudes: */
