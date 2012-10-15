@@ -7,17 +7,17 @@ readfits: opening J0159.8.chip_01.fits for read
      data_type    = -32
 NTHPIX (initial sky update freq. in pixels) : 30
 Obliterating an ellipse within the following region :
-IXLO, IXHI, IYLO, IYHI = 593, 786, 641, 834
+IXLO, IXHI, IYLO, IYHI = 464, 915, 512, 963
 OBLITERATION: IX & IY = 690 738
-OBLITERATION: WX, WY, TILT = 38.219482 38.219482 0.010000
+OBLITERATION: WX, WY, TILT = 90.000000 90.000000 0.010000
 Obliterating following region :
 IXLO, IXHI, IYLO, IYHI = 1, 14, 746, 791
 OBLITERATION: IX & IY = 1 768
 OBLITERATION: WX & WY = 25.000000 45.000000
 Obliterating an ellipse within the following region :
-IXLO, IXHI, IYLO, IYHI = 142, 567, 597, 682
+IXLO, IXHI, IYLO, IYHI = 1, 855, 539, 740
 OBLITERATION: IX & IY = 355 640
-OBLITERATION: WX, WY, TILT = 84.932182 16.986437 12.000000
+OBLITERATION: WX, WY, TILT = 200.000000 40.000000 12.000000
 
 11 objects subtracted from image at WARMSTART
  
@@ -215,9 +215,9 @@ fudgex, temp & starpar[4] =
 JRECT[I], I =       484         0        524         1        204         2        241         3  
 SIG2 = 449426.468750
 Obliterating an ellipse within the following region :
-IXLO, IXHI, IYLO, IYHI = 462, 547, 183, 262
+IXLO, IXHI, IYLO, IYHI = 404, 605, 130, 316
 OBLITERATION: IX & IY = 505 223
-OBLITERATION: WX, WY, TILT = 16.986437 15.712454 0.010000
+OBLITERATION: WX, WY, TILT = 40.000000 37.000000 0.010000
 Triggering on new Object:323 1374 6759
   0  0 8.862996e+00 4.072900e+00 0.000000e+00 0.000000e+00 
   1  1 7.956928e+00 4.080090e+00 4.958051e-01 -7.304069e-02 
@@ -37603,9 +37603,9 @@ fudgex, temp & starpar[4] =
 JRECT[I], I =       418         0        439         1       2161         2       2181         3  
 SIG2 =  0.000000
 Obliterating an ellipse within the following region :
-IXLO, IXHI, IYLO, IYHI = 406, 451, 2149, 2175
+IXLO, IXHI, IYLO, IYHI = 376, 482, 2120, 2175
 OBLITERATION: IX & IY = 429 2171
-OBLITERATION: WX, WY, TILT = 8.917879 8.493218 0.010000
+OBLITERATION: WX, WY, TILT = 21.000000 20.000000 0.010000
 Triggering on new Object:463 2170 804
   0  0 7.850726e+00 -1.613072e+00 1.000000e+00 1.000000e+00 
   1  1 7.843139e+00 -1.646184e+00 7.281764e-01 9.699393e-01 

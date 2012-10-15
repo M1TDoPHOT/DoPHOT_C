@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 #include "logh.h"
 #include "tuneable.h"
 #include "mini_mathlib.h"

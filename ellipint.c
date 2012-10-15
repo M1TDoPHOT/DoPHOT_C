@@ -1,6 +1,7 @@
 #include <math.h>
 #include "logh.h"
 /* dophot subroutine converted to c void function 01-13-2012 */
+/* converts from amajor, minor, tilt to sigmax^2, sigmay^2, sigmaxy */
 
 void ellipint_(float *AMAJOR_ptr, float *AMINOR_ptr, float *TILT_ptr, float *AREA_ptr, float *B5_ptr, float *A6_ptr, float *B7_ptr)
 {

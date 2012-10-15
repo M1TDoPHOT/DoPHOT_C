@@ -5,6 +5,7 @@
 #include "mini_mathlib.h"
 #include "cast_arr.h"
 #include "guess.h"
+#include "ellipint.h"
 #include "oblit.h"
 
 /* dophot logical function converted to c int function 02-20-2012 */
@@ -81,30 +82,18 @@ int oblit_ellipse_( double (*ONESTAR)(short int*, float*, float*, int*, int*), i
      int IX, IY;
      int JX, JY;
      int IXHI, IXLO, IYHI, IYLO;
-     float a, b, tilt;
-     float root1, root2;
-     float a5, a6, a7, t1, t2;
+     float a, b, tilt, area;
      float sigmax, sigmay, sigmaxy;
      float dist;
 
      guess2_return = guess2_(A, STARPAR, &IX, &IY);
-     a    = STARPAR[4]/2.35482f;
-     b    = STARPAR[6]/2.35482f;
+     a    = STARPAR[4];
+     b    = STARPAR[6];
      tilt = STARPAR[5];
-
-     root1 = (1.0f/b)*(1.0f/b) ;
-     root2 = (1.0f/a)*(1.0f/a) ;
-
-     a6 = 0.5f*(root2 - root1) * sinf( 2.0f*(tilt/57.29578f) );
-     t1 = (root1 - root2) * cosf( 2.0f*(tilt/57.29578f) );
-     t2 = (root1 + root2)   ;
-     a7 = 0.5f*(t2 + t1) ;
-     a5 = 0.5f*(t2 - t1) ;
-
-     sigmax  = a5; // actually 1/sigmax^2
-     sigmaxy = a6;
-     sigmay  = a7; // actually 1/sigmay^2
-//     printf( "%f, %f, %f \n", a5, a6, a7);
+    
+     ellipint_(&a, &b, &tilt, &area, &sigmax, &sigmaxy, &sigmay);
+     sigmax = 1.0f/sigmax;
+     sigmay = 1.0f/sigmay;
 
      // allowing a search region of 1.5x the x,y dimensions of the 
      // semi-major and minor axes
