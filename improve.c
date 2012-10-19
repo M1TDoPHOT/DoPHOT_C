@@ -417,6 +417,16 @@ int improve_(double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int**
           if (fixpass_.fixxy){
                IMTYPE[K] = JMTYPE + 10;
           }
+
+          //reset which model even if never entered inner loop
+          if (which_shape_model == 0){ //normal specified model
+               //possibly empirical
+               WHICH_MODEL[K] = 0;
+          }
+          if (which_shape_model == 1){ //pgaussogaussian
+               WHICH_MODEL[K] = 1;
+          }
+
           fixpass_.fixxy = 0;//false
           passimp_.iii += 1; //loop this variable as well as cleaner I
      } //end I loop

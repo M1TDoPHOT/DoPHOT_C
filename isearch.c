@@ -70,7 +70,7 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      static int ISUB = -1;
 
      float PIXT2, BESTSKY, TTHRESH, THRESH2, HIGHSKY, HIGHTHRESH;
-     int SKIP, FLAG, COSMIC, TOOBRIGHT, WIPE, HOLE, NUFFPTS;
+     int SKIP, TOOFAINT, COSMIC, TOOBRIGHT, WIPE, HOLE, NUFFPTS;
      int TRANSMASK_SUM2, TRANSMASK_HSKY;
      int I, J;
      float IFLOAT, JFLOAT;
@@ -189,12 +189,12 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                                        &NFAST, &NSLOW, 
                                                        STARPAR[NSTOT-1]);
                                         WIPE = ( (COSMIC) || (TOOBRIGHT) );
-                                        FLAG = toofaint_(STARPAR[NSTOT-1], ERR);
-
-                                        if (FLAG){
-                                             IMTYPE[NSTOT-1] = 7;
+                                        if (!WIPE){
+                                             TOOFAINT = toofaint_(STARPAR[NSTOT-1], ERR);
+                                             if (TOOFAINT){
+                                                  IMTYPE[NSTOT-1] = 7;
+                                             }
                                         }
-
                                         if (WIPE){
                                              IMTYPE[NSTOT-1] = 8;
                                              if (COSMIC){ //sub square cosmic rays
@@ -210,25 +210,23 @@ int isearch_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
                                                           STARPAR[NSTOT-1]);
                                              }
                                         }
-                                        else{
-                                             if (CHI >= 1.0e10f){
-                                                  SKIP = 1; //true
-                                                  if (lverb > 20){
-                                                       fprintf(logfile,
+                                        else if (CHI >= 1.0e10f){
+                                             SKIP = 1; //true
+                                             if (lverb > 20){
+                                                  fprintf(logfile,
                                       "FAILED TO CONVERGE: NO ENTRY IN STAR LIST\n");
-                                                  }
-                                                  NSTOT -= 1;
                                              }
-                                             else{
-                                                  addstar_(ONESTAR, 
-                                                       BIG, NOISE,
-                                                       NFAST, NSLOW, 
-                                                       STARPAR[NSTOT-1],
-                                                       ADDAREA[NSTOT-1],
-                                                       ISUB, 
-                                                       0, " ", 0, " ");
-                                             }
-                                        } //end of WIPE if/else
+                                             NSTOT -= 1;
+                                        }
+                                        else{
+                                             addstar_(ONESTAR, 
+                                                  BIG, NOISE,
+                                                  NFAST, NSLOW, 
+                                                  STARPAR[NSTOT-1],
+                                                  ADDAREA[NSTOT-1],
+                                                  ISUB, 
+                                                  0, " ", 0, " ");
+                                        }
                                    } //end of !SKIP if
                               } //end if transmask_sum2 if/else
                          } //end if !nuffpts if/else
