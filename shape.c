@@ -145,6 +145,13 @@ C:   its value to imtype(i).  -PLS  */
           else{
                SKY = guess2_(A, SHADOW[K], &IX, &IY);
           } 
+          // if base model and updated from shadow, 
+          // replace extra arams with new avarages
+          if (WHICH_MODEL[K] == 1){
+               for (index = NFIT2; index < tune4_.nfit2; index++){
+                    A[index] = AVA[index];
+               }
+          }
 
           if (VFAINT){
                if (lverb > 20){
@@ -310,6 +317,8 @@ C:   its value to imtype(i).  -PLS  */
                                                   //certainly no more complexity is necessary
                               NFIT2 = 7;
                               ONESTAR = &pgauss2d_;
+                              GALCHI = PGAUSS_CHI;
+                              CONVERGE = 0; //no convergence generally
                          }
                     } //end if which model = 0 or if !PGAUSS default model
                     else{ //if which model = 1 or not first pass, or PGAUSS is the default model
@@ -333,7 +342,9 @@ C:   its value to imtype(i).  -PLS  */
                     // and eval VERYBIG and offpic.
                     NIT = ITFIT; //resetting to default, no longer first pass
                     //update all shape fit params to shadow files
-                    parupd_(A, SHADOW[K], IX, IY, NFIT2); 
+                    //update all parameters, even those not fitted so they dont default to 0
+                    parupd_(A, SHADOW[K], IX, IY, tune4_.nfit2); 
+                    //only update fitted parameters in error files so rest default to 0
                     errupd_(C_ptr, SHADERR[K], &NFIT2); //update ERROR from C_ptr
                     covarupd_(C_ptr, SHADCOVAR[K], NFIT2, 1); //update COVAR from C_ptr
 
