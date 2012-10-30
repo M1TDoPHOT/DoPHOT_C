@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "subraster_struct.h"
 #include "starlist_struct.h"
 #include "parpred_struct.h"
@@ -54,10 +55,11 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
      int*  WHICH_STAR_MODEL = model_.which_model;
 
      /* substance of subroutine begins here */
-     float* PARWT  = malloc_float_1darr(NPMAX);
-     float* ROOTS  = malloc_float_1darr(NPMAX);
-     float* WEIGHT = malloc_float_1darr(NPMAX);
-     float* PARVAL = malloc_float_1darr(NPMAX);
+     float* PARWT  = free_parking_.npmaxarray_1;
+     float* ROOTS  = free_parking_.npmaxarray_2;
+     float* WEIGHT = free_parking_.npmaxarray_3;
+     float* PARVAL = free_parking_.npmaxarray_4;
+     //none of PARWT, ROOTS, WEIGHT, PARVAL are gaurenteed to be 0, 
 
      static int MINRMS = 5;
      static int ITSKY  = 100;
@@ -73,7 +75,7 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
      static int MINHUB = 100;
      static float HACC[NPHUB];
      static float HLIM[NPHUB];
-     float* SKYPARINIT = malloc_float_1darr(NPHUB);
+     float* SKYPARINIT;
      // will use only one set depending on model
 
      int POSITIVE, GOODSTAR, PERFECT, TYPE1, TYPE3, CONV;
@@ -87,7 +89,8 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
           NSKYFIT_loc = NSKYFIT;
      }
      if (whichmodel == 1){
-          NSKYFIT_loc = NHUBFIT;
+          NSKYFIT_loc = NHUBFIT; 
+          SKYPARINIT = malloc_float_1darr(NPHUB);
      }
 
      /* initializing arrays */
@@ -135,6 +138,15 @@ void varipar_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr, int whichmodel)
           for(J = 0; J < 4; J++){
                PARMS[K[J]]  = 0.0f;
           }
+     }
+
+     //none of PARWT, ROOTS, WEIGHT, PARVAL are gaurenteed to be 0, 
+     //so initialize all
+     for (J = 0; J < NPMAX; J++){
+          PARWT[J]  = 0.0f;
+          ROOTS[J]  = 0.0f;
+          WEIGHT[J] = 0.0f;
+          PARVAL[J] = 0.0f;
      }
 
      /* TWO PASSES, ONE TO COMPUTE EXPECTED VALUE AND ONE TO COMPUTE RMS */
@@ -356,11 +368,9 @@ C:  GIVE SCREWEY RESULTS.  SO WE'LL TAKE THE LARGER OF O-C**2 AND SHADERR.
      }// end NPERF >=1 if/else
 
      /* free locally allocated memory */
-     free(PARWT);
-     free(ROOTS);
-     free(WEIGHT);
-     free(PARVAL);
-     free(SKYPARINIT);
+     if (whichmodel == 1){
+          free(SKYPARINIT);
+     }
 }
 
 void variparplane_(int* NSTOT_ptr, int* NFAST_ptr, int* NSLOW_ptr)

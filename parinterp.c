@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tuneable.h"
+#include "parinterp_struct.h"
 #include "skyvar_struct.h"
 #include "hubvar_struct.h"
 #include "drfake_struct.h"
@@ -29,21 +30,31 @@ double parinterp_(float* X_ptr, float* Y_ptr, float* STARPAR)
      int** MEDPIX = median_.medpix;
 
      /* substance of function begins here */
-     short int* IXY = malloc_si_1darr(2);
-     int* K         = malloc_int_1darr(tune4_.npar - 3);
-     float* DUMMY   = malloc_float_1darr(NPMAX);
+     static int first = 1;
+     if (first){ //allocate struct memory
+          pararray_.parsiarray  = malloc_si_1darr(2);
+          pararray_.parintarray = malloc_int_1darr(tune4_.npar - 3);
+          pararray_.dummy       = malloc_float_1darr(NPMAX);
+     }
+     short int* IXY = pararray_.parsiarray;
+     int* K         = pararray_.parintarray;
+     float* DUMMY   = pararray_.dummy;
      int I;
      
-     IXY[0] = (short int)(X + 0.5f);
-     IXY[1] = (short int)(Y + 0.5f);
-     K[0] = 0;
-     for(I = 4; I < tune4_.nfit2; I++){
-          K[I-3] = I;
+     if (first){          
+          K[0] = 0;
+          for(I = 4; I < tune4_.nfit2; I++){
+               K[I-3] = I;
+          }
+          first = 0;
      }
 
      for (I = 1; I < (tune4_.nfit2 - 3); I++){
           STARPAR[K[I]] = AVA[K[I]];
      }
+
+     IXY[0] = (short int)(X + 0.5f);
+     IXY[1] = (short int)(Y + 0.5f);
 
      NEEDIT = 0; //false
      /* Decide which sky function to use. */
@@ -63,11 +74,6 @@ double parinterp_(float* X_ptr, float* Y_ptr, float* STARPAR)
           STARPAR[0] = MEDPIX[IXY[1]][IXY[0]]; 
      }
      NEEDIT = 1; //true
-
-     /* free allocated memory */
-     free(IXY)    ;
-     free(K)      ;
-     free(DUMMY)  ;
 
      return STARPAR[0];
 }
