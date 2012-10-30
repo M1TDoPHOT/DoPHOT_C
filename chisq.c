@@ -30,7 +30,7 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
 
      /* substance of subroutine beigns here */
      if (M > MMAX-1){
-          free_float_2darr(M, C);
+          printf("chisq thinks M>MMAX-1... possible bug\n");
           return 0;
      }
      
