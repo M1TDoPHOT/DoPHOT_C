@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "empmom_struct.h"
 #include "guess.h"
 #include "addlims.h"
@@ -28,7 +29,7 @@ void stampout_(int** BIG, int* NFAST_ptr, int* NSLOW_ptr, float* STARPAR, short 
      float E7 = empmom_.e7;
 
      /* substance of subroutine begins here */
-     float* FA   = malloc_float_1darr(NPMAX);
+     float* FA   = free_parking_.npmaxarray_1;
 
      float RFAC;
      int JRECT0, JRECT1, JRECT2, JRECT3;
@@ -84,7 +85,6 @@ void stampout_(int** BIG, int* NFAST_ptr, int* NSLOW_ptr, float* STARPAR, short 
      newfits_(nx, ny, out_arr, out_file, 0, " ");
 
      /* free locally allocated memory */
-     free(FA);
      free_int_2darr(ny, out_arr);
 
 }

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "search_struct.h"
 #include "cast_arr.h"
 #include "mini_mathlib.h"
@@ -29,8 +30,8 @@ int toobright_(int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr, float* ST
 
 
      /* substance of function begins here */
-     float* A     = malloc_float_1darr(NPMAX);
-     short* JRECT = malloc_si_1darr(4);
+     float* A     = free_parking_.npmaxarray_1;
+     short* JRECT = free_parking_.sifourarray_1;
      int FLAG;
      int JTOP, NSAT; 
      int IXHI, IXLO, IYHI, IYLO;
@@ -39,8 +40,6 @@ int toobright_(int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr, float* ST
      int TOOBRIGHT = 0; //false
 
      if (STARPAR[1] < (float)(ITOP)/4.0f){
-          free(A);
-          free(JRECT);
           return TOOBRIGHT;
      }
      else{
@@ -80,10 +79,6 @@ int toobright_(int** BIG, int** NOISE, int* NFAST_ptr, int* NSLOW_ptr, float* ST
           STARPAR[5] = 0.01f;  //0 exactly saved for cosmic rays
           STARPAR[6] = JRECT[3] - JRECT[2];
      }
-
-     /* free allocated memory */
-     free(A);
-     free(JRECT);
 
      return TOOBRIGHT;
 }

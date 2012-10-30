@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "passmask_struct.h"
 #include "passweird_struct.h"
 #include "parinterp.h"
@@ -21,9 +22,9 @@ void makemask_( double (*ONESTAR)(short int*, float*, float*, int*, int*) )
      float** STARMASK = passmask_.starmask;
 
      /* substance of subroutine begins here */
-     float* A  = malloc_float_1darr(NPMAX);
-     float* FA = malloc_float_1darr(NPMAX);
-     short int* IX = malloc_si_1darr(2);
+     float* A  = free_parking_.npmaxarray_1;
+     float* FA = free_parking_.npmaxarray_2;
+     short int* IX = free_parking_.sifourarray_1;
      static float DUMX = 0.0f;
      static float DUMY = 0.0f;
      double parinterp_return;
@@ -49,7 +50,4 @@ void makemask_( double (*ONESTAR)(short int*, float*, float*, int*, int*) )
 
      /* reassigning renamed common block variables and freeing allocated mem */
      passweird_.weird =  WEIRD;
-     free(A);
-     free(FA);
-     free(IX);
 }

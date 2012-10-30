@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "mini_mathlib.h"
 #include "cast_arr.h"
 #include "guess.h"
@@ -22,7 +23,7 @@ int oblit_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BIG
      int lverb = tune14_.lverb;
 
      /* substance of subroutine begins here */
-     float* A  = malloc_float_1darr(NPMAX);
+     float* A  = free_parking_.npmaxarray_1;
      int OBLIT;
      double guess2_return;
      int IX, IY;
@@ -59,9 +60,6 @@ int oblit_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BIG
  
      OBLIT = 1; //true
 
-     /* recasting changed pointers and freeing allocated memory */
-     free(A);
-
      return OBLIT;
 }
 
@@ -76,7 +74,7 @@ int oblit_ellipse_( double (*ONESTAR)(short int*, float*, float*, int*, int*), i
      int lverb = tune14_.lverb;
 
      /* substance of subroutine begins here */
-     float* A  = malloc_float_1darr(NPMAX);
+     float* A  = free_parking_.npmaxarray_1;
      int OBLIT;
      double guess2_return;
      int IX, IY;
@@ -127,9 +125,6 @@ int oblit_ellipse_( double (*ONESTAR)(short int*, float*, float*, int*, int*), i
      }
  
      OBLIT = 1; //true
-
-     /* recasting changed pointers and freeing allocated memory */
-     free(A);
 
      return OBLIT;
 
