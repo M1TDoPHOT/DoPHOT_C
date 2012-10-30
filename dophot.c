@@ -122,11 +122,11 @@ int main( int argc, char* argv[])
      float* fb         = malloc_float_1darr(2*NPMAX);
      fitarrays_.fb     = fb;
 
-     float** c_mat           = malloc_float_2darr(NPMAX, NPMAX);
+     float** c_mat           = malloc_float_2darr(NPMAX+1, NPMAX+1);
      fitting_matrices_.c_mat = c_mat;
-     float** b_mat           = malloc_float_2darr(NPMAX, NPMAX);
+     float** b_mat           = malloc_float_2darr(NPMAX+1, NPMAX+1);
      fitting_matrices_.b_mat = b_mat;
-     float** lu              = malloc_float_2darr(NPMAX, NPMAX);
+     float** lu              = malloc_float_2darr(NPMAX+1, NPMAX+1);
      fitting_matrices_.lu    = lu;
      float*  c_list          = malloc_float_1darr(NPMAX);
      fitting_matrices_.c_list = c_list;
