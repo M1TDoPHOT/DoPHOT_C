@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "fitting_matrices_struct.h"
 #include "mini_mathlib.h"
 #include "cast_arr.h"
 #include "guess.h"
@@ -28,12 +29,13 @@ double probgal_(double (*ONESTAR)(short int*, float*, float*, int*, int*), short
      int lverb = tune14_.lverb;
 
      /* substance of fucntion begins here */
-     float** C = malloc_float_2darr(NPAR, NPAR);
-     float** LU = malloc_float_2darr(NPAR, NPAR);
-     float* V  = malloc_float_1darr(NPAR);
-     float* Vsol  = malloc_float_1darr(NPAR);
-     int* INDX = malloc_int_1darr(NPAR);
-     float* C2 = malloc_float_1darr(NPAR);
+     float** C  = fitting_matrices_.c_mat;
+     float** LU = fitting_matrices_.lu;
+     float* V   = fitting_matrices_.v;
+     float* Vsol = fitting_matrices_.vsol;
+     int* INDX = fitting_matrices_.index;
+     float* C2 = fitting_matrices_.c_list; //NPMAX
+     // none gaurenteed to be 0'd
 
      int I,J,K; 
      float CHI1 = 0.0f;
@@ -46,6 +48,14 @@ double probgal_(double (*ONESTAR)(short int*, float*, float*, int*, int*), short
      float AAREA, BAREA;
      float CHIPER; 
      float PROBGAL; 
+    
+     //zero C and C2
+     for(I = 0; I < NPMAX; I++){
+          C2[I] = 0.0f;
+          for(J = 0; J < NPMAX; J++){
+               C[I][J] = 0.0f;
+          } 
+     } 
 
      for(I = 0; I < NPT; I++){
           F_double = (*ONESTAR)(XX[I], A, FA, &NPAR_dum, &ZERO_dum);
@@ -103,14 +113,6 @@ double probgal_(double (*ONESTAR)(short int*, float*, float*, int*, int*), short
                PROBGAL = fabsf(DCHI/CHIPER) * (BAREA-AAREA)/fabsf(BAREA-AAREA);
           }
      }
-
-     /* freeing locally allocated memory */
-     free_float_2darr(NPAR, C);
-     free_float_2darr(NPAR, LU);
-     free(V)    ;
-     free(Vsol) ;
-     free(INDX) ;
-     free(C2)   ;
 
      return PROBGAL;
 }

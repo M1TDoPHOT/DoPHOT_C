@@ -128,6 +128,8 @@ int main( int argc, char* argv[])
      fitting_matrices_.b_mat = b_mat;
      float** lu              = malloc_float_2darr(NPMAX, NPMAX);
      fitting_matrices_.lu    = lu;
+     float*  c_list          = malloc_float_1darr(NPMAX);
+     fitting_matrices_.c_list = c_list;
      float*  v               = malloc_float_1darr(MMAX);
      fitting_matrices_.v     = v;
      float* vsol             = malloc_float_1darr(MMAX);
