@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "unitize_struct.h"
 #include "drfake_struct.h"
 #include "empmom_struct.h"
@@ -43,10 +44,10 @@ void addstar_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** B
      float UFACTOR = unitize_.ufactor;
 
      /* substance of subroutine begins here */
-     short int* IX    = malloc_si_1darr(2);
-     float* A    = malloc_float_1darr(NPMAX);
-     float* FA   = malloc_float_1darr(NPMAX);
-     float* B    = malloc_float_1darr(NPMAX);
+     short int* IX    = free_parking_.sifourarray_1;
+     float* A    = free_parking_.npmaxarray_1;
+     float* FA   = free_parking_.npmaxarray_2;
+     float* B    = free_parking_.npmaxarray_3;
 
      int BADNEWS;
      int ZERO_dum = 0; //so can be passed by pointer to fxns
@@ -258,10 +259,6 @@ void addstar_(double (*ONESTAR)(short int*, float*, float*, int*, int*), int** B
      drfake_.needit = NEEDIT;
 
      /* free locally allocated memory */
-     free(IX);
-     free(A);
-     free(FA);
-     free(B);
      if (model_img == 1){
           newfits_(nx, ny, model_arr, model_file, 0, " ");
           free_int_2darr(ny, model_arr);

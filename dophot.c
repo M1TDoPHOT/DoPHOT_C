@@ -20,6 +20,7 @@
 #include "subraster_struct.h"
 #include "byvirtue_struct.h"
 #include "fitarrays_struct.h"
+#include "free_parking_struct.h"
 #include "hubvar_struct.h"
 #include "imdev_struct.h"
 #include "oimdev_struct.h"
@@ -119,6 +120,25 @@ int main( int argc, char* argv[])
      fitarrays_.b      = b;
      float* fb         = malloc_float_1darr(2*NPMAX);
      fitarrays_.fb     = fb;
+
+     float*        npmaxarray_1 = malloc_float_1darr(NPMAX);
+     free_parking_.npmaxarray_1 = npmaxarray_1;
+     float*        npmaxarray_2 = malloc_float_1darr(NPMAX);
+     free_parking_.npmaxarray_2 = npmaxarray_2;
+     float*        npmaxarray_3 = malloc_float_1darr(NPMAX);
+     free_parking_.npmaxarray_3 = npmaxarray_3;
+     float*        npmaxarray_4 = malloc_float_1darr(NPMAX);
+     free_parking_.npmaxarray_4 = npmaxarray_4;
+     short int*    sifourarray_1 = malloc_si_1darr(4);
+     free_parking_.sifourarray_1 = sifourarray_1;
+     short int*    sifourarray_2 = malloc_si_1darr(4);
+     free_parking_.sifourarray_2 = sifourarray_2;
+     int*          intfourarray_1 = malloc_int_1darr(4);
+     free_parking_.intfourarray_1 = intfourarray_1;
+     int*          intfourarray_2 = malloc_int_1darr(4);
+     free_parking_.intfourarray_2 = intfourarray_2;
+     float**       npmaxbynpmaxarray = malloc_float_2darr(NPMAX, NPMAX);
+     free_parking_.npmaxbynpmaxarray = npmaxbynpmaxarray;
 
      float* hubpar     = malloc_float_1darr(NPHUB);
      hubvar_.hubpar    = hubpar;
