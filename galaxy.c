@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "parpred_struct.h"
 #include "byvirtue_struct.h"
 #include "cast_arr.h"
@@ -23,8 +24,8 @@ int galaxy_(float* A, float* ERR, float* STARPAR)
 
 
      /* substance of function begins here */
-     float* B   = malloc_float_1darr(NPMAX);
-     float* TOT = malloc_float_1darr(3);
+     float* B   = free_parking_.npmaxarray_1;
+     float* TOT = free_parking_.npmaxarray_2; //though only need 3 elements
      int I;
      float dum, NSIGMA;
      int GALAXY = 0; //FALSE
@@ -65,10 +66,6 @@ int galaxy_(float* A, float* ERR, float* STARPAR)
           }
           GALAXY = (CHI[3] >= CHICRIT);
      }
-
-     /* freeing allocated memory */
-     free(B)  ;
-     free(TOT);
 
      return GALAXY;
 

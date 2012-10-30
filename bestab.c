@@ -4,6 +4,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "starlist_struct.h"
 #include "estuff_struct.h"
 #include "search_struct.h"
@@ -87,7 +88,7 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
      int CHOOME, FIRST, IOK;
      int*       IT1 = malloc_int_1darr(NSMAX);
      short int* IT2 = malloc_si_1darr(NSMAX);
-     float*       A = malloc_float_1darr(NSMAX);
+     float*       A = free_parking_.npmaxarray_1;
 
      static int IADD =  1;
      static int ISUB = -1;
@@ -401,7 +402,6 @@ void bestab_( double (*ONESTAR_7P)(short int*, float*, float*, int*, int*), int*
 
      free(IT1);
      free(IT2);
-     free(A);
 
 }
                                

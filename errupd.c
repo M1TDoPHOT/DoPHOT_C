@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "free_parking_struct.h"
 #include "cast_arr.h"
 #include "errupd.h"
 
@@ -11,7 +12,7 @@ void errupd_(float *C_ptr, float *SHADERR, int *NFIT_ptr)
      /* SHADDERR is a pointer to the first element of a 1D array and
         should not be de referenced       */
      /* recasting the 2 dimensional array */
-     float** C = malloc_float_2darr(NFIT, NFIT);
+     float** C = free_parking_.npmaxbynpmaxarray;
      recast_float_1dto2darr(NFIT, NFIT, C_ptr, C); 
 
      /* substance of the suboutine begins here */
@@ -22,6 +23,5 @@ void errupd_(float *C_ptr, float *SHADERR, int *NFIT_ptr)
 
      /* no recasting needed as the only changed variable is 
         cast in both fortran and c as a 1d arr */
-     free_float_2darr(NFIT, C)       ;
 
 } 

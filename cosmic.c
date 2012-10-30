@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "free_parking_struct.h"
 #include "fitarrays_struct.h"
 #include "unitize_struct.h"
 #include "mini_mathlib.h"
@@ -28,7 +29,7 @@ int cosmic_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
      float UFACTOR = unitize_.ufactor;
 
      /* substance of function begins here */
-     short int* II = malloc_si_1darr(2);    
+     short int* II = free_parking_.sifourarray_1;
      double guess2_return;
      double onestar_return;
      float SKY, CHISTAR, CHICOS;
@@ -102,8 +103,6 @@ int cosmic_( double (*ONESTAR)(short int*, float*, float*, int*, int*), int** BI
           STARPAR[6] = WIDOBL      ;
      }
      COSMIC = POINTY;
-
-     free(II);
      
      return COSMIC;
 }
