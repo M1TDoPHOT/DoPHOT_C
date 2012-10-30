@@ -2,6 +2,7 @@
 #include <math.h>
 #include "logh.h"
 #include "tuneable.h"
+#include "fitting_matrices_struct.h"
 #include "cast_arr.h"
 #include "mini_mathlib.h"
 #include "lu_comp.h"
@@ -21,23 +22,24 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
      int N  = *N_ptr ;
      int M  = *M_ptr ;
      int IT = *IT_ptr;
-     float** C  = malloc_float_2darr(M, M);
+     float** C  = fitting_matrices_.c_mat;
      recast_float_1dto2darr(M, M, C_ptr, C);
-     float** LU = malloc_float_2darr(M, M);
      
      /* renaming used common block variables */
      int lverb   = tune14_.lverb;
 
      /* substance of subroutine beigns here */
      if (M > MMAX-1){
+          free_float_2darr(M, C);
           return 0;
      }
      
      int CONV, MARQ, LIMIT, skip_ahead;
-     float* V     = malloc_float_1darr(MMAX) ;
-     float* Vsol  = malloc_float_1darr(MMAX) ;
-     float** B = malloc_float_2darr(MMAX, MMAX) ;
-     int* INDX = malloc_int_1darr(MMAX) ;
+     float** LU   = fitting_matrices_.lu;
+     float* V     = fitting_matrices_.v;
+     float* Vsol  = fitting_matrices_.vsol;
+     float** B = fitting_matrices_.b_mat;
+     int* INDX = fitting_matrices_.index;
      int ZERO_dum = 0; //needed only for function pass
      int FITCALL = 1; //calling the fitting function from chisq
      int J, KK, L, count;
@@ -288,14 +290,8 @@ double chisq_( double (*FUNCTN)(short int*, float*, float*, int*, int*), short i
           CHISQ = 1.0E10f;
      }
 
-     /* recasting changed pointers and freeing all locally allocated memory */
+     /* recasting changed pointers*/
      recast_float_2dto1darr(M, M, C_ptr, C);
-     free_float_2darr(M,  C);
-     free_float_2darr(M,  LU);
-     free_float_2darr(MMAX, B);
-     free(V);
-     free(Vsol);
-     free(INDX);
 
      fprintf(logfile, "chisq returns: %10.6g \n", CHISQ);
      return CHISQ;

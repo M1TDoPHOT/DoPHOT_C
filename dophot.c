@@ -20,6 +20,7 @@
 #include "subraster_struct.h"
 #include "byvirtue_struct.h"
 #include "fitarrays_struct.h"
+#include "fitting_matrices_struct.h"
 #include "free_parking_struct.h"
 #include "hubvar_struct.h"
 #include "imdev_struct.h"
@@ -120,6 +121,19 @@ int main( int argc, char* argv[])
      fitarrays_.b      = b;
      float* fb         = malloc_float_1darr(2*NPMAX);
      fitarrays_.fb     = fb;
+
+     float** c_mat           = malloc_float_2darr(NPMAX, NPMAX);
+     fitting_matrices_.c_mat = c_mat;
+     float** b_mat           = malloc_float_2darr(NPMAX, NPMAX);
+     fitting_matrices_.b_mat = b_mat;
+     float** lu              = malloc_float_2darr(NPMAX, NPMAX);
+     fitting_matrices_.lu    = lu;
+     float*  v               = malloc_float_1darr(MMAX);
+     fitting_matrices_.v     = v;
+     float* vsol             = malloc_float_1darr(MMAX);
+     fitting_matrices_.vsol  = vsol;
+     int* index_list         = malloc_int_1darr(MMAX);
+     fitting_matrices_.index = index_list;
 
      float*        npmaxarray_1 = malloc_float_1darr(NPMAX);
      free_parking_.npmaxarray_1 = npmaxarray_1;
