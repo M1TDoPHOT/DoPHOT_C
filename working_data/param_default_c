@@ -48,6 +48,8 @@ IBOTTOM = -50          Lowest allowed data value in data numbers.
 ITOP = 16384           Maximum allowed data value in data numbers.
 THRESHMIN = 20.0       Value of lowest threshold.
 THRESHMAX = 10000.0    Value of maximum threshold.
+DOFINALFIT = 'YES'     Do a last fitting iteration after all objects found
+=                      fully fits faintest objects of type 3, but slows DoPHOT
 THRESHEMP = 0.0        Fit empirical PSF at and below this value.
 THRESHDEC = 1.0        Threshold decrement in powers-of-2.
 MAX_SOUGHT = 32768     Quit after this number of improved stars.
@@ -68,7 +70,7 @@ OBJECTS_IN                           Input object list file name.
 OBJECTS_OUT = 'objects_out'          Output object list file name.
 SHADOWFILE_IN                        Input shadow file name.
 SHADOWFILE_OUT = 'shadowfile_out'    Output shadow file name.
-ERRORS_OUT = 'error_out'  Errors on fit to be output if shadow file is requested
+ERRORS_OUT = 'error_out'  Errors of fit to be output if shadow file is requested
 LOGFILE = 'TERM'                     Log file name.  TERM for screen.
 LOGVERBOSITY = 1                     Verbosity of log file; (0-4).
 =
@@ -147,6 +149,7 @@ APMAG_MAXERR = 0.1     Max anticipated error for aperture phot report.
 PIXTHRESH = 1.0        Trigger on pixels higher than noise*PIXTHRESH.
 BETA4 = 1.0            R**4 coefficient modifier.
 BETA6 = 1.0            R**6 coefficient modifier.
+COVARS_OUT             File to contain covariance matrices of fit to be output
 =
 =
 =  AUTO SCALING PARAMETERS.  These parameters are used only if the auto-scaling
