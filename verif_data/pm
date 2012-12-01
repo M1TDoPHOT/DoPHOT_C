@@ -31,7 +31,7 @@ RPSNAME_ROOT  'resid' model file names will be 'MNAME_ROOT####.fits'
 =
 MAX_PERF  = 2000       Only average up to this number of stars to get shape parameters.
 THRESHMIN = 20.0       Value of lowest threshold.
-DOFINALFIT = 'NO'      Do a last fitting iteration after all objects found
+=DOFINALFIT = 'NO'      Do a last fitting iteration after all objects found
 CENTINTMAX = 42000.0   Obliterate if central intensity exceeds this.
 CHI2MINBIG = 9.00 
 FOOTPRINT_NOISE = 1.5  Expand stars in noise file by this amount (analytic).

@@ -365,7 +365,7 @@ int main( int argc, char* argv[])
           }
           
  
-        printf("here before sky\n");
+//        printf("here before sky\n");
           if (strncmp(flags[1], "MEDIA", 5) == 0){
                if ((PASSCNT == 0) || (PASSCNT == (NPPP-2))){
                     if (lverb >= 10){
@@ -390,7 +390,7 @@ int main( int argc, char* argv[])
           if (strncmp(flags[1], "HUBBL", 5) == 0){
                variparhub_(&search_.nstot, &nfast, &nslow);
           }
-        printf("here after sky\n");
+//        printf("here after sky\n");
                
           /* need varipar because improve calls guess3 which calls skyfun
              need makemask because improve calls snok which needs mask
