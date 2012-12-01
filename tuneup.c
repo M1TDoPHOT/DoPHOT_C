@@ -746,6 +746,18 @@ void tuneup_(int command_line_pm, char* pm_file_name)
           files[9][0] = '\0';
      }
 
+     /* END LEVINSON MODIFICATION FOR POSTAGE STAMP FILE OUTPUTS */
+
+     /* BEGIN LEVINSON MODIFICATION FOR EXTRA FITTING LOOP */
+     /* Ask if extra fitting loop tune3_.dofinalfit (int)*/
+     char* dofinalfit_yn = get_string_item_(keywords, items, "DOFINALFIT", nlines);
+     if ((dofinalfit_yn[0] == 'N' ) || (dofinalfit_yn[0] == 'n')){
+          tune3_.dofinalfit = 0; //dont do final fit
+     }
+     else{
+          tune3_.dofinalfit = 1; //if keyword is not specified or not NO, then yes 
+     }
+
      /* END LEVINSON'S MODIFICATIONS */
    
      /* Done with flags and files extraction and update. 

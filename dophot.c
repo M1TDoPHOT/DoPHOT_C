@@ -336,8 +336,8 @@ int main( int argc, char* argv[])
      char* rwa = "w";
      int ierr;
      char* outfilename;
-     char* errfilename; //only used if outfiletype = 0
      FILE* outfile;
+     char* errfilename; //only used if outfiletype = 0
      FILE* errfile; //only used if outfiletype = 0
      char* shadowfilename;
      FILE* shadowfile;
@@ -346,16 +346,26 @@ int main( int argc, char* argv[])
     
       
      first = ( (tune21_.fixpos) || (WARM) );
-     while ((search_.thresh / tune3_.tmin) >= 0.999f){
+     int last = 0;
+     while ( ((search_.thresh / tune3_.tmin) >= 0.999f) || (last) ){
 
           tune22_.emenab = (search_.thresh <= tune22_.emthrsh);
-          if (lverb > 10){
-               fprintf(logfile," \n");        
-               fprintf(logfile,"Starting loop at threshold level %f \n",
-                                search_.thresh);
+          if (!last){
+               if (lverb > 10){
+                    fprintf(logfile," \n");        
+                    fprintf(logfile,"Starting loop at threshold level %f \n",
+                                     search_.thresh);
+               }
           }
+          else{
+               if (lverb > 10){
+                    fprintf(logfile," \n");        
+                    fprintf(logfile,"Last Loop \n");
+               }
+          }
+          
  
-//        printf("here before sky\n");
+        printf("here before sky\n");
           if (strncmp(flags[1], "MEDIA", 5) == 0){
                if ((PASSCNT == 0) || (PASSCNT == (NPPP-2))){
                     if (lverb >= 10){
@@ -380,7 +390,7 @@ int main( int argc, char* argv[])
           if (strncmp(flags[1], "HUBBL", 5) == 0){
                variparhub_(&search_.nstot, &nfast, &nslow);
           }
-//        printf("here after sky\n");
+        printf("here after sky\n");
                
           /* need varipar because improve calls guess3 which calls skyfun
              need makemask because improve calls snok which needs mask
@@ -391,7 +401,7 @@ int main( int argc, char* argv[])
           makemask_(model2d);
 //        printf("here before makemask\n");
 
-          if (!first){
+          if ((!first) && (!last)){
 //             printf("here before isearch\n");
                NSTAR = isearch_(model2d, big, noise, &nfast, &nslow);
 //             printf("here after isearch\n");
@@ -426,7 +436,7 @@ int main( int argc, char* argv[])
           improve_(model2d, big, noise, &nfast, &nslow);
 //        printf("here after improve\n");
 
-          if (!first){
+          if ((!first) && (!last)){
                if (lverb > 10){
                     fprintf(logfile,"Ending loop at threshold level %f \n",
                                      search_.thresh);
@@ -439,8 +449,17 @@ int main( int argc, char* argv[])
                }
           }
 
-          if (!first){
+          if ((!first) && (!last)){
                search_.thresh = search_.thresh/powf(2, tune3_.tfac);
+          }
+
+          if ( ((search_.thresh / tune3_.tmin) < 0.999f) && (!last)){
+               if (tune3_.dofinalfit){ 
+                    last = 1;
+               }
+          }
+          else{
+               last = 0; //only last once if ever
           }
 
           /* outputing results to files */

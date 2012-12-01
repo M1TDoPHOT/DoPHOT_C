@@ -42,13 +42,15 @@ struct{
 struct{
     float tmin, tmax, tfac;
     int ibot, itop;
+    int dofinalfit;
 }tune3_;
 /*ITOP- Saturated pixel value */
 /*IBOT- Lowest allowed pixel value */
 /*TMIN- is the minimum threshold for the sky THRESHMIN */
 /*TMAX- THRESHMAX */
 /*TFAC- THRESHDEC */
-/* THRESHDEC – The separation between successive thresholds in units of 2.0 raised to the power THRESHDEC. Thus if this parameter is 1.0, and THRESHMIN = 20, and THRESHMAX = 1000, the thresholds (relative to the sky value) would be 640, 320, 160, 80, 40, and 20. */
+/* THRESHDEC The separation between successive thresholds in units of 2.0 raised to the power THRESHDEC. Thus if this parameter is 1.0, and THRESHMIN = 20, and THRESHMAX = 1000, the thresholds (relative to the sky value) would be 640, 320, 160, 80, 40, and 20. */
+/*DOFINALFIT Do a last fitting iteration after all objects found.  This extra loop will ensure that objects of type 3 found ont he final threshold pass are fully fit, but it will slow DoPHOT */
 
 struct{
     int nit, npar, nfit1, nfit2;
